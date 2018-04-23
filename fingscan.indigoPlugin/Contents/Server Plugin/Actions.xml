@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<!-- If your plugin wants to add actions to the action step dialog that are independent
+     of a device (devices define their own actions), define them here.
+-->
+<Actions>
+
+    <Action id="pingIpDevice">
+        <Name>ping a device on network to ping</Name>
+        <CallbackMethod>pingCALLBACKaction</CallbackMethod>
+        <ConfigUI>
+            <Field id="pingIpDevice"		type="menu" default=""						hidden="False" >
+                <List class="self" method="filterListIpDevices"></List>
+                <Label>pick device on network to ping </Label>
+            </Field>
+        </ConfigUI>
+    </Action>
+
+    <Action id="unifiUpdate" uiPath="hidden" >
+        <Name>--- only for python Script---</Name>
+        <CallbackMethod>UnifiUpdateCALLBACKaction</CallbackMethod>
+    </Action>
+    <Action id="MotherUpdate" uiPath="hidden" >
+        <Name>--- only for python Script---</Name>
+        <CallbackMethod>MotherUpdateCALLBACKaction</CallbackMethod>
+    </Action>
+    <Action id="piBeaconUpdate" uiPath="hidden" >
+        <Name>--- only for python Script---</Name>
+        <CallbackMethod>piBeaconUpdateCALLBACKaction</CallbackMethod>
+    </Action>
+
+    <Action id="actionFrom" uiPath="hidden" >
+        <Name>--- only for python Script---</Name>
+        <CallbackMethod>actionFromCALLBACKaction</CallbackMethod>
+    </Action>
+
+
+</Actions>

@@ -1,0 +1,112 @@
+---------------------------------------------------------
+ FingBox Sentinel How To
+---------------------------------------------------------
+
+FingBox Sentinel is a service compatible with:
+ * Windows 
+ * Linux/Unix System V init 
+ * Upstart service manager (Ubuntu and Debian)
+ * OSX Launchd (Mac OS)
+ * others (manual run)
+
+Create your FingBox discovery configurations with 'fing --interactive' command.
+The created profiles are then placed in the Sentinel configuration folder:
+ * On Windows you have a link to from Start Menu / Overlook Fing
+ * On Linux/MAC you can find it at /var/data/fing/sentinel
+
+The fingbox-sentinel service automatically run each profile found in the above folder.
+
+
+---------------------------------------------------------
+ Linux/Unix System V - init.d
+---------------------------------------------------------
+
+The following section applies to Linux distributions supporting System V init.d 
+Red-hat, Centos, and other RPM based distributions support it.
+
+Copy or link the init.d script from /usr/lib/fing/init.d/fingbox-sentinel to your /etc/init.d folder.
+
+Then add to your services with:
+  chkconfig --add fingbox-sentinel
+
+To manually control the service:
+start: 
+  service fingbox-sentinel start
+
+stop:
+  service fingbox-sentinel stop
+
+restart:
+  service fingbox-sentinel restart 
+
+  
+---------------------------------------------------------
+ Upstart service manager - Ubuntu and Debian
+---------------------------------------------------------
+
+Copy the upstart script from /usr/lib/fing/upstart/fingbox-sentinel.conf to your /etc/init folder.
+
+To manage the service with upstart:
+start: sudo start fingbox-sentinel
+stop: sudo stop fingbox-sentinel
+
+
+---------------------------------------------------------
+ Raspbian (Raspberry pi) - init.d
+---------------------------------------------------------
+
+The following section applies Raspberry pi distribution supporting System V init.d
+Raspbian based distributions support it.
+
+Copy or link the init.d script from /usr/lib/fing/init.d/fingbox-sentinel.raspberry to your /etc/init.d/fingbox-sentinel .
+
+Make sure you have installed chkconfig:
+  sudo apt-get install chkconfig
+
+Then add to your services with:
+  chkconfig --add fingbox-sentinel
+
+To manually control the service:
+start:
+  service fingbox-sentinel start
+
+stop:
+  service fingbox-sentinel stop
+
+restart:
+  service fingbox-sentinel restart
+
+
+---------------------------------------------------------
+ Windows Service
+---------------------------------------------------------
+
+Service can be installed and restarted automatically by fing --interactive command.
+
+To manually install it:
+  fing --installservice FingBoxSentinel --sentinel
+
+To manually uninstall it:
+	fing --uninstallservice FingBoxSentinel
+
+
+---------------------------------------------------------
+ OSX Launchd - Mac OS
+---------------------------------------------------------
+
+Copy or link the launchd script from /usr/lib/fing/launchd/com.overlooksoft.FingSentinel.plist to your 
+/Library/LaunchDaemons folder.
+
+copy:
+  sudo cp /usr/lib/fing/launchd/com.overlooksoft.FingSentinel.plist /Library/LaunchDaemons
+
+To manually load and start the service in background:
+load:
+  sudo launchctl load com.overlooksoft.FingSentinel.plist
+
+unload:
+  sudo launchctl unload com.overlooksoft.FingSentinel.plist
+
+
+---------------------------------------------------------
+FingBox. Enjoy your networks, anywhere.

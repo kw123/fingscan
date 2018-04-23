@@ -1,0 +1,210 @@
+<?xml version="1.0"?>
+<PluginConfig>
+
+    <Field id="infoLabel" type="label">
+        <Label>fingscan Plugin                                   Developed by Karl Wachs</Label>
+    </Field>
+    <Field id="simpleSeparator11" type="separator"/>
+  
+
+
+<Field defaultValue="" id="network" type="textfield" alignText="right" default="192.168.1.0">
+    <Label>Network starting # to be scanned</Label></Field>
+<Field defaultValue="24" id="netwType" type="menu" alignText="right">
+            <List>
+            <Option value="16" >/16 = 16 bits: 0..65535  if you really need that many numbers.. scans will take a long time!! </Option>
+            <Option value="17" >/17 = 15 bits: 0..32767</Option>
+            <Option value="18" >/18 = 14 bits: 0..16383</Option>
+            <Option value="19" >/19 = 13 bits: 0..8193</Option>
+            <Option value="20" >/20 = 12 bits: 0..4095</Option>
+            <Option value="21" >/21 = 11 bits: 0..2047</Option>
+            <Option value="22" >/22 = 10 bits: 0..1011 </Option>
+            <Option value="23" >/23 =  9 bits: 0..512</Option>
+            <Option value="24" >/24 =  8 bits: 0..255 </Option>
+            <Option value="25" >/25 =  7 bits: 0..128 </Option>
+            <Option value="26" >/26 =  6 bits: 0..63 </Option>
+            <Option value="27" >/27 =  5 bits: 0..31 </Option>
+            <Option value="28" >/28 =  4 bits: 0..15 </Option>
+            <Option value="29" >/29 =  3 bits: 0..7 </Option>
+            </List>
+<Label>Network type = ip number range</Label></Field>
+<Field id="infoLabel00" type="label" alignText="right">
+        <Label>eg 192.168.1.0/24= ...0..255 or 192.168.1.64/27 =...64..96  </Label>    </Field>
+
+
+<Field defaultValue="ipDevices" id="indigoDevicesFolderName" type="textfield" alignText="right">
+<Label>indigo DEVICE folder name </Label></Field>
+<Field defaultValue="IP devices" id="indigoVariablesFolderName" type="textfield" alignText="right">
+<Label>indigo VARIABLE folder name </Label></Field>
+
+
+    <Field defaultValue="21" id="enableMACtoVENDORlookup" type="menu" alignText="right">
+                <List>
+                <Option value="0"  >disable </Option>
+                <Option value="7"  >enable, refresh every  7 days </Option>
+                <Option value="14" >enable, refresh every 14 days </Option>
+                <Option value="21" >enable, refresh every 21 days </Option>
+                <Option value="30" >enable, refresh every 30 days </Option>
+                </List>
+        <Label>MAC# to vendor lookup</Label>
+    </Field>
+
+
+<Field defaultValue="0" id="enableMotherDevices" type="menu" alignText="right" visible = "no">
+            <List>
+            <Option value="0" >disable  mother devices for tracking</Option>
+            <Option value="1" >enable   mother devices for tracking </Option>
+            </List>
+<Label>use mother devices for tracking</Label></Field>
+
+<Field defaultValue="0" id="enablepiBeaconDevices" type="menu" alignText="right">
+            <List>
+            <Option value="0" >disable piBeacon devices for tracking</Option>
+            <Option value="1" >enable  piBeacon devices for tracking </Option>
+            </List>
+<Label>use piBeacon devices for tracking</Label></Field>
+
+<Field defaultValue="0" id="enablepiUnifiDevices" type="menu" alignText="right">
+            <List>
+            <Option value="0" >disable UNIFI devices for tracking</Option>
+            <Option value="1" >enable  UNIFI devices for tracking </Option>
+            </List>
+<Label>use UNIFI devices for tracking</Label></Field>
+
+<Field id="simpleSeparator1" type="separator"/>
+    
+<Field defaultValue="0" id="routerType" type="menu" alignText="right">
+            <List>
+            <Option value="0"            >None</Option>
+            <Option value="ASUS"         >ASUS</Option>
+            <Option value="MERLIN"       >ASUS/MERLIN &lt; 378_54  </Option>
+            <Option value="MERLIN378_54" >ASUS/MERLIN v= 378_54 </Option>
+            </List>
+<Label>type of Router</Label></Field>
+
+<Field visibleBindingId="routerType" visibleBindingValue="ASUS,MERLIN,MERLIN378_54" id="routerIPn" type="textfield" alignText="right" default="192.168.1.6"> <Label>IP</Label></Field>
+<Field visibleBindingId="routerType" visibleBindingValue="ASUS,MERLIN,MERLIN378_54" id="routerUID" type="textfield" alignText="right"> <Label>userid of router</Label></Field>
+<Field visibleBindingId="routerType" visibleBindingValue="ASUS,MERLIN,MERLIN378_54" id="routerPWD" type="textfield" alignText="right"> <Label>password of router</Label></Field>
+<Field visibleBindingId="routerType" visibleBindingValue="ASUS,MERLIN,MERLIN378_54" id="infoLabelTrigger" type="label">
+<Label>           Parameters to trigger Bad WiFi Signal:</Label> 	</Field>
+<Field visibleBindingId="routerType" visibleBindingValue="ASUS,MERLIN,MERLIN378_54" id="minWiFiSignal" type="menu" defaultValue="10" tooltip="trigger BadWiFi if signal is below this value">
+        <List>
+            <Option value="-70" >-70 dBm</Option>
+            <Option value="-75" >-75 dBm</Option>
+            <Option value="-80" >-80 dBm</Option>
+            <Option value="-82" >-82 dBm</Option>
+            <Option value="-84" >-84 dBm</Option>
+            <Option value="-86" >-86 dBm</Option>
+            <Option value="-88" >-88 dBm</Option>
+            <Option value="-90" >-90 dBm</Option>
+            <Option value="-92" >-92 dBm</Option>
+            <Option value="-94" >-94 dBm</Option>
+            <Option value="-96" >-96 dBm</Option>
+            <Option value="-999" >off, do not use</Option>
+        </List>
+    <Label>Min WiFi Signal </Label>
+</Field>
+<Field visibleBindingId="routerType" visibleBindingValue="ASUS,MERLIN,MERLIN378_54" id="minSignalDrop" type="menu" defaultValue="10" tooltip="amount of signaldrop ">
+        <List>
+            <Option value="1" >1 dBm</Option>
+            <Option value="7" >7 dBm</Option>
+            <Option value="8" >8 dBm</Option>
+            <Option value="9" >9 dBm</Option>
+            <Option value="10" >10 dBm</Option>
+            <Option value="12" >12 dBm</Option>
+            <Option value="14" >14 dBm</Option>
+            <Option value="16" >16 dBm</Option>
+            <Option value="18" >18 dBm</Option>
+            <Option value="20" >20 dBm</Option>
+            <Option value="25" >25 dBm</Option>
+            <Option value="999" >off, do not use</Option>
+        </List>
+    <Label>singal drop </Label>
+</Field>
+<Field visibleBindingId="routerType" visibleBindingValue="ASUS,MERLIN,MERLIN378_54" id="minNumberOfDevicesBad" type="menu" defaultValue="3" tooltip="number of devices that have to show the lower wifi signal">
+        <List>
+            <Option value="1" >1 device</Option>
+            <Option value="2" >2 device</Option>
+            <Option value="3" >3 device</Option>
+            <Option value="4" >4 device</Option>
+            <Option value="5" >5 device</Option>
+            <Option value="6" >1 device</Option>
+            <Option value="7" >7 device</Option>
+            <Option value="8" >8 device</Option>
+            <Option value="9" >9 device</Option>
+            <Option value="9999" >off, do not use</Option>
+        </List>
+    <Label># of devices </Label>
+</Field>
+<Field visibleBindingId="routerType" visibleBindingValue="ASUS,MERLIN,MERLIN378_54" id="minNumberOfSecondsBad" type="menu" defaultValue="90" tooltip="min time that devcies have to show low wifisignal">
+        <List>
+            <Option value="10" >10 seconds</Option>
+            <Option value="20" >20 seconds</Option>
+            <Option value="40" >40 seconds</Option>
+            <Option value="60" >60 seconds</Option>
+            <Option value="90" >90 seconds</Option>
+            <Option value="120" >2 minutes</Option>
+            <Option value="180" >3 minutes</Option>
+            <Option value="360" >6 minutes</Option>
+            <Option value="600" >10 minutes</Option>
+            <Option value="9999" >off, do not use</Option>
+        </List>
+    <Label>length of time wth low signal</Label>
+</Field>
+
+
+<Field id="simpleSeparator2" type="separator"/>
+
+
+<Field	id="password" type="textfield" defaultValue="your router password here" readonly ="no" hidden="false"> <Label>Enter YOUR MAC password:</Label> </Field>
+
+<Field id="infoLabel2" type="label" alignText="right"> <Label>overwrite with new password if you want to change it</Label> </Field>
+
+<Field id="simpleSeparator3" type="separator"/>
+    
+<Field id="sleepTime" type="menu" defaultValue="1" tooltip="amount of seconds to sleep between checking for changes in FING files / pings etc">
+        <List>
+            <Option value="1" >1 second fastest reaction, but keeps CPU busy (wait seconds must a dividor of 60)</Option>
+            <Option value="2" >2 seconds</Option>
+            <Option value="3" >3 seconds</Option>
+            <Option value="4" >4 seconds</Option>
+            <Option value="5" >5 seconds</Option>
+            <Option value="6" >6 seconds</Option>
+            <Option value="10" >10 seconds</Option>
+            <Option value="15" >15 seconds .. slow to react </Option>
+        </List>
+    <Label>seconds to sleep between probing:</Label>
+</Field>
+
+<Field id="inbetweenPingType" type="menu" defaultValue="0" tooltip="choose if pings should detect DOWN status if devices are UP, fing will detect once a minute. pinging a device can detect a DOWN status faster" >
+    <List>
+        <Option value="0"          >do not use ping</Option>
+        <Option value="sequential" >do pings for each device sequentially</Option>
+        <Option value="parallel"   >do pings in parallel (fastest detection) </Option>
+    </List>
+    <Label>Enable PINGs inbetween FING:</Label> </Field>
+
+    <Field id="infoLabel99" type="label"> <Label>debug level for plugin:</Label>  </Field>
+        
+    <Field    id="debugLogic"    type="checkbox"  defaultValue="false"       tooltip=""> <Label> Debug...                   ... (1) Logic:</Label>  </Field>
+    <Field    id="debugPing"     type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (2) PING:</Label>  </Field>
+    <Field    id="debugWifi"     type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (3) WiFi:</Label>  </Field>
+    <Field    id="debugEvents"   type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (4) Events:</Label>  </Field>
+    <Field    id="debugMother"   type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (5) Mother:</Label>  </Field>
+    <Field    id="debugiFind"    type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (6) iFind:</Label>  </Field>
+    <Field    id="debugpiBeacon" type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (7) piBeacon:</Label>  </Field>
+    <Field    id="debugpUnifi"   type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (8) Unifi:</Label>  </Field>
+    <Field    id="debugpAll"     type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (9) All:</Label>  </Field>
+
+    <Field    id="logFileActive"  type="checkbox"  defaultValue="false"       tooltip=""> <Label> send logs to file:</Label> tooltip="logfile= ~/indigo/fing/fingPlugin.log" </Field>
+    <Field    id="logFilePath"      type="menu"      defaultValue="no"      > <Label> send logs to ..:</Label>
+        <List>
+            <Option value="no"       > no special unifi logfile, std indigo logfile</Option>
+            <Option value="user"     > ~/indigo/p/fing/fingPlugin.log                   </Option>
+            <Option value="indigo"   > .. Perceptive Automation/Indigo 7/Logs/com.karlwachs.fingscan/fingPlugin.log </Option>
+        </List>
+    </Field>
+
+
+
+</PluginConfig>

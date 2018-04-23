@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+# Copyright 2012 by Overlook
+
+export LD_LIBRARY_PATH="/usr/local/lib/fing"
+export DYLD_LIBRARY_PATH=$LD_LIBRARY_PATH
+
+ulimit -n 1024
+ulimit -c unlimited
+
+/usr/local/lib/fing/fing.bin $@

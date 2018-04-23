@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<Devices>
+<Device type="custom" id="IP-Device">
+    <Name>IP-Device</Name>
+        <ConfigUI>			
+            <Field id="setHardwareVendor" type="textfield" hidden="false"> <Label>overwrite HardwareVendor State value:</Label></Field>
+            <Field id="setDeviceInfo"     type="textfield" hidden="false"> <Label>overwrite DeviceInfo State value:</Label></Field>
+            <Field id="setWiFi" 			  type="menu"     defaultValue="0"> <Label>WiFi/ethernet device:</Label>
+                <List>
+                    <Option value="Ethernet" >set to regular ethernet, ignore WiFi info</Option>
+                    <Option value="WiFi"     >set to Wifi Only </Option>
+                    <Option value="0"        >Wifi or Ethernet, what ever the system chooses </Option>
+                </List>
+            </Field>
+            <Field id="setUsePing" 			  type="menu"     defaultValue="usePing"> <Label>Use Ping to track DOWN status:</Label>
+                <List>
+                    <Option value="doNotUsePing" >do not use PING</Option>
+                    <Option value="usePing" >use Ping</Option>
+                </List>
+            </Field>
+            <Field id="setSuppressChangeMSG" type="menu"     defaultValue="show"> <Label>Show MSG changed/double IP#(suppress change MSG):</Label>
+                <List>
+                    <Option value="notShow" >do NOT show double / changed IP numbers in Logfile</Option>
+                    <Option value="show"    >SHOW  double / changed IP numbers in Logfile</Option>
+                </List>
+            </Field>
+        </ConfigUI>
+
+    <UiDisplayStateId>statusDisplay</UiDisplayStateId>
+    <States>
+        <State id="statusDisplay">
+            <ValueType>String</ValueType>
+            <TriggerLabel>statusDisplay</TriggerLabel>
+            <ControlPageLabel>statusDisplay</ControlPageLabel>
+        </State>
+        <State id="MACNumber">
+            <ValueType>String</ValueType>
+            <TriggerLabel>MACNumber</TriggerLabel>
+            <ControlPageLabel>MACNumber</ControlPageLabel>
+        </State>
+        <State id="ipNumber">
+            <ValueType>String</ValueType>
+            <TriggerLabel>IPNumber</TriggerLabel>
+            <ControlPageLabel>IPNumber</ControlPageLabel>
+        </State>
+        <State id="timeOfLastChange">
+            <ValueType>String</ValueType>
+            <TriggerLabel>TimeOfLastChange</TriggerLabel>
+            <ControlPageLabel>TimeOfLastChange</ControlPageLabel>
+        </State>
+        <State id="status">
+            <ValueType>String</ValueType>
+            <TriggerLabel>status</TriggerLabel>
+            <ControlPageLabel>status</ControlPageLabel>
+        </State>
+        <State id="hardwareVendor">
+            <ValueType>String</ValueType>
+            <TriggerLabel>hardwareVendor</TriggerLabel>
+            <ControlPageLabel>hardwareVendor</ControlPageLabel>
+        </State>
+        <State id="deviceInfo">
+            <ValueType>String</ValueType>
+            <TriggerLabel>deviceInfo</TriggerLabel>
+            <ControlPageLabel>deviceInfo</ControlPageLabel>
+        </State>
+        <State id="noOfChanges">
+            <ValueType>String</ValueType>
+            <TriggerLabel>noOfChanges</TriggerLabel>
+            <ControlPageLabel>noOfChanges</ControlPageLabel>
+        </State>
+        <State id="WiFi">
+            <ValueType>String</ValueType>
+            <TriggerLabel>WiFi</TriggerLabel>
+            <ControlPageLabel>WiFi</ControlPageLabel>
+        </State>
+        <State id="WiFiSignal">
+            <ValueType>String</ValueType>
+            <TriggerLabel>WiFiSignal</TriggerLabel>
+            <ControlPageLabel>WiFiSignal</ControlPageLabel>
+        </State>
+        <State id="usePing">
+            <ValueType>String</ValueType>
+            <TriggerLabel>usePing</TriggerLabel>
+            <ControlPageLabel>usePing</ControlPageLabel>
+        </State>
+        <State id="suppressChangeMSG">
+            <ValueType>String</ValueType>
+            <TriggerLabel>suppressChangeMSG</TriggerLabel>
+            <ControlPageLabel>suppressChangeMSG</ControlPageLabel>
+        </State>
+        <State id="nickName">
+            <ValueType>String</ValueType>
+            <TriggerLabel>nickName</TriggerLabel>
+            <ControlPageLabel>nickName</ControlPageLabel>
+        </State>
+    </States>
+</Device>
+
+</Devices>
