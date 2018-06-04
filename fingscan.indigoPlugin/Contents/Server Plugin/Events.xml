@@ -9,49 +9,100 @@
     <Event id="EVENT_1_oneAway">	<Name>EVENT_1_oneAway  .. ONE device  of the devices in the group must be AWAY to trigger</Name> </Event>
     <Event id="EVENT_1_oneHome">	<Name>EVENT_1_oneHome  .. ONE device  of the devices in the group must be HOME to trigger</Name> </Event>
     <Event id="EVENT_1_allHome">	<Name>EVENT_1_allHome  .. ALL devices                in the group must be HOME to trigger</Name> </Event>
+
     <Event id="EVENT_2_allAway">	<Name>EVENT_2_allAway  .. ALL devices  ....</Name> </Event>
     <Event id="EVENT_2_oneAway">	<Name>EVENT_2_oneAway</Name> </Event>
     <Event id="EVENT_2_oneHome">	<Name>EVENT_2_oneHome</Name> </Event>
     <Event id="EVENT_2_allHome">	<Name>EVENT_2_allHome</Name> </Event>
+
     <Event id="EVENT_3_allAway">	<Name>EVENT_3_allAway</Name> </Event>
     <Event id="EVENT_3_oneAway">	<Name>EVENT_3_oneAway</Name> </Event>
     <Event id="EVENT_3_oneHome">	<Name>EVENT_3_oneHome</Name> </Event>
     <Event id="EVENT_3_allHome">	<Name>EVENT_3_allHome</Name> </Event>
+
     <Event id="EVENT_4_allAway">	<Name>EVENT_4_allAway</Name> </Event>
     <Event id="EVENT_4_oneAway">	<Name>EVENT_4_oneAway</Name> </Event>
     <Event id="EVENT_4_oneHome">	<Name>EVENT_4_oneHome</Name> </Event>
     <Event id="EVENT_4_allHome">	<Name>EVENT_4_allHome</Name> </Event>
+
     <Event id="EVENT_5_allAway">	<Name>EVENT_5_allAway</Name> </Event>
     <Event id="EVENT_5_oneAway">	<Name>EVENT_5_oneAway</Name> </Event>
     <Event id="EVENT_5_oneHome">	<Name>EVENT_5_oneHome</Name> </Event>
     <Event id="EVENT_5_allHome">	<Name>EVENT_5_allHome</Name> </Event>
+
     <Event id="EVENT_6_allAway">	<Name>EVENT_6_allAway</Name> </Event>
     <Event id="EVENT_6_oneAway">	<Name>EVENT_6_oneAway</Name> </Event>
     <Event id="EVENT_6_oneHome">	<Name>EVENT_6_oneHome</Name> </Event>
     <Event id="EVENT_6_allHome">	<Name>EVENT_6_allHome</Name> </Event>
+
     <Event id="EVENT_7_allAway">	<Name>EVENT_7_allAway</Name> </Event>
     <Event id="EVENT_7_oneAway">	<Name>EVENT_7_oneAway</Name> </Event>
     <Event id="EVENT_7_oneHome">	<Name>EVENT_7_oneHome</Name> </Event>
     <Event id="EVENT_7_allHome">	<Name>EVENT_7_allHome</Name> </Event>
+
     <Event id="EVENT_8_allAway">	<Name>EVENT_8_allAway</Name> </Event>
     <Event id="EVENT_8_oneAway">	<Name>EVENT_8_oneAway</Name> </Event>
     <Event id="EVENT_8_oneHome">	<Name>EVENT_8_oneHome</Name> </Event>
     <Event id="EVENT_8_allHome">	<Name>EVENT_8_allHome</Name> </Event>
+
     <Event id="EVENT_9_allAway">	<Name>EVENT_9_allAway</Name> </Event>
     <Event id="EVENT_9_oneAway">	<Name>EVENT_9_oneAway</Name> </Event>
     <Event id="EVENT_9_oneHome">	<Name>EVENT_9_oneHome</Name> </Event>
     <Event id="EVENT_9_allHome">	<Name>EVENT_9_allHome</Name> </Event>
+
     <Event id="EVENT_10_allAway">	<Name>EVENT_10_allAway</Name> </Event>
     <Event id="EVENT_10_oneAway">	<Name>EVENT_10_oneAway</Name> </Event>
     <Event id="EVENT_10_oneHome">	<Name>EVENT_10_oneHome</Name> </Event>
     <Event id="EVENT_10_allHome">	<Name>EVENT_10_allHome</Name> </Event>
+
     <Event id="EVENT_11_allAway">	<Name>EVENT_11_allAway</Name> </Event>
     <Event id="EVENT_11_oneAway">	<Name>EVENT_11_oneAway</Name> </Event>
     <Event id="EVENT_11_oneHome">	<Name>EVENT_11_oneHome</Name> </Event>
     <Event id="EVENT_11_allHome">	<Name>EVENT_11_allHome</Name> </Event>
+
     <Event id="EVENT_12_allAway">	<Name>EVENT_12_allAway</Name> </Event>
     <Event id="EVENT_12_oneAway">	<Name>EVENT_12_oneAway</Name> </Event>
     <Event id="EVENT_12_oneHome">	<Name>EVENT_12_oneHome</Name> </Event>
     <Event id="EVENT_12_allHome">	<Name>EVENT_12_allHome</Name> </Event>
+
+    <Event id="EVENT_13_allAway">	<Name>EVENT_13_allAway</Name> </Event>
+    <Event id="EVENT_13_oneAway">	<Name>EVENT_13_oneAway</Name> </Event>
+    <Event id="EVENT_13_oneHome">	<Name>EVENT_13_oneHome</Name> </Event>
+    <Event id="EVENT_13_allHome">	<Name>EVENT_13_allHome</Name> </Event>
+
+    <Event id="EVENT_14_allAway">	<Name>EVENT_14_allAway</Name> </Event>
+    <Event id="EVENT_14_oneAway">	<Name>EVENT_14_oneAway</Name> </Event>
+    <Event id="EVENT_14_oneHome">	<Name>EVENT_14_oneHome</Name> </Event>
+    <Event id="EVENT_14_allHome">	<Name>EVENT_14_allHome</Name> </Event>
+
+    <Event id="EVENT_15_allAway">	<Name>EVENT_15_allAway</Name> </Event>
+    <Event id="EVENT_15_oneAway">	<Name>EVENT_15_oneAway</Name> </Event>
+    <Event id="EVENT_15_oneHome">	<Name>EVENT_15_oneHome</Name> </Event>
+    <Event id="EVENT_15_allHome">	<Name>EVENT_15_allHome</Name> </Event>
+
+    <Event id="EVENT_16_allAway">	<Name>EVENT_16_allAway</Name> </Event>
+    <Event id="EVENT_16_oneAway">	<Name>EVENT_16_oneAway</Name> </Event>
+    <Event id="EVENT_16_oneHome">	<Name>EVENT_16_oneHome</Name> </Event>
+    <Event id="EVENT_16_allHome">	<Name>EVENT_16_allHome</Name> </Event>
+
+    <Event id="EVENT_17_allAway">	<Name>EVENT_17_allAway</Name> </Event>
+    <Event id="EVENT_17_oneAway">	<Name>EVENT_17_oneAway</Name> </Event>
+    <Event id="EVENT_17_oneHome">	<Name>EVENT_17_oneHome</Name> </Event>
+    <Event id="EVENT_17_allHome">	<Name>EVENT_17_allHome</Name> </Event>
+
+    <Event id="EVENT_18_allAway">	<Name>EVENT_18_allAway</Name> </Event>
+    <Event id="EVENT_18_oneAway">	<Name>EVENT_18_oneAway</Name> </Event>
+    <Event id="EVENT_18_oneHome">	<Name>EVENT_18_oneHome</Name> </Event>
+    <Event id="EVENT_18_allHome">	<Name>EVENT_18_allHome</Name> </Event>
+
+    <Event id="EVENT_19_allAway">	<Name>EVENT_19_allAway</Name> </Event>
+    <Event id="EVENT_19_oneAway">	<Name>EVENT_19_oneAway</Name> </Event>
+    <Event id="EVENT_19_oneHome">	<Name>EVENT_19_oneHome</Name> </Event>
+    <Event id="EVENT_19_allHome">	<Name>EVENT_19_allHome</Name> </Event>
+
+    <Event id="EVENT_20_allAway">	<Name>EVENT_20_allAway</Name> </Event>
+    <Event id="EVENT_20_oneAway">	<Name>EVENT_20_oneAway</Name> </Event>
+    <Event id="EVENT_20_oneHome">	<Name>EVENT_20_oneHome</Name> </Event>
+    <Event id="EVENT_20_allHome">	<Name>EVENT_20_allHome</Name> </Event>
 
 </Events>

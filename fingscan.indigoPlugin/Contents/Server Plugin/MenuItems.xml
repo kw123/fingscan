@@ -48,7 +48,7 @@
         </Field>
 
 
-        <Field  id="selectEvent" type="menu" defaultValue="1" tooltip="Enter Event number, click on ::Event n:: to refresh" default="0"> <Label> Event GROUP # to be created ......:</Label>
+        <Field  id="selectEvent" type="menu" defaultValue="1" tooltip="Enter Event number, click on ::Event n:: to refresh" > <Label> Event GROUP # to be created ......:</Label>
                 <List>
                     <Option value="1" >Event 1</Option>
                     <Option value="2" >Event 2</Option>
@@ -62,6 +62,14 @@
                     <Option value="10" >Event10</Option>
                     <Option value="11" >Event11</Option>
                     <Option value="12" >Event12</Option>
+                    <Option value="13" >Event13</Option>
+                    <Option value="14" >Event14</Option>
+                    <Option value="15" >Event15</Option>
+                    <Option value="16" >Event16</Option>
+                    <Option value="17" >Event17</Option>
+                    <Option value="18" >Event18</Option>
+                    <Option value="19" >Event19</Option>
+                    <Option value="20" >Event20</Option>
                 </List>
                 <CallbackMethod>CALLBACKevent</CallbackMethod>
         </Field>
@@ -495,50 +503,101 @@
                     <Option value="EVENT_1_allAway" >EVENT_1_allAway</Option>
                     <Option value="EVENT_1_oneHome" >EVENT_1_oneHome</Option>
                     <Option value="EVENT_1_allHome" >EVENT_1_allHome</Option>
+
                     <Option value="EVENT_2_oneAway" >EVENT_2_oneAway</Option>
                     <Option value="EVENT_2_allAway" >EVENT_2_allAway</Option>
                     <Option value="EVENT_2_oneHome" >EVENT_2_oneHome</Option>
                     <Option value="EVENT_2_allHome" >EVENT_2_allHome</Option>
+
                     <Option value="EVENT_3_oneAway" >EVENT_3_oneAway</Option>
                     <Option value="EVENT_3_allAway" >EVENT_3_allAway</Option>
                     <Option value="EVENT_3_oneHome" >EVENT_3_oneHome</Option>
                     <Option value="EVENT_3_allHome" >EVENT_3_allHome</Option>
+
                     <Option value="EVENT_4_oneAway" >EVENT_4_oneAway</Option>
                     <Option value="EVENT_4_allAway" >EVENT_4_allAway</Option>
                     <Option value="EVENT_4_oneHome" >EVENT_4_oneHome</Option>
                     <Option value="EVENT_4_allHome" >EVENT_4_allHome</Option>
+
                     <Option value="EVENT_5_oneAway" >EVENT_5_oneAway</Option>
                     <Option value="EVENT_5_allAway" >EVENT_5_allAway</Option>
                     <Option value="EVENT_5_oneHome" >EVENT_5_oneHome</Option>
                     <Option value="EVENT_5_allHome" >EVENT_5_allHome</Option>
+
                     <Option value="EVENT_6_oneAway" >EVENT_6_oneAway</Option>
                     <Option value="EVENT_6_allAway" >EVENT_6_allAway</Option>
                     <Option value="EVENT_6_oneHome" >EVENT_6_oneHome</Option>
                     <Option value="EVENT_6_allHome" >EVENT_6_allHome</Option>
+
                     <Option value="EVENT_7_oneAway" >EVENT_7_oneAway</Option>
                     <Option value="EVENT_7_allAway" >EVENT_7_allAway</Option>
                     <Option value="EVENT_7_oneHome" >EVENT_7_oneHome</Option>
                     <Option value="EVENT_7_allHome" >EVENT_7_allHome</Option>
+
                     <Option value="EVENT_8_oneAway" >EVENT_8_oneAway</Option>
                     <Option value="EVENT_8_allAway" >EVENT_8_allAway</Option>
                     <Option value="EVENT_8_oneHome" >EVENT_8_oneHome</Option>
                     <Option value="EVENT_8_allHome" >EVENT_8_allHome</Option>
+
                     <Option value="EVENT_9_oneAway" >EVENT_9_oneAway</Option>
                     <Option value="EVENT_9_allAway" >EVENT_9_allAway</Option>
                     <Option value="EVENT_9_oneHome" >EVENT_9_oneHome</Option>
                     <Option value="EVENT_9_allHome" >EVENT_9_allHome</Option>
+
                     <Option value="EVENT_10_oneAway" >EVENT_10_oneAway</Option>
                     <Option value="EVENT_10_allAway" >EVENT_10_allAway</Option>
                     <Option value="EVENT_10_oneHome" >EVENT_10_oneHome</Option>
                     <Option value="EVENT_10_allHome" >EVENT_10_allHome</Option>
+
                     <Option value="EVENT_11_oneAway" >EVENT_11_oneAway</Option>
                     <Option value="EVENT_11_allAway" >EVENT_11_allAway</Option>
                     <Option value="EVENT_11_oneHome" >EVENT_11_oneHome</Option>
                     <Option value="EVENT_11_allHome" >EVENT_11_allHome</Option>
+
                     <Option value="EVENT_12_oneAway" >EVENT_12_oneAway</Option>
                     <Option value="EVENT_12_allAway" >EVENT_12_allAway</Option>
                     <Option value="EVENT_12_oneHome" >EVENT_12_oneHome</Option>
                     <Option value="EVENT_12_allHome" >EVENT_12_allHome</Option>
+
+                    <Option value="EVENT_13_oneAway" >EVENT_13_oneAway</Option>
+                    <Option value="EVENT_13_allAway" >EVENT_13_allAway</Option>
+                    <Option value="EVENT_13_oneHome" >EVENT_13_oneHome</Option>
+                    <Option value="EVENT_13_allHome" >EVENT_13_allHome</Option>
+
+                    <Option value="EVENT_14_oneAway" >EVENT_14_oneAway</Option>
+                    <Option value="EVENT_14_allAway" >EVENT_14_allAway</Option>
+                    <Option value="EVENT_14_oneHome" >EVENT_14_oneHome</Option>
+                    <Option value="EVENT_14_allHome" >EVENT_14_allHome</Option>
+
+                    <Option value="EVENT_15_oneAway" >EVENT_15_oneAway</Option>
+                    <Option value="EVENT_15_allAway" >EVENT_15_allAway</Option>
+                    <Option value="EVENT_15_oneHome" >EVENT_15_oneHome</Option>
+                    <Option value="EVENT_15_allHome" >EVENT_15_allHome</Option>
+
+                    <Option value="EVENT_16_oneAway" >EVENT_16_oneAway</Option>
+                    <Option value="EVENT_16_allAway" >EVENT_16_allAway</Option>
+                    <Option value="EVENT_16_oneHome" >EVENT_16_oneHome</Option>
+                    <Option value="EVENT_16_allHome" >EVENT_16_allHome</Option>
+
+                    <Option value="EVENT_17_oneAway" >EVENT_17_oneAway</Option>
+                    <Option value="EVENT_17_allAway" >EVENT_17_allAway</Option>
+                    <Option value="EVENT_17_oneHome" >EVENT_17_oneHome</Option>
+                    <Option value="EVENT_17_allHome" >EVENT_17_allHome</Option>
+
+                    <Option value="EVENT_18_oneAway" >EVENT_18_oneAway</Option>
+                    <Option value="EVENT_18_allAway" >EVENT_18_allAway</Option>
+                    <Option value="EVENT_18_oneHome" >EVENT_18_oneHome</Option>
+                    <Option value="EVENT_18_allHome" >EVENT_18_allHome</Option>
+
+                    <Option value="EVENT_19_oneAway" >EVENT_19_oneAway</Option>
+                    <Option value="EVENT_19_allAway" >EVENT_19_allAway</Option>
+                    <Option value="EVENT_19_oneHome" >EVENT_19_oneHome</Option>
+                    <Option value="EVENT_19_allHome" >EVENT_19_allHome</Option>
+
+                    <Option value="EVENT_20_oneAway" >EVENT_20_oneAway</Option>
+                    <Option value="EVENT_20_allAway" >EVENT_20_allAway</Option>
+                    <Option value="EVENT_20_oneHome" >EVENT_20_oneHome</Option>
+                    <Option value="EVENT_20_allHome" >EVENT_20_allHome</Option>
                 </List>
             </Field>
             <Field  id="execEventButton" type="button"	>

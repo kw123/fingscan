@@ -176,13 +176,13 @@
     <Label>seconds to sleep between probing:</Label>
 </Field>
 
-<Field id="inbetweenPingType" type="menu" defaultValue="0" tooltip="choose if pings should detect DOWN status if devices are UP, fing will detect once a minute. pinging a device can detect a DOWN status faster" >
+<Field id="inbetweenPingType" type="menu" defaultValue="0" tooltip="choose if pings should detect DOWN status if devices are UP, fing will detect once a minute. pinging a device can detect a DOWN status faster , but if device answers ping, FING will detect it too." >
     <List>
         <Option value="0"          >do not use ping</Option>
         <Option value="sequential" >do pings for each device sequentially</Option>
         <Option value="parallel"   >do pings in parallel (fastest detection) </Option>
     </List>
-    <Label>Enable PINGs inbetween FING:</Label> </Field>
+    <Label>Enable PINGs inbetween FING(for all devices + device edit settings for each device):</Label> </Field>
 
     <Field id="infoLabel99" type="label"> <Label>debug level for plugin:</Label>  </Field>
         
@@ -197,13 +197,6 @@
     <Field    id="debugpAll"     type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (9) All:</Label>  </Field>
 
     <Field    id="logFileActive"  type="checkbox"  defaultValue="false"       tooltip=""> <Label> send logs to file:</Label> tooltip="logfile= ~/indigo/fing/fingPlugin.log" </Field>
-    <Field    id="logFilePath"      type="menu"      defaultValue="no"      > <Label> send logs to ..:</Label>
-        <List>
-            <Option value="no"       > no special unifi logfile, std indigo logfile</Option>
-            <Option value="user"     > ~/indigo/p/fing/fingPlugin.log                   </Option>
-            <Option value="indigo"   > .. Perceptive Automation/Indigo 7/Logs/com.karlwachs.fingscan/fingPlugin.log </Option>
-        </List>
-    </Field>
 
 
 
