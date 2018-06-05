@@ -20,7 +20,7 @@ import versionCheck.versionCheck as VS
 import MACMAP.MAC2Vendor as M2Vclass
 import ip.IP as IPaddressCalcClass
 
-fingscanVersion="7.25.21"
+fingscanVersion="7.27.25"
 
 nOfDevicesInEvent   = 35
 nOfIDevicesInEvent  = 5
@@ -691,6 +691,18 @@ class Plugin(indigo.PluginBase):
                     indigo.variable.create("oneHome_"+str(i),"",folder=FINGscanFolderID)
                 except:
                     pass
+
+            
+            if init: 
+                try:    indigo.variable.delete("FingEventDevChangedIndigoId")
+                except: pass
+            
+            try:
+                indigo.variable.create("FingEventDevChangedIndigoId",folder=self.FINGscanFolderID)
+            except:  pass
+
+
+
             for i in self.EVENTS:
                 try:
                     indigo.variable.create("allAway_"+str(i),"",folder=FINGscanFolderID)
@@ -4111,6 +4123,8 @@ class Plugin(indigo.PluginBase):
                                 self.updatePrefs = True
                                 indigo.variable.updateValue("oneHome_"+nEvent,"1")
                                 if self.checkTriggerInitialized:
+                                    try:indigo.variable.updateValue("FingEventDevChangedIndigoId",str(self.allDeviceInfo[evnt["IPdeviceMACnumber"][oneHomeTrigger]]["deviceId"]))
+                                    except: pass
                                     self.triggerEvent("EVENT_"+nEvent+"_oneHome")
                     else:
                         if evnt["oneHome"]!= "0":
@@ -4124,6 +4138,8 @@ class Plugin(indigo.PluginBase):
                                 self.updatePrefs = True
                                 indigo.variable.updateValue("allHome_"+nEvent,"1")
                                 if self.checkTriggerInitialized:
+                                    try: indigo.variable.updateValue("FingEventDevChangedIndigoId",str(self.allDeviceInfo[evnt["IPdeviceMACnumber"][allHomeTrigger]]["deviceId"]))
+                                    except: pass
                                     self.triggerEvent("EVENT_"+nEvent+"_allHome")
                     else:
                         if evnt["allHome"]!= "0":
@@ -4140,6 +4156,8 @@ class Plugin(indigo.PluginBase):
                                 evnt["allAway"] ="1"
                                 indigo.variable.updateValue("allAway_"+nEvent,"1")
                                 if self.checkTriggerInitialized:
+                                    try: indigo.variable.updateValue("FingEventDevChangedIndigoId",str(self.allDeviceInfo[evnt["IPdeviceMACnumber"][allAwayTrigger]]["deviceId"]))
+                                    except: pass
                                     self.triggerEvent("EVENT_"+nEvent+"_allAway")
                     else:
                         if evnt["allAway"] !="0":
@@ -4154,6 +4172,8 @@ class Plugin(indigo.PluginBase):
                                 evnt["oneAway"] ="1"
                                 indigo.variable.updateValue("oneAway_"+nEvent,"1")
                                 if self.checkTriggerInitialized:
+                                    try: indigo.variable.updateValue("FingEventDevChangedIndigoId",str(self.allDeviceInfo[evnt["IPdeviceMACnumber"][allAwayTrigger]]["deviceId"]))
+                                    except: pass
                                     self.triggerEvent("EVENT_"+nEvent+"_oneAway")
                     else:
                         if evnt["oneAway"] !="0":
