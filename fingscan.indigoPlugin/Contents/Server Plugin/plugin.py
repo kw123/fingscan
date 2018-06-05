@@ -585,7 +585,7 @@ class Plugin(indigo.PluginBase):
 ############ create indigo Event variables  and initialize ..
                 
             self.cleanUpEvents()
-            self.setupEventVariables()
+            self.setupEventVariables(init=True)
      
 
 ############ initialize indigo settings ..
@@ -677,7 +677,7 @@ class Plugin(indigo.PluginBase):
         return
         
 ########################################
-    def setupEventVariables(self):
+    def setupEventVariables(self,init=False):
         try:
             try:
                 indigo.variables.folder.create("FINGscanEvents")
