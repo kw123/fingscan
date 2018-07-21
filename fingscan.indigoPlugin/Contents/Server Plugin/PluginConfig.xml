@@ -50,12 +50,12 @@
     </Field>
 
 
-<Field defaultValue="0" id="enableMotherDevices" type="menu" alignText="right" visible = "no">
+<Field defaultValue="1" id="acceptNewDevices" type="menu" alignText="right" visible = "no">
             <List>
-            <Option value="0" >disable  mother devices for tracking</Option>
-            <Option value="1" >enable   mother devices for tracking </Option>
+            <Option value="0" >ignore new devices</Option>
+            <Option value="1" >add new devices</Option>
             </List>
-<Label>use mother devices for tracking</Label></Field>
+<Label>ignore / accpet new devices</Label></Field>
 
 <Field defaultValue="0" id="enablepiBeaconDevices" type="menu" alignText="right">
             <List>

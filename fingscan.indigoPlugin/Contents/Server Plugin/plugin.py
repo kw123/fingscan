@@ -20,7 +20,7 @@ import versionCheck.versionCheck as VS
 import MACMAP.MAC2Vendor as M2Vclass
 import ip.IP as IPaddressCalcClass
 
-fingscanVersion="7.27.25"
+fingscanVersion="7.28.26"
 
 nOfDevicesInEvent   = 35
 nOfIDevicesInEvent  = 5
@@ -304,6 +304,7 @@ class Plugin(indigo.PluginBase):
 
             self.initIndigoParms()
 
+            self.acceptNewDevices=self.pluginPrefs.get(u"acceptNewDevices","0") =="1"
 
 
 ############ get password
@@ -347,28 +348,32 @@ class Plugin(indigo.PluginBase):
                 self.pluginPrefs[u"password"] = "password is already stored"  # set text to everything ok ...
                 self.quitNOW ="no"
                 self.passwordOK = "2"
-            self.myLog("all",u"get password done")
+            self.myLog("all",u"get password done;  checking if FING is installed "+ self.yourPassword)
 
 ############ install FING executables
             #paths for fing executables files to be installed
             try:
                 ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /usr/local/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-                if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir "+ret.strip("\n"))
+                if len(ret) > 1 and ret.find("File exists") ==-1 :
+                    self.myLog("all","mk fing dir "+ret.strip("\n"))
+                    if ret.find("incorrect password attempt") >-1: 
+                        self.myLog("all","please corrrect password in config and reload plugin ")
+                        self.sleep(180)
             except:
                 pass
             try:
                 ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /usr/local/bin/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-                if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir "+ret.strip("\n"))
+                if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir:  "+ret.strip("\n"))
             except:
                 pass
             try:
                 ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /usr/local/lib/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-                if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir "+ret.strip("\n"))
+                if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir:  "+ret.strip("\n"))
             except:
                 pass
             try:
                 ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /usr/local/share/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-                if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir "+ret.strip("\n"))
+                if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir:  "+ret.strip("\n"))
             except:
                 pass
             try:
@@ -377,8 +382,13 @@ class Plugin(indigo.PluginBase):
             except:
                 pass
             try:
+                ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /usr/local/lib/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+                if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir:  "+ret.strip("\n"))
+            except:
+                pass
+            try:
                 ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /usr/local/lib/fing/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-                if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir "+ret.strip("\n"))
+                if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir:  "+ret.strip("\n"))
             except:
                 pass
             try:
@@ -388,41 +398,45 @@ class Plugin(indigo.PluginBase):
                 pass
             try:
                 ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /var/log/fing/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-                if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir "+ret.strip("\n"))
+                if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir:  "+ret.strip("\n"))
+            except:
+                pass
+            try:
+                ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /var/data/ ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+                if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir:  "+ret.strip("\n"))
             except:
                 pass
             try:
                 ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /var/data/fing/ ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-                if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir "+ret.strip("\n"))
+                if len(ret) > 1 and ret.find("File exists") ==-1 and ret.find("Password:") ==-1 :self.myLog("all","mk fing dir:  "+ret.strip("\n"))
             except:
                 pass
             ## copy files to /usr/local/bin  ..
-            cmd = "echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/bin/'            /usr/local/bin"
+            self.fingEXEpath="/usr/local/bin/fing"
+            cmd = "echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/fing'            /usr/local/bin"
             ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-            self.myLog("Logic",u"mv fing files: "+cmd)
-            if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","copy fing "+ret.strip("\n"))
+            if len(ret) > 1 and ret.find("File exists") ==-1 and ret.find("Password:") ==-1:self.myLog("all","copy fing:  "+ret.strip("\n"))
             cmd = "echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/share/'          /usr/local/share"
             ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-            self.myLog("Logic",u"mv fing files: "+cmd)
-            if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","copy fing "+ret.strip("\n"))
+            if len(ret) > 1 and ret.find("File exists") ==-1 and ret.find("Password:") ==-1:self.myLog("all","copy fing:  "+ret.strip("\n"))
             cmd = "echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/lib/'            /usr/local/lib"
             ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
             self.myLog("Logic",cmd)
-            if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","copy fing "+ret.strip("\n"))
+            if len(ret) > 1 and ret.find("File exists") ==-1 and ret.find("Password:") ==-1:self.myLog("all","copy fing:  "+ret.strip("\n"))
             cmd = "echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/var/data/'       /var/data"
             ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
             self.myLog("Logic",u"mv fing files: "+cmd)
-            if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","copy fing "+ret.strip("\n"))
+            if len(ret) > 1 and ret.find("File exists") ==-1 and ret.find("Password:") ==-1:self.myLog("all","copy fing:  "+ret.strip("\n"))
             cmd = "echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/var/log/'        /var/log/fing"
             ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
             self.myLog("Logic",u"mv fing files: "+cmd)
-            if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","copy fing "+ret.strip("\n"))
+            if len(ret) > 1 and ret.find("File exists") ==-1 and ret.find("Password:") ==-1:self.myLog("all","copy fing:  "+ret.strip("\n"))
             cmd = "echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/etc/fing'        /etc"
             ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
             self.myLog("Logic",u"mv fing files: "+cmd)
-            if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","copy fing "+ret.strip("\n"))
-            self.fingEXEpath="/usr/local/bin/fing"
+            if len(ret) > 1 and ret.find("File exists") ==-1 and ret.find("Password:") ==-1:self.myLog("all","copy fing:  "+ret.strip("\n"))
 
+            self.myLog("all","fing install done")
 ############ get WIFI router info if available
             self.routerType	= self.pluginPrefs.get(u"routerType","0")
             self.routerPWD	= ""
@@ -510,23 +524,14 @@ class Plugin(indigo.PluginBase):
 
 
 
-############ check for MOTHER plugin devcies
-            try:
-                self.motherDevices=json.loads(self.pluginPrefs["MOTHER"])
-            except:
-                self.motherDevices = {}
-            self.cleanUpMother()
 
 
-            self.enableMotherDevices=self.pluginPrefs.get(u"enableMotherDevices","0")
+############ check for MOTHER plugin devcies  disabled permanently 
+            self.motherDevices={}
+            self.enableMotherDevices="0"
             self.motherAvailable =False
             self.motherDevicesAvailable=[]
-            self.getMotherCokiesAvailable()
-            if self.motherAvailable:
-                self.pluginPrefs["motherEnabled"] =True
-                self.updateMothers()
-            else:
-                self.pluginPrefs["motherEnabled"] =False
+
 ############ check for piBeacon plugin devcies
             try:
                 self.piBeaconDevices=json.loads(self.pluginPrefs["piBeacon"])
@@ -729,15 +734,16 @@ class Plugin(indigo.PluginBase):
 
 
 ########################################
-    def sendWakewOnLanAndPing(self, MAC, waitForPing=500, countPings=1, waitBeforePing = 0.5, calledFrom=""):
+    def sendWakewOnLanAndPing(self, MAC, nBC= 2, waitForPing=500, nPings=1, countPings=1, waitBeforePing = 0.5, waitAfterPing = 0.5, calledFrom=""):
         self.sendWakewOnLan(MAC, calledFrom=calledFrom)
-        self.sleep(0.05)
-        self.sendWakewOnLan(MAC, calledFrom=calledFrom)
+        if nBC ==2:
+            self.sleep(0.05)
+            self.sendWakewOnLan(MAC, calledFrom=calledFrom)
         self.sleep(waitBeforePing)
-        return self.checkPing(MAC, waitForPing=waitForPing, countPings=countPings)
+        return self.checkPing(MAC, waitForPing=waitForPing, countPings=countPings, nPings=nPings, waitAfterPing = 0.5)
         
 ########################################
-    def checkPing(self, MAC, waitForPing=100, countPings = 1):
+    def checkPing(self, MAC, waitForPing=100, countPings = 1,nPings = 1, waitAfterPing = 0.5):
         if (MAC not in self.allDeviceInfo): return 2
         ipN= self.allDeviceInfo[MAC]["ipNumber"]
         Wait = ""
@@ -746,9 +752,15 @@ class Plugin(indigo.PluginBase):
         Count = "-c 1"
         if countPings != "":
             Count = "-c "+str(countPings)
-            
-        retCode = subprocess.call('/sbin/ping -o '+Wait+' '+Count+' -q '+ipN+' >/dev/null',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE) # "call" will wait until its done and deliver retcode 0 or >0
-        self.myLog("Ping",u"ping resp:"+MAC+"  :" +str(retCode) )
+        if nPings == 1:
+            waitAfterPing =0.
+
+        retCode = 1
+        for nn in range(nPings):            
+            retCode = subprocess.call('/sbin/ping -o '+Wait+' '+Count+' -q '+ipN+' >/dev/null',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE) # "call" will wait until its done and deliver retcode 0 or >0
+            self.myLog("Ping",u"ping resp:"+ipN+"  :" +str(retCode) )
+            if retCode ==0: return 0
+            if nn != nPings-1: self.sleep(waitAfterPing)
         return retCode
 
 ########################################
@@ -792,28 +804,6 @@ class Plugin(indigo.PluginBase):
         return
 ########################################
     def getMotherCokiesAvailable(self):
-        try:
-            self.motherDevicesAvailable=[]
-            if  indigo.server.getPlugin("com.karlwachs.mother").isEnabled():
-                for dev in indigo.devices.iter():
-                    if  dev.pluginId.find("com.karlwachs.mother") > -1 :
-                        self.motherAvailable =True
-                        self.motherDevicesAvailable.append((dev.id,dev.name))
-                        if str(dev.id) not in self.motherDevices:
-                            self.motherDevices[str(dev.id)]={"currentState": "0","lastUpdate":time.time(),"name":dev.name,"used": "0"}
-                        else:
-                            self.motherDevices[str(dev.id)]["name"]=dev.name
-            ## remove devices that do not exist anymore
-            delList=[]
-            list=unicode(self.motherDevicesAvailable)
-            for nDev in self.motherDevices:
-                if list.find(nDev)==-1 : delList.append(nDev)
-            for d in delList:
-                del self.motherDevices[d]
-            self.motherDevicesAvailable= sorted(self.motherDevicesAvailable, key=lambda tup: tup[1])                
-            self.motherDevicesAvailable.append((1,"do not use"))
-        except Exception, e:
-            self.myLog("all",u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
         return
 ########################################
     def getpiBeaconAvailable(self):
@@ -1135,12 +1125,6 @@ class Plugin(indigo.PluginBase):
             if self.iDevicesEnabled:	valuesDict["iDevicesEnabled"]   =True
             else:						valuesDict["iDevicesEnabled"]   =False
                 
-            if self.motherAvailable:	
-                valuesDict["motherEnabled"]     =True
-                for nMother in ("22","23","24"):
-                    valuesDict["IPdeviceMACnumber"+nMother]=self.EVENTS[self.currentEventN]["IPdeviceMACnumber"][nMother]
-            else:	
-                valuesDict["motherEnabled"]     =False
                 
             if self.piBeaconIsAvailable:	
                 valuesDict["piBeaconEnabled"]     =True
@@ -1283,91 +1267,12 @@ class Plugin(indigo.PluginBase):
 
 ######################################
     def MotherUpdateCALLBACKaction(self, action):
-        self.myLog("Mother",u" self.motherDevices "+unicode(self.motherDevices))
-        try:
-            if "deviceId" in  action.props:
-                for devId in action.props["deviceId"]:
-                    devS=str(devId)
-                    if devS not in self.motherDevices:
-                        self.myLog("Mother",u"mother deviceId not used in fingscan: "+devS)
-                        continue
-                    dev=indigo.devices[int(devId)]
-                    mdevName=dev.name
-                    try:
-                        try:
-                            Presence= dev.states["Presence"]
-                            Presence=int(Presence)
-                            if Presence >0: Presence="up"
-                            else:			Presence="0"
-                        except:
-                            Presence ="notAvail"
-                        
-                        self.myLog("Mother",u" devName "+mdevName+"  Presence "+Presence )
-                        if self.motherDevices[devS]["currentState"] !=Presence:
-                            if self.motherDevices[devS]["used"] == "1":
-                                self.newSleepTime=0.
-                                self.motherUpDateNeeded=True
-                            self.motherDevices[devS]["lastUpdate"] = time.time()
-                        self.motherDevices[devS]["currentState"] = Presence
-                        self.motherDevices[devS]["name"] = mdevName
-                    except:
-                        self.myLog("Mother",u"Presence data not ready:"+Presence)
-        
-            else:
-                self.myLog("Mother",u" error from mother, deviceId not in action: "+unicode(action))
-                return
-        except  Exception, e:
-            self.myLog("all", u"in Line '%s' has error='%s'" % (sys.exc_traceback.tb_lineno, e) )
-            self.myLog("all",unicode(action))
-            return
-        self.pluginPrefs["MOTHER"]	=	json.dumps(self.motherDevices)
-        return
+        return 
 
 
 ########################################
     def updateMothers(self):
-        try:
-            Presence="not initialized"
-            for deviceId in  self.motherDevices:
-                currentState= self.motherDevices[deviceId]["currentState"]
-                lastUpdate= self.motherDevices[deviceId]["lastUpdate"]
-                try:
-                    devId= int(deviceId)
-                except:
-                    self.getMotherCokiesAvailable()
-                    try:
-                        devId= int(deviceId)
-                    except:
-                        del self.motherDevices[deviceId]
-                        continue
-                        
-                dev=indigo.devices[devId]
-                mdevName=dev.name
-                try:
-                    try:
-                        Presence= dev.states["Presence"]
-                        Presence=int(Presence)
-                        if Presence >0: Presence ="up"
-                        else: Presence ="0"
-                    except:
-                        Presence ="notAvail"
-
-                    if currentState !=Presence:
-                        self.myLog("Mother",u"updating mother/cookie:  devName "+mdevName+"  Presence "+Presence)
-                        self.motherUpDateNeeded=True
-                        self.motherDevices[deviceId]["currentState"]= Presence
-                        self.motherDevices[deviceId]["lastUpdate"] 	= time.time()
-                        self.motherDevices[deviceId]["name"] 		= mdevName
-                        if self.motherDevices[devS]["used"] == "1":
-                            self.newSleepTime=0.
-                except:
-                        self.myLog("Mother",u"updating mother/cookie:  devName "+unicode(mdevName)+"  Presence "+unicode(Presence) +" not ready"  )
-    
-        
-        except  Exception, e:
-            self.myLog("all", u"in Line '%s' has error='%s'" % (sys.exc_traceback.tb_lineno, e) )
-            self.motherDevices={}
-        return
+        return 
 ########################################
     def updatepiBeacons(self):
         try:
@@ -1505,13 +1410,7 @@ class Plugin(indigo.PluginBase):
 
 ########################################
     def motherFilter(self, filter="self", valuesDict=None,typeId=""):
-        #self.myLog("all", u"motherFilter called" )
-        try:
-            retList =copy.deepcopy(self.motherDevicesAvailable)
-        except Exception, e:
-            self.myLog("all",u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
-            return [(0,0)]
-        return retList
+        return [(0,0)]
 
 ########################################
     def piBeaconFilter(self, filter="self", valuesDict=None,typeId=""):
@@ -1546,35 +1445,8 @@ class Plugin(indigo.PluginBase):
 
     ########  do mother stuff needed later in EVENTS
             for nMother in ("22","23","24"):
-                mId=str(valuesDict["IPdeviceMACnumber"+nMother])
-                if mId =="0":
-                    mId = self.EVENTS[self.currentEventN]["IPdeviceMACnumber"][nMother]
-                elif mId =="1":
-                    mId=""
+                self.EVENTS[self.currentEventN]["IPdeviceMACnumber"][nMother]	= ""
 
-                self.EVENTS[self.currentEventN]["IPdeviceMACnumber"][nMother]	= mId
-                if mId !="" and mId !="0"and mId !="1":
-                    try:
-                        mdevName=indigo.devices[int(mId)].name
-                        if mId not in self.motherDevices:
-                            self.myLog("all",u"Mother mId 3 "+str(mId) + "  "+str(nMother))
-                    except:
-                        pass
-
-
-            ## clean up mother list
-            keep=[]
-            for nEvent in self.EVENTS:
-                for nMother in ("22","23","24"):
-                    mId=self.EVENTS[self.currentEventN]["IPdeviceMACnumber"][nMother]
-                    if  mId !="" and mId !="0":
-                        keep.append(mId)
-
-            deleteM=[]
-            for motherId in self.motherDevices:
-                if motherId not in keep: deleteM.append(motherId)
-            for motherId in deleteM:
-                del self.motherDevices[motherId]
 
     ########  do piBeacon stuff needed later in EVENTS
             for npiBeacon in ("25","26","27","28","29"):
@@ -1745,9 +1617,7 @@ class Plugin(indigo.PluginBase):
 
             valuesDict["EVENTS"]	=	json.dumps(self.EVENTS)
 
-            valuesDict["MOTHER"]	=	json.dumps(self.motherDevices)
-            self.myLog("Mother",u"self.motherDevices  "+unicode(self.motherDevices))
-            if valuesDict["motherEnabled"]: self.updateMothers()
+            valuesDict["MOTHER"]	=	{}
 
             valuesDict["piBeacon"]	=	json.dumps(self.piBeaconDevices)
             self.myLog("piBEacon",u"self.piBeaconDevices  "+unicode(self.piBeaconDevices))
@@ -1859,7 +1729,7 @@ class Plugin(indigo.PluginBase):
                 else:  ## new password entered, store and send sucess message back
                     self.yourPassword = pwdis
                     valuesDict[u"password"] = "password is already stored"
-                    self.myLog("Logic",u"password entered=" +self.yourPassword)
+                    self.myLog("Logic",u"password entered(&a3reversed#5B)=" +self.yourPassword)
                     self.storePWD(self.yourPassword,"fingscanpy")
 
             self.routerType = valuesDict[u"routerType"]
@@ -1899,7 +1769,7 @@ class Plugin(indigo.PluginBase):
                 rebootRequired                         = True
             self.enableMACtoVENDORlookup               = valuesDict[u"enableMACtoVENDORlookup"]
 
-#            self.enableMotherDevices = valuesDict[u"enableMotherDevices"]
+            self.acceptNewDevices = valuesDict[u"acceptNewDevices"] == "1"
 #            if self.enableMotherDevices =="1":
 #                indigo.devices.subscribeToChanges()
 #            self.enableMotherDevices = valuesDict[u"enableMotherDevices"]
@@ -1910,7 +1780,7 @@ class Plugin(indigo.PluginBase):
             self.cleanUpEvents()
     # save to indigo
             valuesDict["EVENTS"]	=	json.dumps(self.EVENTS)
-            valuesDict["MOTHER"]	=	json.dumps(self.motherDevices)
+            valuesDict["MOTHER"]	=	{}
             valuesDict["UNIFI"]	    =	json.dumps(self.unifiDevices)
             valuesDict["piBeacon"]	=	json.dumps(self.piBeaconDevices)
 
@@ -1943,12 +1813,6 @@ class Plugin(indigo.PluginBase):
 
 
 
-########################################
-    def	cleanUpMother(self):
-    
-        for nDev in self.motherDevices:
-            if "used" not in self.motherDevices[nDev]:
-                self.motherDevices[nDev]["used"] = "0"
 
 ########################################
     def	cleanUppiBeacon(self):
@@ -2007,9 +1871,7 @@ class Plugin(indigo.PluginBase):
                                 self.EVENTS[n]["IPdeviceMACnumber"][nDev] = "0"   
 
                     if int(nDev) >= motherStart and int(nDev) < piBeaconStart:
-                        if self.EVENTS[n]["IPdeviceMACnumber"][nDev] !="" and  self.EVENTS[n]["IPdeviceMACnumber"][nDev] !="0":
-                            if self.EVENTS[n]["IPdeviceMACnumber"][nDev] in self.motherDevices:
-                                self.motherDevices[self.EVENTS[n]["IPdeviceMACnumber"][nDev]]["used"]="1"
+                        pass
                 
                     elif  int(nDev) <= piBeaconStart and int(nDev) < unifiStart:
                         if self.EVENTS[n]["IPdeviceMACnumber"][nDev] !="" and  self.EVENTS[n]["IPdeviceMACnumber"][nDev] !="0":
@@ -2128,18 +1990,7 @@ class Plugin(indigo.PluginBase):
                         devI = self.allDeviceInfo[theMAC]
                         self.myLog("all",u"dev#: "+str(nDev).rjust(2)+" -- devNam:"+devI["deviceName"].ljust(25)[:25] +" -- MAC#:"+theMAC+" -- ip#:"+devI["ipNumber"].ljust(15)+" -- status:"+devI["status"].ljust(8)+" -- WiFi:"+devI["WiFi"])
                     elif int(nDev) < piBeaconStart:
-                        try:
-                            name= 	self.motherDevices[theMAC]["name"]
-                        except:
-                            self.getMotherCokiesAvailable()
-                            self.updateMothers()
-                            try:
-                                name= 	self.motherDevices[theMAC]["name"]
-                            except:
-                                self.myLog("all",u" mother device IndigoID# "+theMAC+ " does not exist, check you mother plugin" )
-                                continue
-                        status= self.motherDevices[theMAC]["currentState"]
-                        self.myLog("all",u"dev#: "+str(nDev)+" -- devNam:"+name.ljust(25)[:25] +" -- IND#:"+theMAC.ljust(17)+" --     "+" ".ljust(15)+" -- status:"+status.ljust(8))
+                        pass
                     elif int(nDev) < unifiStart:  # next section is pibeacon 
                         try:
                             name= 	self.piBeaconDevices[theMAC]["name"]
@@ -2251,36 +2102,7 @@ class Plugin(indigo.PluginBase):
         return
 ########################################
     def printMotherDevs(self):
-        try:
-            ## refresh mother cokkies
-            self.getMotherCokiesAvailable()
-            if len(self.motherDevices) ==0: return
-            
-            self.myLog("all",u"===      Mother/Cookie devices  available  to fingscan    ===        START")
-            #				 123456789012345678901234567890123412345678123456789012
-            self.myLog("all",u"--Device Name------        indigoID--    --Status  lastUpdate  used")
-            list=[]
-            for theMAC in self.motherDevices:
-                list.append((theMAC,self.motherDevices[theMAC]["name"]))
-            list = sorted(list, key=lambda tup: tup[1])
-            for ii in range(len(list)):
-                theMAC = list[ii][0]
-                try:
-                    theString = self.motherDevices[theMAC]["name"].ljust(27)
-                    theString+= theMAC.ljust(14)
-                    theString+= self.motherDevices[theMAC]["currentState"].rjust(8)
-                    lastUpdate= datetime.datetime.fromtimestamp(self.motherDevices[theMAC]["lastUpdate"]).strftime('%H:%M:%S')
-                    theString+= str(lastUpdate).rjust(12)
-                    theString+= self.motherDevices[theMAC]["used"].rjust(6)
-                    
-                    self.myLog("all",theString)
-                except:
-                    self.myLog("all",u" data wrong for "+unicode(theMAC) +"    "+ unicode(self.motherDevices))
-            self.myLog("all",u"===      Mother/Cookie devices  available  to fingscan    ===        END")
-    
-        except Exception, e:
-            self.myLog("all",u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
-        return
+        return 
 ########################################
     def printpiBeaconDevs(self):
         try:
@@ -2469,7 +2291,7 @@ class Plugin(indigo.PluginBase):
             storePassword= ret.communicate()[1]
             ret.stdout.close()
             ret.stderr.close()
-            self.myLog("Logic",u"password entered=" +str(storePassword))
+            self.myLog("Logic",u"password entered (&a3reversed#5B)=" +str(storePassword))
             try:
                 storePassword.index("password")  # if the return text contains "password" its ok, continue
                 storePassword= str(storePassword).split('"')[1]
@@ -3202,7 +3024,7 @@ class Plugin(indigo.PluginBase):
 
                     if self.fingStatus[kk] =="down":
                         if theMAC in self.allDeviceInfo and self.allDeviceInfo[theMAC]["useWakeOnLanSecs"] > 0:  
-                            if self.sendWakewOnLanAndPing(theMAC,calledFrom="getfingData") ==0:
+                            if self.sendWakewOnLanAndPing(theMAC,nBC= 2, waitForPing=500, countPings=2, waitBeforePing = 0.5, waitAfterPing = 0.1, calledFrom="getfingLog") ==0:
                                 self.fingStatus[kk] =="up"
 
                     self.fingDate[kk] =self.fingDate[kk].replace("/","-")
@@ -3260,7 +3082,7 @@ class Plugin(indigo.PluginBase):
                         if theMAC in self.allDeviceInfo: 
                             if "useWakeOnLanSecs" in self.allDeviceInfo[theMAC]:
                                 if self.allDeviceInfo[theMAC]["useWakeOnLanSecs"] > 0:  
-                                    if self.sendWakewOnLanAndPing(theMAC,calledFrom="getfingData") == 0: # means we got ping back set to up 
+                                    if self.sendWakewOnLanAndPing(theMAC,nBC= 1, waitForPing=500, countPings=1, waitBeforePing = 0.2, waitAfterPing = 0.0, calledFrom="getfingData") ==0:
                                         self.fingStatus[kk] == "up"
                                         self.fingDate[kk] = nowdate.strftime("%Y-%m-%d %H:%M:%S")
                             else:
@@ -3509,7 +3331,7 @@ class Plugin(indigo.PluginBase):
                             devI["useWakeOnLanLast"] = time.time()
                             self.sendWakewOnLan(theMAC, calledFrom="doInbetweenPing")
                             self.sleep(0.5)
-                        retCode = self.checkPing(theMAC, waitForPing=pingWait, countPings=2 )
+                        retCode = self.checkPing(theMAC, waitForPing=pingWait, countPings=2, waitAfterPing = 0.1 )
                         self.myLog("Ping",u"pinged "+ theMAC+"; retcode="+str(retCode)+";  useWakeOnLan:"+str(devI["useWakeOnLanSecs"]) )
                         if retcode !=0: 
                             self.inbetweenPing[theMAC] = "down"
@@ -3572,7 +3394,7 @@ class Plugin(indigo.PluginBase):
                         lptime=time.time()
                         npTime=time.time()
                         #   c 1: do 1 ping;  w: wait 800 msec; o: short output, q: quit if one response
-                        retCode = self.checkPing(theMAC, waitForPing=pingWait, countPings=2)
+                        retCode = self.checkPing(theMAC, waitForPing=pingWait, countPings=2, waitAfterPing = 0.1)
                         pingtimes.append(time.time()-npTime)
                         if retCode > 0:  # ret code = 2 : no response ==> "down"
                             #self.myLog("Ping"," ping response: "+str(resp).strip() )
@@ -3819,21 +3641,8 @@ class Plugin(indigo.PluginBase):
                         devI= self.allDeviceInfo[theMAC]
                         status		= devI["status"]
                     elif iDev< piBeaconStart:
-                        try:
-                            status		= self.motherDevices[theMAC]["currentState"]
-                        except:
-                            self.getMotherCokiesAvailable()
-                            self.updateMothers()
-                            if len(self.motherDevices) ==0:
-                                status ="0"
-                            else:
-                                try:
-                                    status = self.motherDevices[theMAC]["currentState"]
-                                except:
-                                    self.myLog("all",u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
-                                    self.myLog("all",u"error in checkTriggers, indigoID# "+theMAC+u" not in motherdevices  :  " + unicode(self.motherDevices)[0:100]+u" ..  is  mother plugin active? " )
-                                    status = "0"
-                                    del self.motherDevices[theMAC]
+                        status ="0"
+
                     elif iDev< unifiStart:  ## check piBeacon devices
                         try:
                             status		= self.piBeaconDevices[theMAC]["currentStatus"]
@@ -4283,6 +4092,7 @@ class Plugin(indigo.PluginBase):
             if self.routerType != "0":
                 for theMAC in self.wifiMacList:
                     if theMAC not in self.allDeviceInfo:
+                        if not self.acceptNewDevices: continue
                         self.allDeviceInfo[theMAC]= copy.deepcopy(emptyAllDeviceInfo)
                         devI= self.allDeviceInfo[theMAC]
                         devI["ipNumber"]			= "256.256.256.256"
@@ -4384,7 +4194,7 @@ class Plugin(indigo.PluginBase):
 
                     if theStatus != "up":
                         if theMAC in self.allDeviceInfo and "useWakeOnLanSecs" in self.allDeviceInfo[theMAC] and  self.allDeviceInfo[theMAC]["useWakeOnLanSecs"] > 0:
-                            self.sendWakewOnLanAndPing(theMAC, waitForPing=100, countPings=1, waitBeforePing = 0., calledFrom="compareToIndigoDeviceData")
+                            self.sendWakewOnLanAndPing(theMAC, nBC= 1,waitForPing=10, countPings=1, waitBeforePing = 0., waitAfterPing = 0.0, calledFrom="compareToIndigoDeviceData")
 
                     if theStatus == "up":
                         devI["lastFingUp"] = time.time()
@@ -4483,6 +4293,7 @@ class Plugin(indigo.PluginBase):
 
 
                 if theAction == "new" :################################# new device, add device to indigo
+                    if not self.acceptNewDevices: continue
                     self.allDeviceInfo[theMAC]= copy.deepcopy(emptyAllDeviceInfo)
                     devI= self.allDeviceInfo[theMAC]
                     devI["ipNumber"]			=self.fingIPNumbers[kk]
@@ -4542,6 +4353,7 @@ class Plugin(indigo.PluginBase):
             if self.routerType !="0" and lastUpdateSource == "WiFi":
                 for theMAC in self.wifiMacList:
                     if theMAC in self.allDeviceInfo: continue
+                    if not self.acceptNewDevices : continue
                     self.allDeviceInfo[theMAC]= copy.deepcopy(emptyAllDeviceInfo)
                     devI= self.allDeviceInfo[theMAC]
                     devI["ipNumber"]			= "254.254.254.254"
@@ -4757,7 +4569,7 @@ class Plugin(indigo.PluginBase):
                         if "useWakeOnLanSecs" in devI and devI["useWakeOnLanSecs"] >0:
                             if time.time() - devI["useWakeOnLanLast"] > devI["useWakeOnLanSecs"]:
                                 devI["useWakeOnLanLast"] = time.time()
-                                self.sendWakewOnLanAndPing(theMAC, calledFrom="loop")
+                                self.sendWakewOnLanAndPing(theMAC, nBC= 1, waitForPing=10, countPings=1, waitBeforePing = 0.01, waitAfterPing = 0.0, calledFrom="loop")
 
 
                 if self.routerType !="0":
@@ -4792,9 +4604,6 @@ class Plugin(indigo.PluginBase):
                             self.checkTriggers()
                         self.oldwifiMacList = copy.deepcopy(self.wifiMacList)
                     self.WiFiChanged = {}
-                if self.motherUpDateNeeded:
-                    self.checkTriggers()
-                    self.motherUpDateNeeded=False
                 if self.piBeaconUpDateNeeded:
                     self.checkTriggers()
                     self.piBeaconUpDateNeeded=False
@@ -4870,7 +4679,6 @@ class Plugin(indigo.PluginBase):
             # do any cleanup here
             self.killPing("all")
             self.pluginPrefs["EVENTS"]	    =	json.dumps(self.EVENTS)
-            self.pluginPrefs["MOTHER"]	    =	json.dumps(self.motherDevices)
             self.pluginPrefs["piBeacon"]	=	json.dumps(self.piBeaconDevices)
             self.pluginPrefs["UNIFI"]	    =	json.dumps(self.unifiDevices)
             self.myLog("all",u"exception StopThread triggered ... stopped,  quitNOW was:" +  self.quitNOW)
@@ -5507,7 +5315,9 @@ class Plugin(indigo.PluginBase):
             for theMAC in self.allDeviceInfo:
                 if theMAC =="": continue
                 devI = self.allDeviceInfo[theMAC]
+                if not self.acceptNewDevices: continue
                 if devI["devExists"] == 0:
+
     #				self.myLog("Logic",u" creating device "+str(devI))
                     try:
                         if devI["nickName"] !="iphone-xyz" and devI["nickName"] !="":
@@ -5649,43 +5459,44 @@ class Plugin(indigo.PluginBase):
                 name="MAC-"+theMAC,
                 if "nickName" in devI:
                     if devI["nickName"] !="": 	name =devI["nickName"]
-                try:
-                    indigo.device.create(
-                        protocol=indigo.kProtocol.Plugin,
-                        address=self.formatiPforAddress(devI["ipNumber"]),
-                        name=name,
-                        description=theMAC,
-                        pluginId="com.karlwachs.fingscan",
-                        deviceTypeId="IP-Device",
-                        props = {"setUsePing":"doNotUsePing","setuseWakeOnLan":0,"setExpirationTime":0},
-                        folder=self.indigoDeviceFolderID
-                        )
-                except:
-                    pass
+                    if self.acceptNewDevices:
+                        try:
+                            indigo.device.create(
+                                protocol=indigo.kProtocol.Plugin,
+                                address=self.formatiPforAddress(devI["ipNumber"]),
+                                name=name,
+                                description=theMAC,
+                                pluginId="com.karlwachs.fingscan",
+                                deviceTypeId="IP-Device",
+                                props = {"setUsePing":"doNotUsePing","setuseWakeOnLan":0,"setExpirationTime":0},
+                                folder=self.indigoDeviceFolderID
+                                )
+                        except:
+                            pass
 
-                dev = indigo.devices[name]
-                self.addToStatesUpdateList(str(dev.id),"MACNumber",		theMAC)
-                self.addToStatesUpdateList(str(dev.id),"ipNumber",			devI["ipNumber"])
-                self.addToStatesUpdateList(str(dev.id),"timeOfLastChange",	devI["timeOfLastChange"])
-                self.addToStatesUpdateList(str(dev.id),"status",			devI["status"])
-                self.addToStatesUpdateList(str(dev.id),"nickName",			devI["nickName"])
-                self.addToStatesUpdateList(str(dev.id),"noOfChanges",		int(devI["noOfChanges"]) )
-                self.addToStatesUpdateList(str(dev.id),"hardwareVendor",	devI["hardwareVendor"])
-                self.addToStatesUpdateList(str(dev.id),"deviceInfo",		devI["deviceInfo"])
-                self.addToStatesUpdateList(str(dev.id),"WiFi",				devI["WiFi"])
-                self.addToStatesUpdateList(str(dev.id),"usePing-WOL",		devI["usePing"]+"-"+str(devI["useWakeOnLanSecs"]))
-                self.addToStatesUpdateList(str(dev.id),"suppressChangeMSG", devI["suppressChangeMSG"])
-                self.addToStatesUpdateList(str(dev.id),"lastFingUp",        datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") )
-                self.addToStatesUpdateList(str(dev.id),"created",           datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") )
-                if theMAC in self.wifiMacList:
-                    self.addToStatesUpdateList(str(dev.id),"WiFiSignal",		"%5.1f"%self.wifiMacList[theMAC][2])
+                        dev = indigo.devices[name]
+                        self.addToStatesUpdateList(str(dev.id),"MACNumber",		theMAC)
+                        self.addToStatesUpdateList(str(dev.id),"ipNumber",			devI["ipNumber"])
+                        self.addToStatesUpdateList(str(dev.id),"timeOfLastChange",	devI["timeOfLastChange"])
+                        self.addToStatesUpdateList(str(dev.id),"status",			devI["status"])
+                        self.addToStatesUpdateList(str(dev.id),"nickName",			devI["nickName"])
+                        self.addToStatesUpdateList(str(dev.id),"noOfChanges",		int(devI["noOfChanges"]) )
+                        self.addToStatesUpdateList(str(dev.id),"hardwareVendor",	devI["hardwareVendor"])
+                        self.addToStatesUpdateList(str(dev.id),"deviceInfo",		devI["deviceInfo"])
+                        self.addToStatesUpdateList(str(dev.id),"WiFi",				devI["WiFi"])
+                        self.addToStatesUpdateList(str(dev.id),"usePing-WOL",		devI["usePing"]+"-"+str(devI["useWakeOnLanSecs"]))
+                        self.addToStatesUpdateList(str(dev.id),"suppressChangeMSG", devI["suppressChangeMSG"])
+                        self.addToStatesUpdateList(str(dev.id),"lastFingUp",        datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") )
+                        self.addToStatesUpdateList(str(dev.id),"created",           datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") )
+                        if theMAC in self.wifiMacList:
+                            self.addToStatesUpdateList(str(dev.id),"WiFiSignal",		"%5.1f"%self.wifiMacList[theMAC][2])
                 
-                pad = self.padStatusForDevListing(devI["status"])
-                self.addToStatesUpdateList(str(dev.id),"statusDisplay",	(devI["status"]).ljust(pad)+devI["timeOfLastChange"])
-                devI["deviceId"]	=dev.id
-                devI["deviceName"]	=dev.name
-                devI["devExists"]	=1
-                self.executeUpdateStatesList()
+                        pad = self.padStatusForDevListing(devI["status"])
+                        self.addToStatesUpdateList(str(dev.id),"statusDisplay",	(devI["status"]).ljust(pad)+devI["timeOfLastChange"])
+                        devI["deviceId"]	=dev.id
+                        devI["deviceName"]	=dev.name
+                        devI["devExists"]	=1
+                        self.executeUpdateStatesList()
 
                 return
             
