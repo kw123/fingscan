@@ -20,12 +20,10 @@ import versionCheck.versionCheck as VS
 import MACMAP.MAC2Vendor as M2Vclass
 import ip.IP as IPaddressCalcClass
 
-fingscanVersion="7.28.26"
 
 nOfDevicesInEvent   = 35
 nOfIDevicesInEvent  = 5
-motherStart         = 22
-piBeaconStart       = 25
+piBeaconStart       = 22
 unifiStart          = 30
 milesMeters         = 1609.34
 kmMeters	        = 1000.
@@ -166,6 +164,7 @@ class Plugin(indigo.PluginBase):
             self.fingServicesFileName       = self.fingDataDir+"fingservices.json"
             self.fingServicesOutputFileName = self.fingDataDir+"fingservices.txt"
             self.fingServicesLOGFileName    = self.fingDataDir+"fingservices.log"
+            self.ignoredMACFile             = self.fingDataDir+"ignoredMAC"
 
 
 
@@ -202,9 +201,9 @@ class Plugin(indigo.PluginBase):
             self.logFileActive          = self.pluginPrefs.get("logFileActive", True)
             self.logFile                = self.MAChome + "/indigo/fing/fingPlugin.log"
             if self.logFileActive: 
-                indigo.server.log(u"FINGSCAN--V "+fingscanVersion+"   initializing     will take ~ 2 minutes...; sending logs to "+ self.logFile)
+                indigo.server.log(u"FINGSCAN--   initializing     will take ~ 2 minutes...; sending logs to "+ self.logFile)
             else:
-                self.myLog("all",u"FINGSCAN--V "+fingscanVersion+"   initializing     will take ~ 2 minutes...")
+                self.myLog("all",u"FINGSCAN--V    initializing     will take ~ 2 minutes...")
             self.checkLogFiles()
 
 ############ set basic parameters to default before we use them
@@ -237,7 +236,6 @@ class Plugin(indigo.PluginBase):
             self.indigoInitialized = False
             self.stopConcurrentCounter = 0
             self.doNOTupdate=False
-            self.motherUpDateNeeded=False
             self.piBeaconUpDateNeeded=False
             self.unifiUpDateNeeded=False
             self.allDeviceInfo={}
@@ -305,7 +303,7 @@ class Plugin(indigo.PluginBase):
             self.initIndigoParms()
 
             self.acceptNewDevices=self.pluginPrefs.get(u"acceptNewDevices","0") =="1"
-
+            self.getIgnoredMAC()
 
 ############ get password
             self.myLog("all",u"getting password")
@@ -326,7 +324,7 @@ class Plugin(indigo.PluginBase):
                 ## wait for password
                 while self.passwordOK == "0":
                     self.myLog("all",u"no password entered:  please do plugin/fingscan/configure and enter your password ")
-                    self.sleep(60)
+                    self.sleep(10)
                     
                 ## password entered, check if it is NOW in keychain
 
@@ -348,95 +346,99 @@ class Plugin(indigo.PluginBase):
                 self.pluginPrefs[u"password"] = "password is already stored"  # set text to everything ok ...
                 self.quitNOW ="no"
                 self.passwordOK = "2"
-            self.myLog("all",u"get password done;  checking if FING is installed "+ self.yourPassword)
+            self.myLog("all",u"get password done;  checking if FING is installed ")
 
 ############ install FING executables
             #paths for fing executables files to be installed
-            try:
-                ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /usr/local/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-                if len(ret) > 1 and ret.find("File exists") ==-1 :
-                    self.myLog("all","mk fing dir "+ret.strip("\n"))
-                    if ret.find("incorrect password attempt") >-1: 
-                        self.myLog("all","please corrrect password in config and reload plugin ")
-                        self.sleep(180)
-            except:
-                pass
-            try:
-                ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /usr/local/bin/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-                if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir:  "+ret.strip("\n"))
-            except:
-                pass
-            try:
-                ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /usr/local/lib/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-                if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir:  "+ret.strip("\n"))
-            except:
-                pass
-            try:
-                ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /usr/local/share/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-                if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir:  "+ret.strip("\n"))
-            except:
-                pass
-            try:
-                ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /usr/local/share/fing/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-                if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir "+ret.strip("\n"))
-            except:
-                pass
-            try:
-                ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /usr/local/lib/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-                if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir:  "+ret.strip("\n"))
-            except:
-                pass
-            try:
-                ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /usr/local/lib/fing/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-                if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir:  "+ret.strip("\n"))
-            except:
-                pass
-            try:
-                ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /etc/fing/   ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-                if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir "+ret.strip("\n"))
-            except:
-                pass
-            try:
-                ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /var/log/fing/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-                if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir:  "+ret.strip("\n"))
-            except:
-                pass
-            try:
-                ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /var/data/ ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-                if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir:  "+ret.strip("\n"))
-            except:
-                pass
-            try:
-                ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /var/data/fing/ ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-                if len(ret) > 1 and ret.find("File exists") ==-1 and ret.find("Password:") ==-1 :self.myLog("all","mk fing dir:  "+ret.strip("\n"))
-            except:
-                pass
-            ## copy files to /usr/local/bin  ..
-            self.fingEXEpath="/usr/local/bin/fing"
-            cmd = "echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/fing'            /usr/local/bin"
-            ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-            if len(ret) > 1 and ret.find("File exists") ==-1 and ret.find("Password:") ==-1:self.myLog("all","copy fing:  "+ret.strip("\n"))
-            cmd = "echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/share/'          /usr/local/share"
-            ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-            if len(ret) > 1 and ret.find("File exists") ==-1 and ret.find("Password:") ==-1:self.myLog("all","copy fing:  "+ret.strip("\n"))
-            cmd = "echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/lib/'            /usr/local/lib"
-            ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-            self.myLog("Logic",cmd)
-            if len(ret) > 1 and ret.find("File exists") ==-1 and ret.find("Password:") ==-1:self.myLog("all","copy fing:  "+ret.strip("\n"))
-            cmd = "echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/var/data/'       /var/data"
-            ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-            self.myLog("Logic",u"mv fing files: "+cmd)
-            if len(ret) > 1 and ret.find("File exists") ==-1 and ret.find("Password:") ==-1:self.myLog("all","copy fing:  "+ret.strip("\n"))
-            cmd = "echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/var/log/'        /var/log/fing"
-            ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-            self.myLog("Logic",u"mv fing files: "+cmd)
-            if len(ret) > 1 and ret.find("File exists") ==-1 and ret.find("Password:") ==-1:self.myLog("all","copy fing:  "+ret.strip("\n"))
-            cmd = "echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/etc/fing'        /etc"
-            ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-            self.myLog("Logic",u"mv fing files: "+cmd)
-            if len(ret) > 1 and ret.find("File exists") ==-1 and ret.find("Password:") ==-1:self.myLog("all","copy fing:  "+ret.strip("\n"))
+            if self.passwordOK == "2": 
+                try:
+                    ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /usr/local/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+                    if len(ret) > 1 and ret.find("File exists") ==-1 :
+                        self.myLog("all","mk fing dir:   "+ret.strip("\n"))
+                        if ret.find("incorrect password") >-1  or ret.find("Sorry, try again") >-1: 
+                            self.myLog("all","please corrrect password in config and reload plugin , skipping fing install")
+                            self.passwordOK = "0"
+                            self.sleep(2)
+                except:
+                    pass
 
-            self.myLog("all","fing install done")
+            if self.passwordOK == "2": 
+                try:
+                    ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /usr/local/bin/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+                    if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir:  "+ret.strip("\n"))
+                except:
+                    pass
+                try:
+                    ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /usr/local/lib/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+                    if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir:  "+ret.strip("\n"))
+                except:
+                    pass
+                try:
+                    ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /usr/local/share/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+                    if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir:  "+ret.strip("\n"))
+                except:
+                    pass
+                try:
+                    ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /usr/local/share/fing/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+                    if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir "+ret.strip("\n"))
+                except:
+                    pass
+                try:
+                    ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /usr/local/lib/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+                    if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir:  "+ret.strip("\n"))
+                except:
+                    pass
+                try:
+                    ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /usr/local/lib/fing/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+                    if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir:  "+ret.strip("\n"))
+                except:
+                    pass
+                try:
+                    ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /etc/fing/   ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+                    if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir "+ret.strip("\n"))
+                except:
+                    pass
+                try:
+                    ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /var/log/fing/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+                    if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir:  "+ret.strip("\n"))
+                except:
+                    pass
+                try:
+                    ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /var/data/ ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+                    if len(ret) > 1 and ret.find("File exists") ==-1 :self.myLog("all","mk fing dir:  "+ret.strip("\n"))
+                except:
+                    pass
+                try:
+                    ret = unicode(subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /var/data/fing/ ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+                    if len(ret) > 1 and ret.find("File exists") ==-1 and ret.find("Password:") ==-1 :self.myLog("all","mk fing dir:  "+ret.strip("\n"))
+                except:
+                    pass
+                ## copy files to /usr/local/bin  ..
+                self.fingEXEpath="/usr/local/bin/fing"
+                cmd = "echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/fing'            /usr/local/bin"
+                ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+                if len(ret) > 1 and ret.find("File exists") ==-1 and ret.find("Password:") ==-1:self.myLog("all","copy fing:  "+ret.strip("\n"))
+                cmd = "echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/share/'          /usr/local/share"
+                ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+                if len(ret) > 1 and ret.find("File exists") ==-1 and ret.find("Password:") ==-1:self.myLog("all","copy fing:  "+ret.strip("\n"))
+                cmd = "echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/lib/'            /usr/local/lib"
+                ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+                self.myLog("Logic",cmd)
+                if len(ret) > 1 and ret.find("File exists") ==-1 and ret.find("Password:") ==-1:self.myLog("all","copy fing:  "+ret.strip("\n"))
+                cmd = "echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/var/data/'       /var/data"
+                ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+                self.myLog("Logic",u"mv fing files: "+cmd)
+                if len(ret) > 1 and ret.find("File exists") ==-1 and ret.find("Password:") ==-1:self.myLog("all","copy fing:  "+ret.strip("\n"))
+                cmd = "echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/var/log/'        /var/log/fing"
+                ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+                self.myLog("Logic",u"mv fing files: "+cmd)
+                if len(ret) > 1 and ret.find("File exists") ==-1 and ret.find("Password:") ==-1:self.myLog("all","copy fing:  "+ret.strip("\n"))
+                cmd = "echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/etc/fing'        /etc"
+                ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+                self.myLog("Logic",u"mv fing files: "+cmd)
+                if len(ret) > 1 and ret.find("File exists") ==-1 and ret.find("Password:") ==-1:self.myLog("all","copy fing:  "+ret.strip("\n"))
+
+                self.myLog("all","fing install done")
 ############ get WIFI router info if available
             self.routerType	= self.pluginPrefs.get(u"routerType","0")
             self.routerPWD	= ""
@@ -526,12 +528,6 @@ class Plugin(indigo.PluginBase):
 
 
 
-############ check for MOTHER plugin devcies  disabled permanently 
-            self.motherDevices={}
-            self.enableMotherDevices="0"
-            self.motherAvailable =False
-            self.motherDevicesAvailable=[]
-
 ############ check for piBeacon plugin devcies
             try:
                 self.piBeaconDevices=json.loads(self.pluginPrefs["piBeacon"])
@@ -612,7 +608,6 @@ class Plugin(indigo.PluginBase):
                     self.myLog("all", "Router wifi not reachable, userid, password or ipnumber wrong?\n"+ unicode(errorMSG))
                 
                 self.printWiFi()
-            self.printMotherDevs()
             self.printpiBeaconDevs()
             self.printUnifiDevs()
             
@@ -801,9 +796,6 @@ class Plugin(indigo.PluginBase):
 
         except Exception, e:
             self.myLog("all",u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
-        return
-########################################
-    def getMotherCokiesAvailable(self):
         return
 ########################################
     def getpiBeaconAvailable(self):
@@ -1081,7 +1073,6 @@ class Plugin(indigo.PluginBase):
 
         try:
             self.getUnifiAvailable()
-            self.getMotherCokiesAvailable()
             self.getpiBeaconAvailable()
             
             self.currentEventN=str(valuesDict["selectEvent"])
@@ -1265,14 +1256,7 @@ class Plugin(indigo.PluginBase):
         self.pluginPrefs["UNIFI"]	=	json.dumps(self.unifiDevices)
         return
 
-######################################
-    def MotherUpdateCALLBACKaction(self, action):
-        return 
 
-
-########################################
-    def updateMothers(self):
-        return 
 ########################################
     def updatepiBeacons(self):
         try:
@@ -1361,6 +1345,41 @@ class Plugin(indigo.PluginBase):
 ##
 
 ########################################
+    def buttonConfirmAddIgnoredMACsCALLBACK(self, valuesDict,typeId=""):
+        theMAC = valuesDict["selectedMAC"]
+        if theMAC not in self.ignoredMAC:
+            info = theMAC
+            if theMAC in self.allDeviceInfo:
+                info = theMAC+"-"+self.allDeviceInfo[theMAC]["deviceName"]+"-"+self.allDeviceInfo[theMAC]["ipNumber"]
+            self.ignoredMAC[theMAC] = info
+            self.saveIgnoredMAC()
+        return valuesDict
+########################################
+    def buttonConfirmRemoveIgnoredMACsCALLBACK(self, valuesDict,typeId=""):
+        theMAC = valuesDict["selectedMAC"]
+        if theMAC in self.ignoredMAC:
+            del self.ignoredMAC[theMAC]
+            self.saveIgnoredMAC()
+        return valuesDict
+
+
+########################################
+    def filterIgnoredMACs(self, filter="self", valuesDict=None, typeId="", targetId=0):
+        retList =[]
+        for theMAC in self.ignoredMAC:
+            retList.append((theMAC,self.ignoredMAC[theMAC]))
+        retList	= sorted(retList, key=lambda tup: tup[1]) #sort string, keep mac numbers with the text
+        return retList
+########################################
+    def filterNotIgnoredMACs(self, filter="self", valuesDict=None, typeId="", targetId=0):
+        retList =[]
+        for theMAC in self.allDeviceInfo:
+            if theMAC not in self.ignoredMAC:
+                retList.append((theMAC,theMAC+"-"+self.allDeviceInfo[theMAC]["deviceName"]+"-"+self.allDeviceInfo[theMAC]["ipNumber"]))
+        retList	= sorted(retList, key=lambda tup: tup[1]) #sort string, keep mac numbers with the text
+        return retList
+
+########################################
     def filterListIpDevices(self, filter="self", valuesDict=None, typeId="", targetId=0):
         retList =[]
         for theMAC in self.allDeviceInfo:
@@ -1408,9 +1427,6 @@ class Plugin(indigo.PluginBase):
         #self.myLog("all", u"IPdeviceMACnumberFilter called" )
         return self.IPretList
 
-########################################
-    def motherFilter(self, filter="self", valuesDict=None,typeId=""):
-        return [(0,0)]
 
 ########################################
     def piBeaconFilter(self, filter="self", valuesDict=None,typeId=""):
@@ -1443,13 +1459,9 @@ class Plugin(indigo.PluginBase):
     #			errorDict = valuesDict
                 return valuesDict
 
-    ########  do mother stuff needed later in EVENTS
-            for nMother in ("22","23","24"):
-                self.EVENTS[self.currentEventN]["IPdeviceMACnumber"][nMother]	= ""
-
 
     ########  do piBeacon stuff needed later in EVENTS
-            for npiBeacon in ("25","26","27","28","29"):
+            for npiBeacon in ("22","23","24","25","26","27","28","29"):
                 mId=str(valuesDict["IPdeviceMACnumber"+npiBeacon])
                 if mId =="0":
                     mId = self.EVENTS[self.currentEventN]["IPdeviceMACnumber"][npiBeacon]
@@ -1862,7 +1874,7 @@ class Plugin(indigo.PluginBase):
                             except: 
                                 pass                               
                                                 
-                    if int(nDev) >= motherStart:#  here the mac number is the indigo device # , remove it if the indigo device is gone
+                    if int(nDev) >= piBeaconStart:#  here the mac number is the indigo device # , remove it if the indigo device is gone
                         if self.EVENTS[n]["IPdeviceMACnumber"][nDev] !="" and self.EVENTS[n]["IPdeviceMACnumber"][nDev] !="0":
                             try:
                                 indigo.devices[int(self.EVENTS[n]["IPdeviceMACnumber"][nDev])]
@@ -1870,10 +1882,8 @@ class Plugin(indigo.PluginBase):
                                 self.myLog("all",u"cleanupEVENTS removing device from evants as indigo device does not exist:"+ unicode(self.EVENTS[n]["IPdeviceMACnumber"][nDev]) ) 
                                 self.EVENTS[n]["IPdeviceMACnumber"][nDev] = "0"   
 
-                    if int(nDev) >= motherStart and int(nDev) < piBeaconStart:
-                        pass
                 
-                    elif  int(nDev) <= piBeaconStart and int(nDev) < unifiStart:
+                    if  int(nDev) <= piBeaconStart and int(nDev) < unifiStart:
                         if self.EVENTS[n]["IPdeviceMACnumber"][nDev] !="" and  self.EVENTS[n]["IPdeviceMACnumber"][nDev] !="0":
                             if self.EVENTS[n]["IPdeviceMACnumber"][nDev] in self.piBeaconDevices:
                                 self.piBeaconDevices[self.EVENTS[n]["IPdeviceMACnumber"][nDev]]["used"]="1"
@@ -1986,7 +1996,7 @@ class Plugin(indigo.PluginBase):
                     except:
                         continue
                     
-                    if int(nDev) < motherStart:
+                    if int(nDev) < piBeaconStart:
                         devI = self.allDeviceInfo[theMAC]
                         self.myLog("all",u"dev#: "+str(nDev).rjust(2)+" -- devNam:"+devI["deviceName"].ljust(25)[:25] +" -- MAC#:"+theMAC+" -- ip#:"+devI["ipNumber"].ljust(15)+" -- status:"+devI["status"].ljust(8)+" -- WiFi:"+devI["WiFi"])
                     elif int(nDev) < piBeaconStart:
@@ -2100,9 +2110,6 @@ class Plugin(indigo.PluginBase):
             self.myLog("all",u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
 
         return
-########################################
-    def printMotherDevs(self):
-        return 
 ########################################
     def printpiBeaconDevs(self):
         try:
@@ -2697,6 +2704,26 @@ class Plugin(indigo.PluginBase):
         if x ==5: return "E"+nMod
         return "F"+nMod
 
+
+########################################
+    def getIgnoredMAC(self):
+        self.ignoredMAC ={}
+        try:
+            f= open (self.ignoredMACFile , "r")
+            self.ignoredMAC =json.loads(f.read())
+            f.close()
+        except: pass
+        self.saveIgnoredMAC()
+
+########################################
+    def saveIgnoredMAC(self):
+        try:
+            f= open (self.ignoredMACFile , "w")
+            f.write(json.dumps(self.ignoredMAC))
+            f.close()
+        except: pass 
+
+
 ########################################
     def initIndigoParms(self):
         ## get folder if it exists, if not it is 0, then set it to IP devices
@@ -3002,20 +3029,20 @@ class Plugin(indigo.PluginBase):
             
             ## get last line of finglog file
 
-                proc = subprocess.Popen(["tail", "-1", self.fingLogFileName], stdout=subprocess.PIPE)
-                self.fingData = [ map(str,line.split(";")) for line in proc.stdout.readlines()]
-                proc.stdout.close()
-                del proc
+                lines = subprocess.Popen(["tail", "-1", self.fingLogFileName], stdout=subprocess.PIPE).communicate()[0].strip("\n")
+                self.fingData =[ map(str,line.split(";")) for line in lines ]
+                if len(self.fingData[0]) < 7: return 0
+                if self.fingData[0][5] in self.ignoredMAC: return 0
                 self.indigoNeedsUpdate = True
                 
                 self.fingNumberOfdevices = 1
                 self.fingLogFileSizeold  = self.fingLogFileSizeNEW
-                self.fingDate            = self.column(self.fingData,0)
-                self.fingStatus          = self.column(self.fingData,1)
-                self.fingIPNumbers       = self.column(self.fingData,2)
-                self.fingDeviceInfo      = self.column(self.fingData,4)
-                self.fingMACNumbers      = self.column(self.fingData,5)
-                self.fingVendor          = self.column(self.fingData,6)
+                self.fingDate            = self.column(self.fingData[0])
+                self.fingStatus          = self.column(self.fingData[1])
+                self.fingIPNumbers       = self.column(self.fingData[2])
+                self.fingDeviceInfo      = self.column(self.fingData[4])
+                self.fingMACNumbers      = self.column(self.fingData[5])
+                self.fingVendor          = self.column(self.fingData[6])
                 self.finglogerrorCount   = 0
                 for kk in range(1):
                     if self.fingMACNumbers[kk] in self.inbetweenPing:	# if this is listed as down in inbetween pings, remove as we have new info.
@@ -3031,7 +3058,9 @@ class Plugin(indigo.PluginBase):
                 return 1
             else:
                 return 0
-        except:
+        except Exception, e:
+            self.myLog("all",u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+            self.myLog("all",unicode(self.fingData))
             self.finglogerrorCount +=1
             if self.finglogerrorCount > 40 and self.totalLoopCounter > 100 :
                 self.myLog("all",u"fing.log file does not exist or is empty \n    trying to stop and restart fing  " )
@@ -3069,6 +3098,9 @@ class Plugin(indigo.PluginBase):
                 removeMAC=[]
                 for kk in range(self.fingNumberOfdevices):
                     theMAC= self.fingMACNumbers[kk]
+                    if theMAC in self.ignoredMAC: 
+                        removeMAC.append(kk)
+                        continue
                     if theMAC in self.doubleIPnumbers:
                         self.doubleIPnumbers[theMAC].append(self.fingIPNumbers[kk])
                     else:
@@ -3089,7 +3121,7 @@ class Plugin(indigo.PluginBase):
                                 self.myLog("all","error: useWakeOnLanSecs not in devI for MAC#:"+ theMAC+" devI=\n"+unicode(self.allDeviceInfo[theMAC])) 
                                 
                         deltaseconds = (  nowdate - datetime.datetime.strptime(self.fingDate[kk],"%Y-%m-%d %H:%M:%S")  ).total_seconds() 
-                        if deltaseconds > 70: 
+                        if deltaseconds > 70 : 
                             removeMAC.append(kk)
                             #self.myLog("all",u"down > 70 secs for "+ self.fingMACNumbers[kk] +"  "+str(deltaseconds)) 
 
@@ -3630,7 +3662,7 @@ class Plugin(indigo.PluginBase):
                     iDev = int(nDev)
                     theMAC =evnt["IPdeviceMACnumber"][nDev]
                     ##self.myLog("all"," in trigger idev"+ nDev+"  "+ theMAC)
-                    if iDev< motherStart:
+                    if iDev< piBeaconStart:
                         if len(theMAC) < 16:
                             self.myLog("Events",u"theMAC=0")
                             continue
@@ -4049,6 +4081,7 @@ class Plugin(indigo.PluginBase):
         try:
             dateTimeNow = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             for theMAC in self.allDeviceInfo:
+                if theMAC in self.ignoredMAC: continue
                     
                 update = False
                 devI = self.allDeviceInfo[theMAC]
@@ -4092,7 +4125,7 @@ class Plugin(indigo.PluginBase):
             if self.routerType != "0":
                 for theMAC in self.wifiMacList:
                     if theMAC not in self.allDeviceInfo:
-                        if not self.acceptNewDevices: continue
+                        if not self.acceptNewDevices or theMAC in self.ignoredMAC: continue
                         self.allDeviceInfo[theMAC]= copy.deepcopy(emptyAllDeviceInfo)
                         devI= self.allDeviceInfo[theMAC]
                         devI["ipNumber"]			= "256.256.256.256"
@@ -4147,6 +4180,7 @@ class Plugin(indigo.PluginBase):
             dateTimeNow = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             for kk in range(0,self.fingNumberOfdevices):
                 theMAC = self.fingMACNumbers[kk]
+                if theMAC in self.ignoredMAC: continue
                 dontUseThisOne = False
                 if self.fingStatus[kk] != "up":
                     for jj in range(0,self.fingNumberOfdevices):   # sometimes ip numbers are listed twice in fing.data, take the one with "UP"
@@ -4293,7 +4327,7 @@ class Plugin(indigo.PluginBase):
 
 
                 if theAction == "new" :################################# new device, add device to indigo
-                    if not self.acceptNewDevices: continue
+                    if not self.acceptNewDevices or theMAC in self.ignoredMAC: continue
                     self.allDeviceInfo[theMAC]= copy.deepcopy(emptyAllDeviceInfo)
                     devI= self.allDeviceInfo[theMAC]
                     devI["ipNumber"]			=self.fingIPNumbers[kk]
@@ -4353,7 +4387,7 @@ class Plugin(indigo.PluginBase):
             if self.routerType !="0" and lastUpdateSource == "WiFi":
                 for theMAC in self.wifiMacList:
                     if theMAC in self.allDeviceInfo: continue
-                    if not self.acceptNewDevices : continue
+                    if not self.acceptNewDevices or theMAC in self.ignoredMAC: continue
                     self.allDeviceInfo[theMAC]= copy.deepcopy(emptyAllDeviceInfo)
                     devI= self.allDeviceInfo[theMAC]
                     devI["ipNumber"]			= "254.254.254.254"
@@ -4445,7 +4479,7 @@ class Plugin(indigo.PluginBase):
                     self.redoAWAY -=1
                     self.myLog("Ping",u"redo tests, check if device is back UP: "+ str(self.redoAWAY))
                 else:
-                    xsleep=max(0.5,self.newSleepTime/10)  ## this is to enable a fast reaction to asynchronous events eg from mother
+                    xsleep=max(0.5,self.newSleepTime/10)  ## this is to enable a fast reaction to asynchronous events 
                     nsleep = int(self.newSleepTime /xsleep)
                     tt=time.time()
                     for i in range(nsleep):
@@ -4470,7 +4504,6 @@ class Plugin(indigo.PluginBase):
                         break
                     if self.indigoCommand == "PrintEVENTS":   self.printEvents()
                     if self.indigoCommand == "PrintWiFi":     self.printWiFi()
-                    if self.indigoCommand == "PrintMother":   self.printMotherDevs()
                     if self.indigoCommand == "PrintpiBeacon": self.printpiBeaconDevs()
                     if self.indigoCommand == "PrintUnifi":    self.printUnifiDevs()
                 self.indigoCommand = "none"
@@ -4490,8 +4523,6 @@ class Plugin(indigo.PluginBase):
                 if lastmin5 !=checkTime[1] and checkTime[1]%5 ==0 and checkTime[1] >0 and checkTime[2]>20 :
                     lastmin5 =checkTime[1]
                     self.setupEventVariables()
-                    self.getMotherCokiesAvailable()
-                    self.updateMothers()
                     self.getpiBeaconAvailable()
                     self.updatepiBeacons()
                     self.getUnifiAvailable()
@@ -4698,6 +4729,7 @@ class Plugin(indigo.PluginBase):
         try:
             if theMACin =="all":
                 for theMAC in self.wifiMacList:
+                    if theMAC in self.ignoredMAC: continue
                     if theMAC in self.allDeviceInfo:
                         self.allDeviceInfo[theMAC]["WiFi"] =  self.wifiMacList[theMAC][9]
                         if self.wifiMacList[theMAC][0] =="Yes" and self.wifiMacList[theMAC][1] =="Yes" :
@@ -4708,15 +4740,16 @@ class Plugin(indigo.PluginBase):
                     if self.wifiMacList[theMAC][11] > 9999999: self.resetbadWifiTrigger() # reset counter if tooo big
             else:
                 theMAC=theMACin
-                if theMAC in self.wifiMacList:
-                    if theMAC in self.allDeviceInfo:
-                        self.allDeviceInfo[theMAC]["WiFi"] =  self.wifiMacList[theMAC][9]
-                        if self.wifiMacList[theMAC][0] =="Yes" and self.wifiMacList[theMAC][1] =="Yes" :
-                            self.allDeviceInfo[theMAC]["WiFiSignal"] =  (("Sig[dBm]:%4.0f"%self.wifiMacList[theMAC][2]  ).strip()
-                                                        +","+("ave:%4.0f"%(self.wifiMacList[theMAC][10]/max(self.wifiMacList[theMAC][11],1))).strip()
-                                                        #+","+("cnt:%8.0f"%self.wifiMacList[theMAC][11]).strip()
-                                                        )
-                    if self.wifiMacList[theMAC][11] > 9999999: self.resetbadWifiTrigger() # reset counter if tooo big
+                if theMAC not in self.ignoredMAC:
+                    if theMAC in self.wifiMacList:
+                        if theMAC in self.allDeviceInfo:
+                            self.allDeviceInfo[theMAC]["WiFi"] =  self.wifiMacList[theMAC][9]
+                            if self.wifiMacList[theMAC][0] =="Yes" and self.wifiMacList[theMAC][1] =="Yes" :
+                                self.allDeviceInfo[theMAC]["WiFiSignal"] =  (("Sig[dBm]:%4.0f"%self.wifiMacList[theMAC][2]  ).strip()
+                                                            +","+("ave:%4.0f"%(self.wifiMacList[theMAC][10]/max(self.wifiMacList[theMAC][11],1))).strip()
+                                                            #+","+("cnt:%8.0f"%self.wifiMacList[theMAC][11]).strip()
+                                                            )
+                        if self.wifiMacList[theMAC][11] > 9999999: self.resetbadWifiTrigger() # reset counter if tooo big
         except Exception, e:
             self.myLog("all",u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
 
@@ -4808,8 +4841,8 @@ class Plugin(indigo.PluginBase):
                             ,self.signalDelta["2"][fiveORtwo]
                             ,self.signalDelta["1"][fiveORtwo]))
             delMACs=[]
-            for theMac in self.oldwifiMacList:
-                if theMac not in self.wifiMacList:
+            for theMAC in self.oldwifiMacList:
+                if theMAC not in self.wifiMacList:
                     self.WiFiChanged[theMAC]=self.self.oldwifiMacList[theMAC][0]
                     delMACs.append(theMAC)
                     continue
@@ -5315,8 +5348,7 @@ class Plugin(indigo.PluginBase):
             for theMAC in self.allDeviceInfo:
                 if theMAC =="": continue
                 devI = self.allDeviceInfo[theMAC]
-                if not self.acceptNewDevices: continue
-                if devI["devExists"] == 0:
+                if devI["devExists"] == 0 and self.acceptNewDevices and theMAC not in self.ignoredMAC:
 
     #				self.myLog("Logic",u" creating device "+str(devI))
                     try:
@@ -5429,10 +5461,12 @@ class Plugin(indigo.PluginBase):
     def updateAllIndigoIpDeviceFromDeviceData(self,statesToUdate=["all"]):
         devcopy = copy.deepcopy(self.allDeviceInfo)
         for theMAC in devcopy:
+            if theMAC in self.ignoredMAC: continue
             self.updateIndigoIpDeviceFromDeviceData(theMAC,statesToUdate)
 ##############################################
     def updateIndigoIpDeviceFromDeviceData(self,theMAC,statesToUpdate,justStatus=""):
 #		self.myLog("Logic",u"updating dev and states: "+ theMAC+"/"+str(statesToUpdate))
+        if theMAC in self.ignoredMAC: return
         try:
             try:
                 devI=self.allDeviceInfo[theMAC]
@@ -5459,7 +5493,7 @@ class Plugin(indigo.PluginBase):
                 name="MAC-"+theMAC,
                 if "nickName" in devI:
                     if devI["nickName"] !="": 	name =devI["nickName"]
-                    if self.acceptNewDevices:
+                    if True or self.acceptNewDevices:
                         try:
                             indigo.device.create(
                                 protocol=indigo.kProtocol.Plugin,
@@ -5720,6 +5754,7 @@ class Plugin(indigo.PluginBase):
 ########################################
     def updateIndigoIpVariableFromDeviceData(self,theMAC):
         try:
+            if theMAC in self.ignoredMAC: return 
             if theMAC in self.indigoIpVariableData:
                 devV =self.indigoIpVariableData[theMAC]
             else:

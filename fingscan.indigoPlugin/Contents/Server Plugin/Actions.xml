@@ -19,10 +19,6 @@
         <Name>--- only for python Script---</Name>
         <CallbackMethod>UnifiUpdateCALLBACKaction</CallbackMethod>
     </Action>
-    <Action id="MotherUpdate" uiPath="hidden" >
-        <Name>--- only for python Script---</Name>
-        <CallbackMethod>MotherUpdateCALLBACKaction</CallbackMethod>
-    </Action>
     <Action id="piBeaconUpdate" uiPath="hidden" >
         <Name>--- only for python Script---</Name>
         <CallbackMethod>piBeaconUpdateCALLBACKaction</CallbackMethod>

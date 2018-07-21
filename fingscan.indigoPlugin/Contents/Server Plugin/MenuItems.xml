@@ -37,7 +37,6 @@
         <Field id="iDevicesEnabled15a" type="checkbox" defaultValue="false" hidden="yes"> </Field>
         <Field id="iDevicesEnabled"    type="checkbox" defaultValue="false" hidden="yes"> </Field>
 
-        <Field id="motherEnabled"      type="checkbox" defaultValue="false" hidden="yes"> </Field>
         <Field id="piBeaconEnabled"    type="checkbox" defaultValue="false" hidden="yes"> </Field>
         <Field id="unifiEnabled"       type="checkbox" defaultValue="false" hidden="yes"> </Field>
 
@@ -285,37 +284,37 @@
             <Label>Pick IP device ..........................21.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
             <CallbackMethod>CALLBACKIPdeviceMACnumber21</CallbackMethod></Field>
 
-        <Field visibleBindingId="motherEnabled" visibleBindingValue="true" enableBindingId="motherEnabled" id="IPdeviceMACnumber22" type="menu" defaultValue="0" tooltip=" pick next Mother device to be member of this EVENT group">
-            <Label>Pick Mother/Cookie device ........1.:</Label>     <List class="self" filter="" method="motherFilter" dynamicReload="false"/>
+        <Field visibleBindingId="piBeaconEnabled" visibleBindingValue="true" enableBindingId="piBeaconEnabled" id="IPdeviceMACnumber22" type="menu" defaultValue="0" tooltip=" pick next piBeacon device to be member of this EVENT group">
+            <Label>Pick piBeacon device ........1.:</Label>     <List class="self" filter="" method="piBeaconFilter" dynamicReload="false"/>
         </Field>
             
-        <Field visibleBindingId="motherEnabled" visibleBindingValue="true" enableBindingId="motherEnabled" id="IPdeviceMACnumber23" type="menu" defaultValue="0" tooltip=" pick next Mother device to be member of this EVENT group">
-            <Label>Pick Mother/Cookie device ........2.:</Label>     <List class="self" filter="" method="motherFilter" dynamicReload="false"/>
+        <Field visibleBindingId="piBeaconEnabled" visibleBindingValue="true" enableBindingId="piBeaconEnabled" id="IPdeviceMACnumber23" type="menu" defaultValue="0" tooltip=" pick next piBeacon device to be member of this EVENT group">
+            <Label>Pick piBeacon device ........2.:</Label>     <List class="self" filter="" method="piBeaconFilter" dynamicReload="false"/>
         </Field>
             
-        <Field visibleBindingId="motherEnabled" visibleBindingValue="true" enableBindingId="motherEnabled" id="IPdeviceMACnumber24" type="menu" defaultValue="0" tooltip=" pick next Mother device to be member of this EVENT group">
-            <Label>Pick Mother/Cookie device ........3.:</Label>     <List class="self" filter="" method="motherFilter" dynamicReload="false"/>
+        <Field visibleBindingId="piBeaconEnabled" visibleBindingValue="true" enableBindingId="piBeaconEnabled" id="IPdeviceMACnumber24" type="menu" defaultValue="0" tooltip=" pick next piBeacon device to be member of this EVENT group">
+            <Label>Pick piBeacon device ........3.:</Label>     <List class="self" filter="" method="piBeaconFilter" dynamicReload="false"/>
         </Field>
             
 
         <Field visibleBindingId="piBeaconEnabled" visibleBindingValue="true" enableBindingId="piBeaconEnabled" id="IPdeviceMACnumber25" type="menu" defaultValue="0" tooltip=" pick next piBeacon device to be member of this EVENT group">
-            <Label>Pick piBeacon device ........1.:</Label>     <List class="self" filter="" method="piBeaconFilter" dynamicReload="false"/>
-        </Field>
-            
-        <Field visibleBindingId="piBeaconEnabled" visibleBindingValue="true" enableBindingId="piBeaconEnabled" id="IPdeviceMACnumber26" type="menu" defaultValue="0" tooltip=" pick next piBeacon device to be member of this EVENT group">
-            <Label>Pick piBeacon device ........2.:</Label>     <List class="self" filter="" method="piBeaconFilter" dynamicReload="false"/>
-        </Field>
-            
-        <Field visibleBindingId="piBeaconEnabled" visibleBindingValue="true" enableBindingId="piBeaconEnabled" id="IPdeviceMACnumber27" type="menu" defaultValue="0" tooltip=" pick next piBeacon device to be member of this EVENT group">
-            <Label>Pick piBeacon device ........3.:</Label>     <List class="self" filter="" method="piBeaconFilter" dynamicReload="false"/>
-        </Field>
-            
-        <Field visibleBindingId="piBeaconEnabled" visibleBindingValue="true" enableBindingId="piBeaconEnabled" id="IPdeviceMACnumber28" type="menu" defaultValue="0" tooltip=" pick next piBeacon device to be member of this EVENT group">
             <Label>Pick piBeacon device ........4.:</Label>     <List class="self" filter="" method="piBeaconFilter" dynamicReload="false"/>
         </Field>
             
-        <Field visibleBindingId="piBeaconEnabled" visibleBindingValue="true" enableBindingId="piBeaconEnabled" id="IPdeviceMACnumber29" type="menu" defaultValue="0" tooltip=" pick next piBeacon device to be member of this EVENT group">
+        <Field visibleBindingId="piBeaconEnabled" visibleBindingValue="true" enableBindingId="piBeaconEnabled" id="IPdeviceMACnumber26" type="menu" defaultValue="0" tooltip=" pick next piBeacon device to be member of this EVENT group">
             <Label>Pick piBeacon device ........5.:</Label>     <List class="self" filter="" method="piBeaconFilter" dynamicReload="false"/>
+        </Field>
+            
+        <Field visibleBindingId="piBeaconEnabled" visibleBindingValue="true" enableBindingId="piBeaconEnabled" id="IPdeviceMACnumber27" type="menu" defaultValue="0" tooltip=" pick next piBeacon device to be member of this EVENT group">
+            <Label>Pick piBeacon device ........6.:</Label>     <List class="self" filter="" method="piBeaconFilter" dynamicReload="false"/>
+        </Field>
+            
+        <Field visibleBindingId="piBeaconEnabled" visibleBindingValue="true" enableBindingId="piBeaconEnabled" id="IPdeviceMACnumber28" type="menu" defaultValue="0" tooltip=" pick next piBeacon device to be member of this EVENT group">
+            <Label>Pick piBeacon device ........7.:</Label>     <List class="self" filter="" method="piBeaconFilter" dynamicReload="false"/>
+        </Field>
+            
+        <Field visibleBindingId="piBeaconEnabled" visibleBindingValue="true" enableBindingId="piBeaconEnabled" id="IPdeviceMACnumber29" type="menu" defaultValue="0" tooltip=" pick next piBeacon device to be member of this EVENT group">
+            <Label>Pick piBeacon device ........8.:</Label>     <List class="self" filter="" method="piBeaconFilter" dynamicReload="false"/>
         </Field>
             
 
@@ -608,6 +607,38 @@
         </ConfigUI>
     </MenuItem>
 
+
+  
+  
+    <MenuItem id="menuremoveignoredMAC">
+        <Name>IGNORE LIST:  Remove MAC number from the ignore list</Name>
+        <ConfigUI>
+        <Field  id="selectedMAC" type="menu" defaultValue="0">
+            <Label>currently ignored MACs:</Label>     <List class="self" filter="" method="filterIgnoredMACs" dynamicReload="false"/>
+        </Field>
+        <Field  id="execButton" type="button"	>
+                <Label> ....after selection click</Label>
+                <Title>REMOVE</Title>
+            <CallbackMethod>buttonConfirmRemoveIgnoredMACsCALLBACK</CallbackMethod>
+        </Field>
+        </ConfigUI>
+    </MenuItem>
+
+  
+    <MenuItem id="menuaddignoredMAC">
+        <Name>IGNORE LIST:  Add MAC number to the ignore list</Name>
+        <ConfigUI>
+            <Field  id="selectedMAC" type="menu" defaultValue="0"> 
+                <Label>existing not ignored devices / MACs:</Label>     <List class="self" filter="" method="filterNotIgnoredMACs" dynamicReload="false"/>
+            </Field>
+            <Field  id="execButton" type="button"	>
+                    <Label> ....after selection click</Label>
+                    <Title>ADD</Title>
+            <CallbackMethod>buttonConfirmAddIgnoredMACsCALLBACK</CallbackMethod>
+            </Field>
+        </ConfigUI>
+    </MenuItem>
+
   
   
     <MenuItem id="menu4">
@@ -624,8 +655,8 @@
         <CallbackMethod>inpPrintWiFi</CallbackMethod>
     </MenuItem>
     <MenuItem id="menu7a">
-        <Name>Print Mother/Cookie Information</Name>
-        <CallbackMethod>inpPrintMother</CallbackMethod>
+        <Name>Print piBeacon Information</Name>
+        <CallbackMethod>inpPrintpiBeacon</CallbackMethod>
     </MenuItem>
     <MenuItem id="menu7b">
         <Name>Print piBeacon Information</Name>
