@@ -5228,6 +5228,7 @@ class Plugin(indigo.PluginBase):
                     theMAC = dev.states["MACNumber"]
                     if theMAC =="": continue
                     if not theMAC in self.allDeviceInfo: continue
+                    if theMAC in self.ignoredMAC: continue
                     devI=self.allDeviceInfo[theMAC]
                     devI["deviceId"]	=dev.id
                     if dev.name != devI["deviceName"]:
