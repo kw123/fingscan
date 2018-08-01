@@ -71,6 +71,17 @@
             </List>
 <Label>use UNIFI devices for tracking</Label></Field>
 
+
+<Field    id="enableBroadCastEvents" type="menu"  defaultValue="false" tooltip="if enabled any change of status of a up/down devices will send indigo broadcast  to read the status and use it to determine home or away events">
+    <List>
+        <Option value="0"          >disable</Option>
+        <Option value="all"        >ENABLE ALL:   for all devices that have an up/ down status</Option>
+        <Option value="individual" >ENABLE INDIVIDUAL:  individual devices must be enabled in device edit</Option>
+    </List>
+    <Label>Enable BC of up/ down status:</Label>
+</Field>
+
+
 <Field id="simpleSeparator1" type="separator"/>
     
 <Field defaultValue="0" id="routerType" type="menu" alignText="right">
@@ -190,11 +201,11 @@
     <Field    id="debugPing"     type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (2) PING:</Label>  </Field>
     <Field    id="debugWifi"     type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (3) WiFi:</Label>  </Field>
     <Field    id="debugEvents"   type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (4) Events:</Label>  </Field>
-    <Field    id="debugMother"   type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (5) Mother:</Label>  </Field>
-    <Field    id="debugiFind"    type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (6) iFind:</Label>  </Field>
-    <Field    id="debugpiBeacon" type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (7) piBeacon:</Label>  </Field>
-    <Field    id="debugpUnifi"   type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (8) Unifi:</Label>  </Field>
-    <Field    id="debugpAll"     type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (9) All:</Label>  </Field>
+    <Field    id="debugiFind"    type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (5) iFind:</Label>  </Field>
+    <Field    id="debugpiBeacon" type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (6) piBeacon:</Label>  </Field>
+    <Field    id="debugUnifi"    type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (7) Unifi:</Label>  </Field>
+    <Field    id="debugBC"       type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (8) send BC of status changes:</Label>  </Field>
+    <Field    id="debugpAll"     type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (10) All:</Label>  </Field>
 
     <Field    id="logFileActive"  type="checkbox"  defaultValue="false"       tooltip=""> <Label> send logs to file:</Label> tooltip="logfile= ~/indigo/fing/fingPlugin.log" </Field>
 

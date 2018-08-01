@@ -193,10 +193,10 @@ class Plugin(indigo.PluginBase):
             if self.pluginPrefs.get(u"debugPing", False):    self.debugLevel += "Ping,"
             if self.pluginPrefs.get(u"debugWifi", False):    self.debugLevel += "WiFi,"
             if self.pluginPrefs.get(u"debugEvents", False):  self.debugLevel += "Events,"
-            if self.pluginPrefs.get(u"debugMother", False):  self.debugLevel += "Mother,"
             if self.pluginPrefs.get(u"debugiFind", False):   self.debugLevel += "iFind,"
             if self.pluginPrefs.get(u"debugpiBeacon", False):self.debugLevel += "piBEacon,"
-            if self.pluginPrefs.get(u"debugpUnifi", False):  self.debugLevel += "Unifi,"
+            if self.pluginPrefs.get(u"debugUnifi", False):   self.debugLevel += "Unifi,"
+            if self.pluginPrefs.get(u"debugBC", False):      self.debugLevel += "BC,"
             if self.pluginPrefs.get(u"debugpAll", False):    self.debugLevel += "all,"
             self.logFileActive          = self.pluginPrefs.get("logFileActive", True)
             self.logFile                = self.MAChome + "/indigo/fing/fingPlugin.log"
@@ -258,6 +258,8 @@ class Plugin(indigo.PluginBase):
             self.signalDelta ={"5":{"2GHz":0,"5GHz":0},"2":{"2GHz":0,"5GHz":0},"1":{"2GHz":0,"5GHz":0}}
             self.theNetwork = "0.0.0.0"
 
+            self.enableBroadCastEvents  = self.pluginPrefs.get(u"enableBroadCastEvents","0")
+            self.sendBroadCastEventsList    = []
 
 
 ########### try to setup folders, create directories if they do not exist
@@ -1662,8 +1664,11 @@ class Plugin(indigo.PluginBase):
             if valuesDict[u"debugMother"]:  self.debugLevel += "Mother,"
             if valuesDict[u"debugiFind"]:   self.debugLevel += "iFind,"
             if valuesDict[u"debugpiBeacon"]:self.debugLevel += "piBEacon,"
-            if valuesDict[u"debugpUnifi"]:  self.debugLevel += "Unifi,"
+            if valuesDict[u"debugUnifi"]:   self.debugLevel += "Unifi,"
+            if valuesDict[u"debugBC"]:      self.debugLevel += "BC,"
             if valuesDict[u"debugpAll"]:    self.debugLevel += "all,"
+
+            self.enableBroadCastEvents  = valuesDict[u"enableBroadCastEvents"]
 
             xx   = valuesDict[u"indigoDevicesFolderName"]
             if xx != self.indigoDevicesFolderName:
@@ -6198,14 +6203,51 @@ class Plugin(indigo.PluginBase):
                                 dev.updateStateImageOnServer(indigo.kStateImageSel.SensorOff)
                             elif value in [u"expired","REC"] :
                                 dev.updateStateImageOnServer(indigo.kStateImageSel.SensorTripped)
+                            msg = {"action":"event", "id":str(dev.id), "name":dev.name, "state":"status", "valueForON":"up", "newValue":value.lower()}
+                            self.myLog("BC",u"executeUpdateStatesDict  msg added :" + unicode(msg))
+                            self.sendBroadCastEventsList.append(msg)
+
 
                     if  newStates == "":
                         self.updateStatesList[devId]={}           
                         if actualChanged !=[]:
                             #indigo.server.log("%14.3f"%time.time()+"  "+dev.name.ljust(25)  + unicode(actualChanged)) 
                             dev.updateStatesOnServer(actualChanged)
+                            
+            if len(self.sendBroadCastEventsList) >0: self.sendBroadCastNOW()
             if  newStates != "":  
                 return newStates              
         except  Exception, e:
             if len(unicode(e))  > 5 :
                 self.myLog("all", u"in Line '%s' has error='%s'" % (sys.exc_traceback.tb_lineno, e) )
+
+
+    ####----------------- if FINGSCAN is enabled send update signal  ---------
+    def sendBroadCastNOW(self):
+        try:
+            self.myLog("BC",u"sendBroadCastNOW enter" )
+            x = ""
+            if  self.enableBroadCastEvents =="0":
+                self.sendBroadCastEventsList = []
+                return x
+            if self.sendBroadCastEventsList == []:  
+                return x
+                
+            msg = copy.copy(self.sendBroadCastEventsList)
+            self.sendBroadCastEventsList = []
+            if len(msg) >0:
+                msg ={"pluginId":self.pluginId,"data":msg}
+                try:
+                    self.myLog("BC",u"updating BC with " + unicode(msg) )
+                    indigo.server.broadcastToSubscribers(u"deviceStatusChanged", json.dumps(msg))
+                except  Exception, e:
+                    if len(unicode(e)) > 5:
+                        indigo.server.log( u"updating sendBroadCastNOW has error in Line '%s' has error='%s'" % (sys.exc_traceback.tb_lineno, e)+u" finscan update failed")
+
+        except  Exception, e:
+            if len(unicode(e)) > 5:
+                indigo.server.log( u"updating sendBroadCastNOW has error in Line '%s' has error='%s'" % (sys.exc_traceback.tb_lineno, e))
+            else:
+                x = "break"
+        return x
+

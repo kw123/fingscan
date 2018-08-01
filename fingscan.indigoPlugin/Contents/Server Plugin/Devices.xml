@@ -61,6 +61,14 @@
                     <Option value="notShow" >do NOT show double / changed IP numbers in Logfile</Option>
                     <Option value="show"    >SHOW  double / changed IP numbers in Logfile</Option>
                 </List>
+            <Field id="sep-03" type="separator"/>
+            <Field   id="enableBroadCastEvents"  type="menu"  defaultValue="0" tooltip="this will enable plugin-plugin bc of status changes ie to EVENTS plugin" >
+                <Label>:send broadcasts to other plugins for status up/x changes</Label>
+                <List>
+                    <Option value="0" >NO </Option>
+                    <Option value="1" >YES send BC, must be enabled in config  </Option>
+                </List>
+            </Field>
             </Field>
         </ConfigUI>
 
