@@ -463,6 +463,7 @@ class Plugin(indigo.PluginBase):
             self.killPing("all")
 
 ############ here we get stored setup etc
+            self.refreshVariables()
             self.getIndigoIpVariablesIntoData()		# indigo variable data to  into self.indigoIpVariableData
             self.updateallDeviceInfofromVariable()	# self.indigoIpVariableData  to self.allDeviceInfo
             self.getIndigoIpDevicesIntoData()       # indigo dev data to self.allDeviceInfo
@@ -664,6 +665,10 @@ class Plugin(indigo.PluginBase):
         except: pass
         try:    indigo.variable.create("ipDevsLastUpdate","",self.indigoVariablesFolderID)	
         except: pass
+        try:    indigo.variable.delete("ipDevsLastDevChangedIndigoName")
+        except: pass
+        try:    indigo.variable.create("ipDevsLastDevChangedIndigoName","",self.indigoVariablesFolderID)	
+        except: pass
         try:    indigo.variable.delete("ipDevsNewDeviceNo")
         except: pass
         try:    indigo.variable.create("ipDevsNewDeviceNo","",self.indigoVariablesFolderID)	
@@ -686,11 +691,11 @@ class Plugin(indigo.PluginBase):
                 self.myLog("all",u"FINGscanFolder folder created")
             except:
                 pass
-            FINGscanFolderID = indigo.variables.folders["FINGscanEvents"].id
+            self.FINGscanFolderID = indigo.variables.folders["FINGscanEvents"].id
             for i in self.EVENTS:
                 try:
-                    indigo.variable.create("allHome_"+str(i),"",folder=FINGscanFolderID)
-                    indigo.variable.create("oneHome_"+str(i),"",folder=FINGscanFolderID)
+                    indigo.variable.create("allHome_"+str(i),"",folder=self.FINGscanFolderID)
+                    indigo.variable.create("oneHome_"+str(i),"",folder=self.FINGscanFolderID)
                 except:
                     pass
 
@@ -701,14 +706,14 @@ class Plugin(indigo.PluginBase):
             
             try:
                 indigo.variable.create("FingEventDevChangedIndigoId",folder=self.FINGscanFolderID)
-            except:  pass
+            except: pass
 
 
 
             for i in self.EVENTS:
                 try:
-                    indigo.variable.create("allAway_"+str(i),"",folder=FINGscanFolderID)
-                    indigo.variable.create("oneAway_"+str(i),"",folder=FINGscanFolderID)
+                    indigo.variable.create("allAway_"+str(i),"",folder=self.FINGscanFolderID)
+                    indigo.variable.create("oneAway_"+str(i),"",folder=self.FINGscanFolderID)
                 except:
                     pass
             for nEvent in self.EVENTS:
@@ -6193,6 +6198,7 @@ class Plugin(indigo.PluginBase):
                         if  newStates == "":
                             if value != dev.states[key]:
                                 actualChanged.append({"key":key,"value":value})
+                                if key == "status": indigo.variable.updateValue("ipDevsLastDevChangedIndigoName",dev.name)
                         else:            
                             if value != newStates[key]:
                                 newStates[key] = value
@@ -6206,7 +6212,7 @@ class Plugin(indigo.PluginBase):
                             msg = {"action":"event", "id":str(dev.id), "name":dev.name, "state":"status", "valueForON":"up", "newValue":value.lower()}
                             self.myLog("BC",u"executeUpdateStatesDict  msg added :" + unicode(msg))
                             self.sendBroadCastEventsList.append(msg)
-
+                            
 
                     if  newStates == "":
                         self.updateStatesList[devId]={}           
