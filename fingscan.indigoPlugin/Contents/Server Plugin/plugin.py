@@ -5350,6 +5350,7 @@ class Plugin(indigo.PluginBase):
                                                 self.myLog("all",u"Multiple IPNumbers for device MAC#: "+theMAC+" -- "+ str(self.doubleIPnumbers[theMAC])+" to switch off changed message: edit this device and select no msg")
                                         else:
                                                 self.myLog("all",u"IPNumber changed,  old: "+ str(props["address"])+ "; new: "+ str(self.formatiPforAddress(devI["ipNumber"]))+ " for device MAC#: "+theMAC+" to switch off changed message: edit this device and select no msg")
+                                indigo.variable.updateValue( "ipDevsOldNewIPNumber", dev.name.strip(" ")+"/"+theMAC.strip(" ")+"/"+props["address"].strip(" ")+"/"+self.formatiPforAddress(devI["ipNumber"]).strip(" ") )
 
                             props["address"]=self.formatiPforAddress(devI["ipNumber"])
                             dev.replacePluginPropsOnServer(props)
@@ -5613,7 +5614,7 @@ class Plugin(indigo.PluginBase):
                             if "suppressChangeMSG" in dev.states:
                                 if dev.states["suppressChangeMSG"] =="show":
                                     self.myLog("all",u"MAC#:"+theMAC  +" -- old IP: "+ str(props["address"])+ ";  new IP number: "+ str(self.formatiPforAddress(devI["ipNumber"]))+" to switch off changed message: edit this device and select no msg")
-                            indigo.variable.updateValue( "ipDevsOldNewIPNumber", dev.name+"/"+theMAC+"/"+props["address"]+"/"+self.formatiPforAddress(devI["ipNumber"]) )
+                            indigo.variable.updateValue( "ipDevsOldNewIPNumber", dev.name.strip(" ")+"/"+theMAC.strip(" ")+"/"+props["address"].strip(" ")+"/"+self.formatiPforAddress(devI["ipNumber"]).strip(" ") )
                             props["address"]=self.formatiPforAddress(devI["ipNumber"])
                             dev.replacePluginPropsOnServer(props)
                     except:
