@@ -681,6 +681,8 @@ class Plugin(indigo.PluginBase):
         except: pass
         try:    indigo.variable.create("ipDevsNoOfDevices","",self.indigoVariablesFolderID)	
         except: pass
+        try:    indigo.variable.create("ipDevsOldNewIPNumber","","")	
+        except: pass
         return
         
 ########################################
@@ -4113,18 +4115,17 @@ class Plugin(indigo.PluginBase):
                                     update = True
                 
                     else:
-                        if self.allDeviceInfo[theMAC]["expirationTime"] == 0: 
-                                update = True
-                                self.allDeviceInfo[theMAC]["status"] = "expired"
-                        else:
-                            if (time.time() - self.allDeviceInfo[theMAC]["lastFingUp"] >  2*self.allDeviceInfo[theMAC]["expirationTime"] ): 
-                                if self.allDeviceInfo[theMAC]["status"] != "expired":
-                                    update = True
-                                    self.allDeviceInfo[theMAC]["status"] = "expired"
-                            elif (time.time() - self.allDeviceInfo[theMAC]["lastFingUp"] >  self.allDeviceInfo[theMAC]["expirationTime"] ): 
-                                if self.allDeviceInfo[theMAC]["status"] != "down":
-                                    update = True
-                                    self.allDeviceInfo[theMAC]["status"] = "down"
+                            try:
+                                if (time.time() - self.allDeviceInfo[theMAC]["lastFingUp"] >  2*self.allDeviceInfo[theMAC]["expirationTime"] ): 
+                                    if self.allDeviceInfo[theMAC]["status"] != "expired":
+                                        update = True
+                                        self.allDeviceInfo[theMAC]["status"] = "expired"
+                                elif (time.time() - self.allDeviceInfo[theMAC]["lastFingUp"] >  self.allDeviceInfo[theMAC]["expirationTime"] ): 
+                                    if self.allDeviceInfo[theMAC]["status"] != "down":
+                                        update = True
+                                        self.allDeviceInfo[theMAC]["status"] = "down"
+                            except:
+                                pass
                     if update:
                         self.allDeviceInfo[theMAC]["timeOfLastChange"] = dateTimeNow
                         self.updateIndigoIpDeviceFromDeviceData(theMAC,["status","timeOfLastChange"])
@@ -4160,7 +4161,7 @@ class Plugin(indigo.PluginBase):
 
                         ## count down empty space
                         self.indigoIndexEmpty -= 1  # one less empty slot
-                        self.indigoEmpty.pop(0) ##  remove first empty from list
+                        if len(self.indigoEmpty) > 0: self.indigoEmpty.pop(0) ##  remove first empty from list
 
                         ## start any triggers if setup
                         try:
@@ -4382,7 +4383,7 @@ class Plugin(indigo.PluginBase):
 
                     ## count down empty space
                     self.indigoIndexEmpty -= 1  # one less empty slot
-                    self.indigoEmpty.pop(0) ##  remove first empty from list
+                    if len(self.indigoEmpty) > 0: self.indigoEmpty.pop(0) ##  remove first empty from list
 
                     anyUpdate +=1
                     ## start any triggers if setup
@@ -4422,7 +4423,7 @@ class Plugin(indigo.PluginBase):
                     self.updateIndigoIpVariableFromDeviceData(theMAC)
                     ## count down empty space
                     self.indigoIndexEmpty -= 1  # one less empty slot
-                    self.indigoEmpty.pop(0) ##  remove first empty from list
+                    if len(self.indigoEmpty) > 0: self.indigoEmpty.pop(0) ##  remove first empty from list
 
                     try:
                         indigo.variable.updateValue("ipDevsNewDeviceNo", "ipDevice"+str(newIPDevNumber)+";"+devI["deviceName"])
@@ -5305,6 +5306,8 @@ class Plugin(indigo.PluginBase):
                             self.addToStatesUpdateList(str(dev.id),"suppressChangeMSG",devI["suppressChangeMSG"])
                             
                     if "lastFingUp" in dev.states:
+                        if "lastFingUp" not in devI:
+                            devI["lastFingUp"] = 0
                         if dev.states["lastFingUp"] != time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(devI["lastFingUp"])):
                             anyUpdate=True
                             #dev.updateStateOnServer("suppressChangeMSG",devI["suppressChangeMSG"])
@@ -5610,6 +5613,7 @@ class Plugin(indigo.PluginBase):
                             if "suppressChangeMSG" in dev.states:
                                 if dev.states["suppressChangeMSG"] =="show":
                                     self.myLog("all",u"MAC#:"+theMAC  +" -- old IP: "+ str(props["address"])+ ";  new IP number: "+ str(self.formatiPforAddress(devI["ipNumber"]))+" to switch off changed message: edit this device and select no msg")
+                            indigo.variable.updateValue( "ipDevsOldNewIPNumber", dev.name+"/"+theMAC+"/"+props["address"]+"/"+self.formatiPforAddress(devI["ipNumber"]) )
                             props["address"]=self.formatiPforAddress(devI["ipNumber"])
                             dev.replacePluginPropsOnServer(props)
                     except:
@@ -5733,7 +5737,7 @@ class Plugin(indigo.PluginBase):
                     if "setExpirationTime" in props: 
                         devI["expirationTime"]  = float(props["setExpirationTime"])
                     else:
-                        devI["expirationTime"]  = 0
+                        devI["expirationTime"]  = 90
 
 
                     if "suppressChangeMSG" in dev.states:
@@ -5781,7 +5785,7 @@ class Plugin(indigo.PluginBase):
                 self.indigoNumberOfdevices +=1
                 devV["index"] = self.indigoNumberOfdevices-1
                 self.indigoIndexEmpty -= 1  # one less empty slot
-                self.indigoEmpty.pop(0) ##  remove first empty from list
+                if len(self.indigoEmpty) > 0: self.indigoEmpty.pop(0) ##  remove first empty from list
 
 
             devI=self.allDeviceInfo[theMAC]
