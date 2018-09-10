@@ -68,7 +68,7 @@ emptyindigoIpVariableData={
     "usePing": "",
     "suppressChangeMSG": "show"
     }
-emptyEVENT ={#              -including Idevices option-------------                                                                                                                                            --------mother cookies ---  ------------pi beacons---------------------   --------------  unifi ---------------------
+emptyEVENT ={#              -including Idevices option-------------                                                                                                                                            ----------  ------------pi beacons---------------------                   --------------  unifi ---------------------
     "IPdeviceMACnumber"   :{"1":"0","2":"0","3":"0","4":"0","5":"0","6":"0","7":"0","8":"0","9":"0","10":"0","11":"0","12":"0","13":"0","14":"0","15":"0","16":"0","17":"0","18":"0","19":"0","20":"0","21":"0","22":"0","23":"0","24":"0","25":"0","26":"0","27":"0","28":"0","29":"0","30":"0","31":"0","32":"0","33":"0","34":"0"},
     "timeOfLastON"        :{"1":"0","2":"0","3":"0","4":"0","5":"0","6":"0","7":"0","8":"0","9":"0","10":"0","11":"0","12":"0","13":"0","14":"0","15":"0","16":"0","17":"0","18":"0","19":"0","20":"0","21":"0","22":"0","23":"0","24":"0","25":"0","26":"0","27":"0","28":"0","29":"0","30":"0","31":"0","32":"0","33":"0","34":"0"},
     "timeOfLastOFF"       :{"1":"0","2":"0","3":"0","4":"0","5":"0","6":"0","7":"0","8":"0","9":"0","10":"0","11":"0","12":"0","13":"0","14":"0","15":"0","16":"0","17":"0","18":"0","19":"0","20":"0","21":"0","22":"0","23":"0","24":"0","25":"0","26":"0","27":"0","28":"0","29":"0","30":"0","31":"0","32":"0","33":"0","34":"0"},
@@ -1638,7 +1638,6 @@ class Plugin(indigo.PluginBase):
 
             valuesDict["EVENTS"]	=	json.dumps(self.EVENTS)
 
-            valuesDict["MOTHER"]	=	{}
 
             valuesDict["piBeacon"]	=	json.dumps(self.piBeaconDevices)
             self.myLog("piBEacon",u"self.piBeaconDevices  "+unicode(self.piBeaconDevices))
@@ -1650,7 +1649,6 @@ class Plugin(indigo.PluginBase):
 
         except Exception, e:
             self.myLog("all",u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
-        ##self.myLog("Mother","empty event "+ unicode(emptyEVENT))
         if len(errorDict) > 0: return  valuesDict, errorDict
         return  valuesDict
 
@@ -1668,7 +1666,6 @@ class Plugin(indigo.PluginBase):
             if valuesDict[u"debugPing"]:    self.debugLevel += "Ping,"
             if valuesDict[u"debugWifi"]:    self.debugLevel += "WiFi,"
             if valuesDict[u"debugEvents"]:  self.debugLevel += "Events,"
-            if valuesDict[u"debugMother"]:  self.debugLevel += "Mother,"
             if valuesDict[u"debugiFind"]:   self.debugLevel += "iFind,"
             if valuesDict[u"debugpiBeacon"]:self.debugLevel += "piBEacon,"
             if valuesDict[u"debugUnifi"]:   self.debugLevel += "Unifi,"
@@ -1794,17 +1791,11 @@ class Plugin(indigo.PluginBase):
             self.enableMACtoVENDORlookup               = valuesDict[u"enableMACtoVENDORlookup"]
 
             self.acceptNewDevices = valuesDict[u"acceptNewDevices"] == "1"
-#            if self.enableMotherDevices =="1":
-#                indigo.devices.subscribeToChanges()
-#            self.enableMotherDevices = valuesDict[u"enableMotherDevices"]
-#            if self.enableMotherDevices =="1":
-#                indigo.devices.subscribeToChanges()
 
     # clean up empty events
             self.cleanUpEvents()
     # save to indigo
             valuesDict["EVENTS"]	=	json.dumps(self.EVENTS)
-            valuesDict["MOTHER"]	=	{}
             valuesDict["UNIFI"]	    =	json.dumps(self.unifiDevices)
             valuesDict["piBeacon"]	=	json.dumps(self.piBeaconDevices)
 
@@ -2383,11 +2374,6 @@ class Plugin(indigo.PluginBase):
     def inpPrintWiFi(self):
         self.indigoCommand = "PrintWiFi"
         self.myLog("all",u"command: Print WiFi information and configuration")
-        return
-########################################
-    def inpPrintMother(self):
-        self.indigoCommand = "PrintMother"
-        self.myLog("all",u"command: Print Mother information")
         return
 ########################################
     def inpPrintpiBeacon(self):
@@ -3715,7 +3701,7 @@ class Plugin(indigo.PluginBase):
                             else:
                                 try:
                                     status = self.unifiDevices[theMAC]["currentStatus"]
-                                except:
+                                except  Exception, e:
                                     self.myLog("all",u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
                                     self.myLog("all",u"error in checkTriggers, indigoID# "+theMAC+u" not in unifidevices  :  " + unicode(self.unifiDevices)[0:100]+u" ..  is  unifi plugin active? " )
                                     del self.unifiDevices[theMAC]
