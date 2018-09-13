@@ -496,10 +496,15 @@ class Plugin(indigo.PluginBase):
                 
             self.pluginPrefs[u"network"]  = self.theNetwork
             self.pluginPrefs[u"netwType"] = self.netwType
-            self.IPaddressCalc = IPaddressCalcClass.IPCalculator(self.theNetwork+"/"+self.netwType)
-            self.netwInfo =  self.IPaddressCalc.makeJson()
+
+            try: 
+                self.IPaddressCalc = IPaddressCalcClass.IPCalculator(self.theNetwork+"/"+self.netwType)
+                self.netwInfo =  self.IPaddressCalc.makeJson()
+            except:
+                self.netwInfo = {'netWorkId': '192.168.1.0', 'broadcast': '192.168.1.255', 'netMask': '255.255.255.0', 'maxHosts': 254, 'hostRange': '192.168.1.1 - 192.168.1.254'}
             indigo.server.log("network info: "+unicode(self.netwInfo))
             self.broadcastIP = self.netwInfo["broadcast"]
+
 
 ############ for triggers:
             self.currentEventN = "0"
