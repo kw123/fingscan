@@ -2022,7 +2022,7 @@ class Plugin(indigo.PluginBase):
 				return
 
 
-			out ="\n EVENT defs::::::::::::::::::\n"
+			out ="\nEVENT defs::::::::::::::::::\n"
 			eventsToPrint=[]
 			if printEvents=="all":
 				for i in range(1,nEvents+1):
@@ -2048,7 +2048,7 @@ class Plugin(indigo.PluginBase):
 					except:
 						continue
 				if len(listOfDevs) ==0: continue
-				out+= u"EVENT:------------- "+nEvent.rjust(2)+"  ---------------------------------------------------------------"+"\n"
+				out+= u"EVENT:------------- "+nEvent.rjust(2)+"  --------------------------------------------------------------------------------------------------"+"\n"
 				for iDev in range(1,nOfDevicesInEvent+1):
 					if iDev not in listOfDevs: continue
 					nDev = str(iDev)
@@ -3256,8 +3256,9 @@ class Plugin(indigo.PluginBase):
 				if len (theTest) < 5:  # that is minimum, should be 8 or 9
 					skip = 1
 					self.quitNOW ="Indigo variable error 6"
-					self.indiLOG.log(40, u"getting data from indigo: bad variable ipDevice" + ii00 +u"\n   please check if it has bad data, in doubt delete and let the program recreate  \n   stopping fingscan" )
-					break
+					self.indiLOG.log(40, u"getting data from indigo: bad variable ipDevice" + ii00 +u";  deleting and letting the program recreate " )
+					indigo.variable.delete("ipDevice"+ii00)
+					continue
 				theValue = theTest.split(";")
 				skip = "no"
 				self.indigoNumberOfdevices +=1
@@ -3267,16 +3268,18 @@ class Plugin(indigo.PluginBase):
 				if theValue[0].strip().count(":") != 5:
 					skip = 1
 					self.quitNOW ="Indigo variable error 7"
-					self.indiLOG.log(40, u"getting data from indigo: bad variable ipDevice" + ii00 +u"\n  MAC number does not seem to be real MAC number" + theValue[0].strip() +u"\n   please check if it has bad data, in doubt delete and let the program recreate  \n  stopping fingscan " )
-					break
+					self.indiLOG.log(40, u"getting data from indigo: bad variable ipDevice" + ii00 +u"  MAC number does not seem to be real MAC number>>" + theValue[0].strip() +u"<<  deleting and letting the program recreate " )
+					indigo.variable.delete("ipDevice"+ii00)
+					continue
 
 
 
 				if theValue[1].strip().count(".") != 3:
 					skip = 1
 					self.quitNOW ="Indigo variable error 8"
-					self.indiLOG.log(40, u"getting data from indigo: bad variable ipDevice" + ii00 +u"\n  IP number does not seem to be real IP number" + theValue[1].strip() +u"\n   please check if it has bad data, in doubt delete and let the program recreate  \n   stopping fingscan  " )
-					break
+					self.indiLOG.log(40, u"getting data from indigo: bad variable ipDevice" + ii00 +u"  IP number does not seem to be real IP number>>" + theValue[1].strip() +u"<<\  deleting and letting the program recreate  " )
+					indigo.variable.delete("ipDevice"+ii00)
+					continue
 
 				self.indigoIpVariableData[theMAC]=copy.deepcopy(emptyindigoIpVariableData)
 				devV =self.indigoIpVariableData[theMAC]
@@ -3862,8 +3865,8 @@ class Plugin(indigo.PluginBase):
 				metersAwayForEvent	= 0
 				metersHomeForEvent	= 0
 
-				out=""
-				if self.decideMyLog(u"Events"): out+="EVENT# "+str(nEvent).ljust(2)+u"  Dev#  HomeStat".ljust(15)                         +"HomeTime".ljust(12)           +"HomeDist".ljust(12)          +"AwayStat".ljust(12)         +"AwayTime".ljust(12)           +"AwayDist".ljust(12)           +" oneHome"            +" allHome"             +" oneAway"           +" allAWay"+"\n"
+				out="\n"
+				if self.decideMyLog(u"Events"): out+="EVENT# "+str(nEvent).ljust(2)+u"  Dev#  HomeStat".ljust(15)                         +"HomeTime".ljust(12)           +"HomeDist".ljust(13)          +"AwayStat".ljust(12)         +"AwayTime".ljust(12)           +"AwayDist".ljust(11)           +" oneHome"            +" allHome"             +"  oneAway"           +" allAWay"+"\n"
 				for nDev in evnt["IPdeviceMACnumber"]:
 					if evnt["IPdeviceMACnumber"][nDev] == "0": continue
 					if evnt["IPdeviceMACnumber"][nDev] ==  "": continue
@@ -4005,7 +4008,7 @@ class Plugin(indigo.PluginBase):
 							indigo.variable.updateValue("oneAway_"+nEvent,"0")
 							self.updatePrefs = True
 
-				self.indiLOG.log(10,"\n"+ out)
+				self.indiLOG.log(10, out)
 				if self.decideMyLog(u"Events"): self.printEvents(printEvents=nEvent)
 	#		if self.decideMyLog(u"Events"): self.indiLOG.log(10," leaving checkTriggers   ---->")
 
