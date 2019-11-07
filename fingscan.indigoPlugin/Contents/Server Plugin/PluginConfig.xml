@@ -205,9 +205,17 @@
     <Field    id="debugpiBeacon" type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (6) piBeacon:</Label>  </Field>
     <Field    id="debugUnifi"    type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (7) Unifi:</Label>  </Field>
     <Field    id="debugBC"       type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (8) send BC of status changes:</Label>  </Field>
-    <Field    id="debugpAll"     type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (10) All:</Label>  </Field>
+    <Field    id="debugpall"     type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (10) All:</Label>  </Field>
 
-    <Field    id="logFileActive"  type="checkbox"  defaultValue="false"       tooltip=""> <Label> send logs to file:</Label> tooltip="logfile= ~/indigo/fing/fingPlugin.log" </Field>
+    <Field    id="logFileActive2"      type="menu"      defaultValue="standard"      > <Label> send logs to ..:</Label>
+        <List>
+            <Option value="standard" > no special fing logfile, std indigo logfile</Option>
+        </List>
+    </Field>
+    <Field id="infoLabel227" type="label"> <Label>.                     for DETAILED time tracking set indigo variable "enableTimeTracking_fing"</Label>  </Field>
+    <Field    id="do_cProfile" type="textfield"  defaultValue="on/off/print"  readonly="yes"     > 
+        <Label>... enable or stop or  print intermediate results use on/off/print:</Label>  
+    </Field>
 
 
 

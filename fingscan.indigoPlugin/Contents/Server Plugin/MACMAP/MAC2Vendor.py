@@ -64,7 +64,7 @@ class MAP2Vendor:
         elif self.ML == "print":
             print text
         else:
-            self.ML( text )
+            self.ML(20, text )
 
         return 
 
@@ -83,10 +83,10 @@ class MAP2Vendor:
         cmd +=  "rm "+self.filePath+"oui36"
         os.system(cmd)
 
-        os.system("/usr/bin/curl -L https://standards.ieee.org/develop/regauth/oui/oui.csv      |  tail -n +2  | cut -d',' -f'2,3' | sed 's/\"//'> "+self.filePath+"oui &")
-        os.system("/usr/bin/curl -L https://standards.ieee.org/develop/regauth/oui28/mam.csv    |  tail -n +2  | cut -d',' -f'2,3' | sed 's/\"//'> "+self.filePath+"mam &")
-        os.system("/usr/bin/curl -L https://standards.ieee.org/develop/regauth/oui36/oui36.csv  |  tail -n +2  | cut -d',' -f'2,3' | sed 's/\"//'> "+self.filePath+"oui36 &")
-
+        cmd= "/usr/bin/curl -L https://standards.ieee.org/develop/regauth/oui/oui.csv      |  tail -n +2  | cut -d',' -f'2,3' | sed 's/\"//'> '"+self.filePath+"oui' &";self.myLog(cmd);os.system(cmd)
+        cmd= "/usr/bin/curl -L https://standards.ieee.org/develop/regauth/oui28/mam.csv    |  tail -n +2  | cut -d',' -f'2,3' | sed 's/\"//'> '"+self.filePath+"mam' &";self.myLog(cmd);os.system(cmd)
+        cmd= "/usr/bin/curl -L https://standards.ieee.org/develop/regauth/oui36/oui36.csv  |  tail -n +2  | cut -d',' -f'2,3' | sed 's/\"//'> '"+self.filePath+"oui36' &";self.myLog(cmd);os.system(cmd)
+       
         self.getFilesStatus = "submitted" 
 
         return 
@@ -100,7 +100,7 @@ class MAP2Vendor:
         return False
 
     ########################################
-    def makeFinalTable(self):
+    def makeFinalTable(self, quiet=True):
 
         if self.isFileCurrent("mac2Vendor.json"):
             f = open(self.filePath+"mac2Vendor.json","r")
@@ -113,7 +113,7 @@ class MAP2Vendor:
                     return False
 
             self.mac2VendorDict = test
-            self.myLog( u"MAP2Vendor initializing  finished, read from mac2Vendor.json file")
+            if not quiet: self.myLog( u"MAP2Vendor initializing  finished, read from mac2Vendor.json file")
             return True
             
         if not ( self.isFileCurrent("oui") or

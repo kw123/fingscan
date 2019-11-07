@@ -658,17 +658,9 @@
         <Name>Print piBeacon Information</Name>
         <CallbackMethod>inpPrintpiBeacon</CallbackMethod>
     </MenuItem>
-    <MenuItem id="menu7b">
-        <Name>Print piBeacon Information</Name>
-        <CallbackMethod>inpPrintpiBeacon</CallbackMethod>
-    </MenuItem>
     <MenuItem id="menu7c">
         <Name>Print unifi Information</Name>
         <CallbackMethod>inpPrintUnifi</CallbackMethod>
-    </MenuItem>
-    <MenuItem id="menu8">
-        <Name>toggle Debug</Name>
-        <CallbackMethod>inpToggleDebug</CallbackMethod>
     </MenuItem>
     <MenuItem id="menu90">
         <Name>-------------------</Name>
