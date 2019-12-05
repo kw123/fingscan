@@ -1,0 +1,5 @@
+Added features / changes in v7.30.39 @ 2019-12-04
+===================================================
+
+1. fixed issue at startup when password is not defined  
+   will give user 200 seconds to finish config , then manual reload is required

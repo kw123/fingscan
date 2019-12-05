@@ -197,15 +197,28 @@ class Plugin(indigo.PluginBase):
 ####----------------- @ startup set global parameters, create directories etc ---------
 	def startup(self):
 		if self.pathToPlugin.find("/"+self.pluginName+".indigoPlugin/")==-1:
-			self.errorLog(u"--------------------------------------------------------------------------------------------------------------" )
+			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
+			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
+			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
+			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
+			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
+			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
+			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
+			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
 			self.errorLog(u"The pluginname is not correct, please reinstall or rename")
 			self.errorLog(u"It should be   /Libray/....../Plugins/"+self.pluginName+".indigPlugin")
 			p=max(0,self.pathToPlugin.find("/Contents/Server"))
 			self.errorLog(u"It is: "+self.pathToPlugin[:p])
 			self.errorLog(u"please check your download folder, delete old *.indigoPlugin files or this will happen again during next update")
 			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
-			self.sleep(1000)
-			exit(1)
+			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
+			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
+			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
+			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
+			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
+			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
+			self.sleep(100000)
+			self.quitNOW="wrong plugin name"
 			return
 		self.initialized=0
 		self.pluginState = "init"
@@ -354,21 +367,19 @@ class Plugin(indigo.PluginBase):
 			if test == "0":  # no password stored in keychain, check config file
 				self.yourPassword = self.pluginPrefs.get(u"password", "yourPassword")
 
-				self.passwordOK =1  # a password has been entered before
-				if self.yourPassword == "yourPassword" : self.passwordOK =0  # nothing changed from the beginning
-				if self.yourPassword == "password is already stored" : self.passwordOK =2  ## password was enteered and was stored into keychain
+				self.passwordOK = "1"  # a password has been entered before
+				if self.yourPassword == "yourPassword" : self.passwordOK = "0"  # nothing changed from the beginning
+				if self.yourPassword == "password is already stored" : self.passwordOK =2  ## password was entered and was stored into keychain
 
-					
-				if self.passwordOK == 1:
+				
+				if self.passwordOK == "1":
 					self.storePWD(self.yourPassword,"fingscanpy")
 					self.pluginPrefs[u"password"] = "password is already stored"  # set text to everything ok ...
-					self.passwordOK = 2
-				
+					self.passwordOK = "2"
+			
 				## wait for password
-				while self.passwordOK == "0":
-					self.indiLOG.log(40,u"no password entered:  please do plugin/fingscan/configure and enter your password ")
-					self.sleep(10)
-					
+				self.indiLOG.log(40,u"no password entered:  please do plugin/fingscan/configure and enter your password ")
+				self.sleep(5)
 				## password entered, check if it is NOW in keychain
 
 				test = self.getPWD("fingscanpy")
@@ -379,7 +390,7 @@ class Plugin(indigo.PluginBase):
 					self.quitNOW ="no"
 
 				else:  ## no password in keychain error exit, stop plugin
-					self.passwordOK = 0
+					self.passwordOK = "0"
 					self.pluginPrefs[u"password"] = "yourPassword"  # set text enter password
 					self.indiLOG.log(40,u"password error please enter password in configuration menue, otherwise FING can not be started ")
 					self.quitNOW="noPassword"
@@ -661,9 +672,10 @@ class Plugin(indigo.PluginBase):
 			self.quitNOW ="no"
 			self.indiLOG.log(20,u"FING initializing parameters ")
 			retCode = self.initFing(1)
-			if retCode !=1:
+			if retCode != 1:
 				self.indiLOG.log(40,u" fing not running... quit")
-				self.quitNOW ="fing not running"
+				self.quitNOW ="fing not running; wait with reboot"
+				self.passwordOK = "0"
 			else:
 				pass
 
@@ -2802,6 +2814,7 @@ class Plugin(indigo.PluginBase):
 ########################################
 	def initFing(self,restartFing):
 		
+		if self.passwordOK !="2": return -1
 		self.fingRestartCount +=1
 
 		if self.fingRestartCount > 5:  # starts # 1
@@ -3865,7 +3878,7 @@ class Plugin(indigo.PluginBase):
 				metersAwayForEvent	= 0
 				metersHomeForEvent	= 0
 
-				out="\n"
+				out = "checkTrigger\n"
 				if self.decideMyLog(u"Events"): out+="EVENT# "+str(nEvent).ljust(2)+u"  Dev#  HomeStat".ljust(15)                         +"HomeTime".ljust(12)           +"HomeDist".ljust(13)          +"AwayStat".ljust(12)         +"AwayTime".ljust(12)           +"AwayDist".ljust(11)           +" oneHome"            +" allHome"             +"  oneAway"           +" allAWay"+"\n"
 				for nDev in evnt["IPdeviceMACnumber"]:
 					if evnt["IPdeviceMACnumber"][nDev] == "0": continue
@@ -4008,7 +4021,6 @@ class Plugin(indigo.PluginBase):
 							indigo.variable.updateValue("oneAway_"+nEvent,"0")
 							self.updatePrefs = True
 
-				self.indiLOG.log(10, out)
 				if self.decideMyLog(u"Events"): self.printEvents(printEvents=nEvent)
 	#		if self.decideMyLog(u"Events"): self.indiLOG.log(10," leaving checkTriggers   ---->")
 
@@ -4793,7 +4805,22 @@ class Plugin(indigo.PluginBase):
 
 			self.pluginState  = "end"
 			self.pluginPrefs["EVENTS"]	=	json.dumps(self.EVENTS)
-			self.indiLOG.log(20,u"--> while loop break  stopping ...  quitNOW was:" +  self.quitNOW)
+
+			try:
+				quitNowX = self.quitNow
+			except:
+				quitNowX = " setup config , waiting"
+				self.indiLOG.log(40,u"-->  setup config, save then a manual reload of plugin")
+
+			self.indiLOG.log(20,u"--> while loop break  stopping ...  quitNOW was:" +  quitNowX)
+			if quitNowX.find("wait") >-1: 
+				self.indiLOG.log(40,u"--> you have 2 minutes to fix config, before restart-1")
+				for ii in range(20): 
+					if self.passwordOK !="0": 
+						self.indiLOG.log(40,u"--> do a manual reload of plugin")
+						break
+					time.sleep(10)
+
 			self.quitNOW ="no"
 			self.stopConcurrentCounter = 1
 ############ if there are PING jobs left  kill them
