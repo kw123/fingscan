@@ -165,9 +165,10 @@ class Plugin(indigo.PluginBase):
 		self.indiLOG.setLevel(logging.THREADDEBUG)
 
 		self.indigo_log_handler.setLevel(logging.INFO)
-		indigo.server.log("initializing	 ... ")
 
-		indigo.server.log(  u"path To files:          =================")
+		self.indiLOG.log(20,"=========================   initializing   ==============================================")
+
+		indigo.server.log(  u"path To files:          ==================")
 		indigo.server.log(  u"indigo                  {}".format(self.indigoRootPath))
 		indigo.server.log(  u"installFolder           {}".format(self.indigoPath))
 		indigo.server.log(  u"plugin.py               {}".format(self.pathToPlugin))
@@ -196,6 +197,9 @@ class Plugin(indigo.PluginBase):
 	
 ####----------------- @ startup set global parameters, create directories etc ---------
 	def startup(self):
+
+
+
 		if self.pathToPlugin.find("/"+self.pluginName+".indigoPlugin/")==-1:
 			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
 			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
@@ -220,7 +224,6 @@ class Plugin(indigo.PluginBase):
 			self.sleep(100000)
 			self.quitNOW="wrong plugin name"
 			return
-		self.initialized=0
 		self.pluginState = "init"
 		try:
 
@@ -239,7 +242,7 @@ class Plugin(indigo.PluginBase):
 			self.fingServicesOutputFileName = self.indigoPreferencesPluginDir+"fingservices.txt"
 			self.fingServicesLOGFileName    = self.indigoPreferencesPluginDir+"fingservices.log"
 			self.ignoredMACFile             = self.indigoPreferencesPluginDir+"ignoredMAC"
-			self.fingEXEpath="/usr/local/bin/fing"
+			self.fingEXEpath				= "/usr/local/bin/fing"
 
 			if not os.path.exists(self.indigoPreferencesPluginDir):
 				os.mkdir(self.indigoPreferencesPluginDir)
@@ -249,19 +252,7 @@ class Plugin(indigo.PluginBase):
 					indigo.server.log(" moving "+ "cp -R " + self.indigoPluginDirOld+"* '" + self.indigoPreferencesPluginDir+"'" )
 					os.system("cp -R " + self.indigoPluginDirOld+"* '" + self.indigoPreferencesPluginDir+"'" )
 
-			self.checkcProfile()
 
-
-
-############ startup message
-			self.debugLevel			= []
-			for d in ["Logic","Ping","Wifi","Events","iFind","piBeacon","Unifi","BC","all"]:
-				if self.pluginPrefs.get(u"debug"+d, False): self.debugLevel.append(d)
-			self.setLogfile(self.pluginPrefs.get("logFileActive2", "standard"))
-			 
-			indigo.server.log(u"FINGSCAN--   initializing     will take ~ 2 minutes...; sending logs to "+ self.logFile)
-
-############ set basic parameters to default before we use them
 			self.updateStatesList={}
 			self.updatePrefs =False
 			self.fingDataModTimeOLD = 0
@@ -313,6 +304,30 @@ class Plugin(indigo.PluginBase):
 			self.signalDelta ={"5":{"2GHz":0,"5GHz":0},"2":{"2GHz":0,"5GHz":0},"1":{"2GHz":0,"5GHz":0}}
 			self.theNetwork = "0.0.0.0"
 
+		except  Exception, e:
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
+
+		self.checkcProfile()
+
+
+		return
+
+
+####----------------- @ startup set global parameters, ---------
+	def initConfig(self):
+
+		try:
+
+############ startup message
+			self.debugLevel			= []
+			for d in ["Logic","Ping","Wifi","Events","iFind","piBeacon","Unifi","BC","all"]:
+				if self.pluginPrefs.get(u"debug"+d, False): self.debugLevel.append(d)
+			self.setLogfile(self.pluginPrefs.get("logFileActive2", "standard"))
+			 
+			indigo.server.log(u"FINGSCAN--   initializing     will take ~ 2 minutes...; sending logs to "+ self.logFile)
+
+############ set basic parameters to default before we use them
+
 			self.enableBroadCastEvents  = self.pluginPrefs.get(u"enableBroadCastEvents","0")
 			self.sendBroadCastEventsList    = []
 
@@ -329,7 +344,7 @@ class Plugin(indigo.PluginBase):
 				self.sleep(0.1)
 				if not os.path.isfile(self.fingDataFileName):
 					self.indiLOG.log(40, u"could not create file: "+self.fingDataFileName+" stopping program")
-					self.quitNOW =True
+					self.quitNOW = "directory /  file problem"
 					return
 
 			
@@ -339,13 +354,13 @@ class Plugin(indigo.PluginBase):
 			
 ############ get plugin prefs parameters
 			
-			self.inbetweenPingType=self.pluginPrefs.get(u"inbetweenPingType","0")
-			self.sleepTime =int(self.pluginPrefs.get(u"sleepTime", 1))
-			self.newSleepTime=self.sleepTime
+			self.inbetweenPingType = self.pluginPrefs.get(u"inbetweenPingType","0")
+			self.sleepTime = int(self.pluginPrefs.get(u"sleepTime", 1))
+			self.newSleepTime = self.sleepTime
 
 
 ############ get & setup WiFi parameters
-			self.badWiFiTrigger={"minSignalDrop":10,"numberOfSecondsBad":0,"minNumberOfDevicesBad":3,"minNumberOfSecondsBad":200,"minWiFiSignal":-90,"trigger":0}
+			self.badWiFiTrigger = {"minSignalDrop":10,"numberOfSecondsBad":0,"minNumberOfDevicesBad":3,"minNumberOfSecondsBad":200,"minWiFiSignal":-90,"trigger":0}
 			try:
 				self.badWiFiTrigger["minSignalDrop"]			= float(self.pluginPrefs.get(u"minSignalDrop"		 ,self.badWiFiTrigger["minSignalDrop"]))
 				self.badWiFiTrigger["minNumberOfDevicesBad"]	= float(self.pluginPrefs.get(u"minNumberOfDevicesBad",self.badWiFiTrigger["minNumberOfDevicesBad"]))
@@ -358,7 +373,7 @@ class Plugin(indigo.PluginBase):
 
 			self.initIndigoParms()
 
-			self.acceptNewDevices=self.pluginPrefs.get(u"acceptNewDevices","0") =="1"
+			self.acceptNewDevices = self.pluginPrefs.get(u"acceptNewDevices","0") == "1"
 			self.getIgnoredMAC()
 
 ############ get password
@@ -367,9 +382,9 @@ class Plugin(indigo.PluginBase):
 			if test == "0":  # no password stored in keychain, check config file
 				self.yourPassword = self.pluginPrefs.get(u"password", "yourPassword")
 
-				self.passwordOK = "1"  # a password has been entered before
-				if self.yourPassword == "yourPassword" : self.passwordOK = "0"  # nothing changed from the beginning
-				if self.yourPassword == "password is already stored" : self.passwordOK =2  ## password was entered and was stored into keychain
+				if True:												self.passwordOK = "1"  # a password has been entered before
+				if self.yourPassword == "yourPassword": 				self.passwordOK = "0"  # nothing changed from the beginning
+				if self.yourPassword == "password is already stored":	self.passwordOK = "2"  ## password was entered and was stored into keychain
 
 				
 				if self.passwordOK == "1":
@@ -378,12 +393,16 @@ class Plugin(indigo.PluginBase):
 					self.passwordOK = "2"
 			
 				## wait for password
-				self.indiLOG.log(40,u"no password entered:  please do plugin/fingscan/configure and enter your password ")
-				self.sleep(5)
+
+				if self.passwordOK == "0":
+					for ii in range(10):
+						self.indiLOG.log(40,u"no password entered:  please do plugin/fingscan/configure and enter your password ")
+						self.sleep(5)
+						if self.passwordOK != "1": break
 				## password entered, check if it is NOW in keychain
 
 				test = self.getPWD("fingscanpy")
-				if test !="0":	## password is in keychain
+				if test != "0":	## password is in keychain
 					self.pluginPrefs[u"password"] = "password is already stored"  # set text to everything ok ...
 					self.yourPassword = test
 					self.passwordOK = "2"
@@ -393,12 +412,13 @@ class Plugin(indigo.PluginBase):
 					self.passwordOK = "0"
 					self.pluginPrefs[u"password"] = "yourPassword"  # set text enter password
 					self.indiLOG.log(40,u"password error please enter password in configuration menue, otherwise FING can not be started ")
-					self.quitNOW="noPassword"
+					self.sleep(20)
+					self.quitNOW="wait noPassword"
 
 			else:  # password is in keychain, done
 				self.yourPassword = test
 				self.pluginPrefs[u"password"] = "password is already stored"  # set text to everything ok ...
-				self.quitNOW ="no"
+				self.quitNOW = "no"
 				self.passwordOK = "2"
 			self.indiLOG.log(20,u"get password done;  checking if FING is installed ")
 
@@ -501,20 +521,20 @@ class Plugin(indigo.PluginBase):
 					if len(ret) > 1 and ret.find("File exists") ==-1 and ret.find("Password:") ==-1:self.indiLOG.log(30,"copy fing:  "+ret.strip("\n"))
 
 
-
-			### set proper attributes for >= catalina OS 
-			cmd =  "echo '"+self.yourPassword+ "' | sudo -S /usr/bin/xattr -rd com.apple.quarantine '"+self.fingEXEpath+"'"
-			ret = subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S /usr/bin/xattr -rd com.apple.quarantine '"+self.fingEXEpath+"'",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
-			if self.decideMyLog(u"Logic"): self.indiLOG.log(20,"setting attribute for catalina  with:  {}".format(cmd))
-			if self.decideMyLog(u"Logic"): self.indiLOG.log(20,"setting attribute for catalina  result:{}".format(ret))
-			self.indiLOG.log(20,"fing install check done")
+			if self.passwordOK == "2": 
+				### set proper attributes for >= catalina OS 
+				cmd = "echo '"+self.yourPassword+ "' | sudo -S /usr/bin/xattr -rd com.apple.quarantine '"+self.fingEXEpath+"'"
+				ret = subprocess.Popen("echo '"+self.yourPassword+ "' | sudo -S /usr/bin/xattr -rd com.apple.quarantine '"+self.fingEXEpath+"'",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
+				if self.decideMyLog(u"Logic"): self.indiLOG.log(20,"setting attribute for catalina  with:  {}".format(cmd))
+				if self.decideMyLog(u"Logic"): self.indiLOG.log(20,"setting attribute for catalina  result:{}".format(ret))
+				self.indiLOG.log(20,"fing install check done")
 
 ############ get WIFI router info if available
 			self.routerType	= self.pluginPrefs.get(u"routerType","0")
 			self.routerPWD	= ""
 			self.routerUID	= ""
 			self.routerIPn	= ""
-			if self.routerType !="0":
+			if self.routerType != "0":
 				self.routerUID	= self.pluginPrefs.get(u"routerUID","0")
 				self.routerIPn	= self.pluginPrefs.get(u"routerIPn","0")
 				
@@ -522,7 +542,7 @@ class Plugin(indigo.PluginBase):
 				if test != "0":
 					self.routerPWD	= test
 				else:
-					self.routerType ="0"
+					self.routerType = "0"
 					self.routerPWD	= ""
 
 				self.checkWIFIinfo()
@@ -563,7 +583,7 @@ class Plugin(indigo.PluginBase):
 			if network !="" and  ok:
 				self.theNetwork = network
 			else:    
-				self.theNetwork ="192.168.1.0"
+				self.theNetwork = "192.168.1.0"
 				
 			self.pluginPrefs[u"network"]  = self.theNetwork
 			self.pluginPrefs[u"netwType"] = self.netwType
@@ -615,30 +635,30 @@ class Plugin(indigo.PluginBase):
 			self.cleanUppiBeacon()
 
 
-			self.enablepiBeaconDevices=self.pluginPrefs.get(u"enablepiBeaconDevices","0")
-			self.piBeaconIsAvailable =False
-			self.piBeaconDevicesAvailable=[]
+			self.enablepiBeaconDevices = self.pluginPrefs.get(u"enablepiBeaconDevices","0")
+			self.piBeaconIsAvailable = False
+			self.piBeaconDevicesAvailable = []
 			self.getpiBeaconAvailable()
 			if self.piBeaconIsAvailable:
-				self.pluginPrefs["piBeaconEnabled"] =True
+				self.pluginPrefs["piBeaconEnabled"] = True
 				self.updatepiBeacons()
 			else:
-				self.pluginPrefs["piBeaconEnabled"] =False
+				self.pluginPrefs["piBeaconEnabled"] = False
 ############ check for UNIFI plugin devcies
 			try:
 				self.unifiDevices=json.loads(self.pluginPrefs["UNIFI"])
 			except:
 				self.unifiDevices = {}
 			self.cleanUpUnifi()
-			self.enableUnifiDevices=self.pluginPrefs.get(u"enableUnifiDevices","0")
-			self.unifiAvailable =False
-			self.unifiDevicesAvailable=[]
+			self.enableUnifiDevices = self.pluginPrefs.get(u"enableUnifiDevices","0")
+			self.unifiAvailable = False
+			self.unifiDevicesAvailable = []
 			self.getUnifiAvailable()
 			if self.unifiAvailable:
-				self.pluginPrefs["unifiEnabled"] =True
+				self.pluginPrefs["unifiEnabled"] = True
 				self.updateUnifi()
 			else:
-				self.pluginPrefs["unifiEnabled"] =False
+				self.pluginPrefs["unifiEnabled"] = False
 
 
 
@@ -646,7 +666,7 @@ class Plugin(indigo.PluginBase):
 			self.IPretList=[]
 			for theMAC in self.allDeviceInfo:
 				devI=self.allDeviceInfo[theMAC]
-				theString = devI["deviceName"]+"-"+devI["ipNumber"]+"-"+theMAC
+				theString = devI["deviceName"] +"-" +devI["ipNumber"] + "-"+theMAC
 				self.IPretList.append(( theMAC,theString ))
 			self.IPretList	= sorted(self.IPretList, key=lambda tup: tup[1]) #sort string, keep mac number with the text
 			self.IPretList.append((1,"Not used"))
@@ -669,12 +689,11 @@ class Plugin(indigo.PluginBase):
 	 
 
 ############ initialize indigo settings ..
-			self.quitNOW ="no"
 			self.indiLOG.log(20,u"FING initializing parameters ")
 			retCode = self.initFing(1)
 			if retCode != 1:
 				self.indiLOG.log(40,u" fing not running... quit")
-				self.quitNOW ="fing not running; wait with reboot"
+				self.quitNOW = "fing not running; wait with reboot"
 				self.passwordOK = "0"
 			else:
 				pass
@@ -682,7 +701,7 @@ class Plugin(indigo.PluginBase):
 ############ print info to indigo logfile
 			self.printConfig()
 			self.printEvents()
-			if self.routerType !="0":
+			if self.routerType != "0":
 				errorMSG = self.getWifiDevices(self.routerUID, self.routerPWD, self.routerIPn, rType=self.routerType)
 				if errorMSG !="ok":
 					self.indiLOG.log(40, "Router wifi not reachable, userid, password or ipnumber wrong?\n"+ unicode(errorMSG))
@@ -722,17 +741,20 @@ class Plugin(indigo.PluginBase):
 						dev = indigo.devices[self.allDeviceInfo[theMAC]["deviceId"]]
 						dev.updateStateOnServer("hardwareVendor",vend)
 					except  Exception, e:
-						self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+						self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 						
 			self.MacToNamesOK = True
 				
 
 		except  Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			if unicode(e).find("None") ==-1:
+				self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
+				self.quitNOW = "restart required; {}".format(e) 
+				self.sleep(20)
+			else:
+				self.indiLOG.log(40,"stopping plugin due to request")
 
 
-		self.initialized=1
-	
 		return
 
 
@@ -808,7 +830,7 @@ class Plugin(indigo.PluginBase):
 				xx=  indigo.variables["allAway_"+nEvent].value
 				if evnt["allAway"]  !=  xx:                     indigo.variable.updateValue("allAway_"+nEvent,evnt["allAway"])
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		return
 
 
@@ -817,7 +839,7 @@ class Plugin(indigo.PluginBase):
 ########################################
 	def sendWakewOnLanAndPing(self, MAC, nBC= 2, waitForPing=500, nPings=1, countPings=1, waitBeforePing = 0.5, waitAfterPing = 0.5, calledFrom=""):
 		self.sendWakewOnLan(MAC, calledFrom=calledFrom)
-		if nBC ==2:
+		if nBC == 2:
 			self.sleep(0.05)
 			self.sendWakewOnLan(MAC, calledFrom=calledFrom)
 		self.sleep(waitBeforePing)
@@ -866,7 +888,7 @@ class Plugin(indigo.PluginBase):
 					return
 			self.pluginPrefs["iDevicesEnabled"] =False
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		return
 
 ########################################
@@ -881,7 +903,7 @@ class Plugin(indigo.PluginBase):
 			self.indiLOG.log(20,u"ifind plugin: "+ self.iFindStuffPlugin)
 
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		return
 ########################################
 	def getpiBeaconAvailable(self):
@@ -911,7 +933,7 @@ class Plugin(indigo.PluginBase):
 			self.piBeaconDevicesAvailable= sorted(self.piBeaconDevicesAvailable, key=lambda tup: tup[1])    
 			self.piBeaconDevicesAvailable.append((1,"do not use"))
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		return
 ########################################
 	def getUnifiAvailable(self):
@@ -943,7 +965,7 @@ class Plugin(indigo.PluginBase):
 			self.unifiDevicesAvailable= sorted(self.unifiDevicesAvailable, key=lambda tup: tup[1])                
 			self.unifiDevicesAvailable.append((1,"do not use"))
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		return
 
 
@@ -963,7 +985,7 @@ class Plugin(indigo.PluginBase):
 				pass
 			self.indiLOG.log(10,u"\n")
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 
 
 ########################################
@@ -975,7 +997,7 @@ class Plugin(indigo.PluginBase):
 					self.deleteIndigoIpDevicesData(theMAC)
 					return
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 
 ########################################
 	def deviceStartComm(self, dev):
@@ -986,7 +1008,7 @@ class Plugin(indigo.PluginBase):
 				if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"dev start called for "+dev.name)
 			return
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 	
 ########################################
 	def deviceStopComm(self, dev):
@@ -1007,7 +1029,7 @@ class Plugin(indigo.PluginBase):
 				else:nBinString+="0"
 			return nBinString
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 
 
 ########################################
@@ -1088,7 +1110,7 @@ class Plugin(indigo.PluginBase):
 			
 		
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		return valuesDict
 
 
@@ -1150,7 +1172,7 @@ class Plugin(indigo.PluginBase):
 				valuesDict["iDevicesEnabled"+nDev+"a"] =False
 		
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		return valuesDict
 
 
@@ -1219,7 +1241,7 @@ class Plugin(indigo.PluginBase):
 
 		
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		#self.indiLOG.log(20,"CALLBACKevent valuesDict:"+unicode(valuesDict))
 		self.updatePrefs =True
 		return valuesDict
@@ -1238,7 +1260,7 @@ class Plugin(indigo.PluginBase):
 			for line in lines:
 				if self.decideMyLog(u"Ping"): self.indiLOG.log(20,str(line))
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 
 ########################################
 	def pingCALLBACKaction(self, action):
@@ -1296,7 +1318,7 @@ class Plugin(indigo.PluginBase):
 				if self.decideMyLog(u"piBeacon"): self.indiLOG.log(20,u" error from piBeacon, deviceId not in action: "+unicode(action))
 				return
 		except  Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 			self.indiLOG.log(40, unicode(action))
 			return
 		self.pluginPrefs["piBeacon"]	=	json.dumps(self.piBeaconDevices)
@@ -1336,7 +1358,7 @@ class Plugin(indigo.PluginBase):
 				if self.decideMyLog(u"Unifi"): self.indiLOG.log(20,u" error from unifi, deviceId not in action: "+unicode(action))
 				return
 		except  Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 			self.indiLOG.log(40, unicode(action))
 			return
 		self.pluginPrefs["UNIFI"]	=	json.dumps(self.unifiDevices)
@@ -1382,7 +1404,7 @@ class Plugin(indigo.PluginBase):
 	
 		
 		except  Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 			self.piBeaconDevices={}
 		return
 
@@ -1424,7 +1446,7 @@ class Plugin(indigo.PluginBase):
 	
 		
 		except  Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 			self.unifiDevices={}
 		return
 
@@ -1509,7 +1531,7 @@ class Plugin(indigo.PluginBase):
 			self.IPretList	= sorted(self.IPretList, key=lambda tup: tup[1]) #sort string, keep mac number with the text
 			self.IPretList.append((1,"Not used"))
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		#self.indiLOG.log(20, u"IPdeviceMACnumberFilter called" )
 		return self.IPretList
 
@@ -1520,7 +1542,7 @@ class Plugin(indigo.PluginBase):
 		try:
 			retList =copy.deepcopy(self.piBeaconDevicesAvailable)
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 			return [(0,0)]
 		return retList
 
@@ -1530,7 +1552,7 @@ class Plugin(indigo.PluginBase):
 		try:
 			retList =copy.deepcopy(self.unifiDevicesAvailable)
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 			return [(0,0)]
 		return retList
 
@@ -1725,7 +1747,7 @@ class Plugin(indigo.PluginBase):
 			if valuesDict["unifiEnabled"]: self.updateUnifi()
 
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		if len(errorDict) > 0: return  valuesDict, errorDict
 		return  valuesDict
 
@@ -1875,7 +1897,7 @@ class Plugin(indigo.PluginBase):
 			self.indiLOG.log(20,"network info: "+unicode(self.netwInfo)+ " quitNow: "+ self.quitNOW)
 
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		return True, valuesDict
 
 
@@ -1989,7 +2011,7 @@ class Plugin(indigo.PluginBase):
 					self.EVENTS[nev]["iDeviceName"][lDev]= str(idevId)
 					
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 			
 ########################################
 	def	resetEvents(self):
@@ -1999,7 +2021,7 @@ class Plugin(indigo.PluginBase):
 			self.pluginPrefs["EVENTS"]	=	json.dumps(self.EVENTS)
 			if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"ResetEVENTS done")
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		return
 ########################################
 	def	resetDevices(self):
@@ -2023,7 +2045,7 @@ class Plugin(indigo.PluginBase):
 
 			if self.decideMyLog(u"WiFi"): self.indiLOG.log(30,u"ResetDEVICES done")
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		return
 
 ########################################
@@ -2071,7 +2093,11 @@ class Plugin(indigo.PluginBase):
 						continue
 					
 					if int(nDev) < piBeaconStart:
-						devI = self.allDeviceInfo[theMAC]
+						try:
+							devI = self.allDeviceInfo[theMAC]
+						except: 
+							out = "{}  is not defined, please remove from event# {}".format(theMAC, nEvent)
+							continue
 						out+= u"dev#: "+str(nDev).rjust(2)+" -- devNam:"+devI["deviceName"].ljust(25)[:25] +" -- MAC#:"+theMAC+" -- ip#:"+devI["ipNumber"].ljust(15)+" -- status:"+devI["status"].ljust(8)+" -- WiFi:"+devI["WiFi"]+"\n"
 					elif int(nDev) < piBeaconStart:
 						pass
@@ -2134,7 +2160,7 @@ class Plugin(indigo.PluginBase):
 				out+=      "dataFormat               :"+str(evnt["dataFormat"]).rjust(12)+"\n"
 			self.indiLOG.log(10,out+u"\n")
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		return
 ########################################
 	def printEventLine(self, name,nameText,nEvent,listOfDevs):
@@ -2183,7 +2209,7 @@ class Plugin(indigo.PluginBase):
 				out+= u"-------------------------------------------------------------------------------------------------------- "+ "\n"
 				self.indiLOG.log(10,out)
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 
 		return
 ########################################
@@ -2219,7 +2245,7 @@ class Plugin(indigo.PluginBase):
 			self.indiLOG.log(10,out)
 	
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 
 ########################################
 	def printUnifiDevs(self):
@@ -2248,13 +2274,13 @@ class Plugin(indigo.PluginBase):
 						out+= theString+"\n"
 						
 					except Exception, e:
-						self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+						self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 						self.indiLOG.log(40, u" data wrong for "+unicode(theMAC) +"    "+ unicode(self.unifiDevices[theMAC]))
 			out+= u"===      unifi devices  available  to fingscan    ===        END"
 			self.indiLOG.log(10,out)
 	
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 
 
 ########################################
@@ -2285,7 +2311,7 @@ class Plugin(indigo.PluginBase):
 				else:
 					out+= theMAC+" -device is expired, not in dev list any more- "+str(self.wifiMacList[theMAC]) +" some times devices with wifi AND ethernet show this behaviour"+"\n"
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		return out
 ########################################
 	def printWiFiAve(self, ghz,Header=False):
@@ -2302,7 +2328,7 @@ class Plugin(indigo.PluginBase):
 				 , self.wifiMacAv["noiseLevel"][ghz])
 				 
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		return out+"\n"
 		
 
@@ -2344,7 +2370,7 @@ class Plugin(indigo.PluginBase):
 					if self.decideMyLog(u"Events"): self.indiLOG.log(10,u"firing trigger id : "+ str(trigId))
 					indigo.trigger.execute(trigger)
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		return
 
 
@@ -2368,7 +2394,7 @@ class Plugin(indigo.PluginBase):
 			ret.stderr.close()
 			return
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 
 ########################################
 	def getPWD(self,name):
@@ -2386,7 +2412,7 @@ class Plugin(indigo.PluginBase):
 			except:  # bad return, no password stored, return "0"
 				return "0"
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 
 
 ########################################
@@ -2529,7 +2555,7 @@ class Plugin(indigo.PluginBase):
 			self.sleep(1)
 			self.indiLOG.log(10,u"       restore done")
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		return
 
 
@@ -2557,7 +2583,7 @@ class Plugin(indigo.PluginBase):
 			ret =subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
 
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 			self.indiLOG.log(40, u"  fing details failed: fing returned an error: "+unicode(ret))
 			return
 
@@ -2569,7 +2595,7 @@ class Plugin(indigo.PluginBase):
 			f.close()
 		except Exception, e:
 			self.indiLOG.log(40, u"  fing details failed , no output file")
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 			return
 			
 		## now get the list into theServices
@@ -3054,7 +3080,7 @@ class Plugin(indigo.PluginBase):
 			else:
 				return 0
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 			self.indiLOG.log(40,unicode(self.fingData))
 			self.finglogerrorCount +=1
 			if self.finglogerrorCount > 40 and self.totalLoopCounter > 100 :
@@ -3131,7 +3157,7 @@ class Plugin(indigo.PluginBase):
 				 
 				return 1
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 			self.fingDataErrorCount +=1
 			if self.fingDataErrorCount > 1 :
 				self.indiLOG.log(30,u"fing.data file does not exist \n    trying "+str(5-self.fingDataErrorCount)+" more times")
@@ -3325,7 +3351,7 @@ class Plugin(indigo.PluginBase):
 				self.quitNOW ="Indigo variable error 9"  ## someting must be wrong, lets restart
 				self.indiLOG.log(40, u"getting data from indigo: bad variable ipDevsNoOfDevices \n   please check if it has bad data, in doubt delete and let the program recreate  \n   stopping fingscan \n exec return code" +str(e) )
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 
 
 		return
@@ -3460,7 +3486,7 @@ class Plugin(indigo.PluginBase):
 
 
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		
 		return oneDown
 
@@ -3492,7 +3518,7 @@ class Plugin(indigo.PluginBase):
 				return 1
 
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 
 		return 0
 
@@ -3589,7 +3615,7 @@ class Plugin(indigo.PluginBase):
 					
 						
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 
 		self.triggerFromPlugin		= False
 		self.callingPluginName=[]
@@ -3686,7 +3712,7 @@ class Plugin(indigo.PluginBase):
 								try:
 									status = self.piBeaconDevices[theMAC]["currentStatus"]
 								except:
-									self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+									self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 									self.indiLOG.log(40, u"error in checkTriggers, indigoID# "+theMAC+u" not in piBeacondevices  :  " + unicode(self.piBeaconDevices)[0:100]+u" ..  is  piBeacon plugin active? " )
 									status = "0"
 									del self.piBeaconDevices[theMAC]
@@ -3703,7 +3729,7 @@ class Plugin(indigo.PluginBase):
 								try:
 									status = self.unifiDevices[theMAC]["currentStatus"]
 								except  Exception, e:
-									self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+									self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 									self.indiLOG.log(40, u"error in checkTriggers, indigoID# "+theMAC+u" not in unifidevices  :  " + unicode(self.unifiDevices)[0:100]+u" ..  is  unifi plugin active? " )
 									del self.unifiDevices[theMAC]
 									status = "0"
@@ -3734,7 +3760,7 @@ class Plugin(indigo.PluginBase):
 								try:
 									indigo.variable.create(varname,"99")
 								except Exception, e:    
-									self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+									self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 									self.indiLOG.log(40, u"could not read or create variable  "+varname+" for iFind communication, ignoring iFind communication")
 									continue
 							
@@ -4029,7 +4055,7 @@ class Plugin(indigo.PluginBase):
 			
 
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		return
 	
 
@@ -4067,7 +4093,7 @@ class Plugin(indigo.PluginBase):
 				except:
 					pass
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 
 		return 1
 
@@ -4164,7 +4190,7 @@ class Plugin(indigo.PluginBase):
 							indigo.variable.create("ipDevsNoOfDevices", str(indigoNumberOfdevices))
 
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 
 		return 0
 	
@@ -4425,7 +4451,7 @@ class Plugin(indigo.PluginBase):
 				indigo.variable.create("ipDevsNoOfDevices", str(indigoNumberOfdevices))
 
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 
 
 		return 0
@@ -4540,6 +4566,9 @@ class Plugin(indigo.PluginBase):
 ####-----------------   main loop          ---------
 	def runConcurrentThread(self):
 
+		self.initConfig()
+
+
 		self.dorunConcurrentThread()
 		self.checkcProfileEND()
 
@@ -4561,7 +4590,6 @@ class Plugin(indigo.PluginBase):
 ####-----------------   main loop          ---------
 	def dorunConcurrentThread(self): 
 
-		self.initialized=1
 		self.indigoCommand = "none"
 		self.pluginState   = "run"
 		## loop:  get fing data and enter fill indigo variables
@@ -4587,7 +4615,7 @@ class Plugin(indigo.PluginBase):
 
 		self.timeOfStart= time.time()
 		try:
-			while self.quitNOW =="no":
+			while self.quitNOW == "no":
 				if self.redoAWAY >0:
 					self.sleep(1)
 					self.redoAWAY -=1
@@ -4797,7 +4825,6 @@ class Plugin(indigo.PluginBase):
 						if self.quitNOW !="no": break
 						if not self.indigoInitialized:
 							self.indiLOG.log(20,u"FINGSCAN initialized")
-						self.initialized=2
 						self.indigoInitialized = True
 #						retCode = self.getIndigoIpVariablesIntoData()
 						self.checkTriggers()
@@ -4809,14 +4836,14 @@ class Plugin(indigo.PluginBase):
 			try:
 				quitNowX = self.quitNow
 			except:
-				quitNowX = " setup config , waiting"
+				quitNowX = "please setup config , waiting"
 				self.indiLOG.log(40,u"-->  setup config, save then a manual reload of plugin")
 
-			self.indiLOG.log(20,u"--> while loop break  stopping ...  quitNOW was:" +  quitNowX)
+			self.indiLOG.log(20,u"--> while loop break  stopping ...  quitNOW was: {}".format(quitNowX) )
 			if quitNowX.find("wait") >-1: 
-				self.indiLOG.log(40,u"--> you have 2 minutes to fix config, before restart-1")
+				self.indiLOG.log(40,u"--> you have 2 minutes to fix config, before restart")
 				for ii in range(20): 
-					if self.passwordOK !="0": 
+					if self.passwordOK != "0": 
 						self.indiLOG.log(40,u"--> do a manual reload of plugin")
 						break
 					time.sleep(10)
@@ -4837,7 +4864,11 @@ class Plugin(indigo.PluginBase):
 			self.pluginPrefs["EVENTS"]	    =	json.dumps(self.EVENTS)
 			self.pluginPrefs["piBeacon"]	=	json.dumps(self.piBeaconDevices)
 			self.pluginPrefs["UNIFI"]	    =	json.dumps(self.unifiDevices)
-			self.indiLOG.log(20,u"exception StopThread triggered ... stopped,  quitNOW was:" +  self.quitNOW)
+			try:
+				quitNowX = self.quitNow
+			except:
+				quitNowX = "please setup config"
+				self.indiLOG.log(20,u"-->  exception StopThread triggered ... stopped,  quitNOW was: {}".format(quitNowX))
 			self.quitNOW ="no"
 			############ if there are PING jobs left  kill them
 		return
@@ -4876,7 +4907,7 @@ class Plugin(indigo.PluginBase):
 															)
 						if self.wifiMacList[theMAC][11] > 9999999: self.resetbadWifiTrigger() # reset counter if tooo big
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 
 		return
 
@@ -5004,7 +5035,7 @@ class Plugin(indigo.PluginBase):
 			self.badWiFiTrigger["numberOfSecondsBad"] =0
 			self.wifiMacAv=copy.deepcopy(emptyWifiMacAv)
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		return
 
 ##############################################
@@ -5045,7 +5076,7 @@ class Plugin(indigo.PluginBase):
 			self.badWiFiTrigger["numberOfSecondsBad"] = time.time()
 			self.badWiFiTrigger["trigger"] -=1
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		return False
 
 
@@ -5142,7 +5173,7 @@ class Plugin(indigo.PluginBase):
 				self.wifiMacAv["numberOfCycles"][fiveORtwo] +=1
 
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		return  "ok"
 
 ##############################################
@@ -5236,7 +5267,7 @@ class Plugin(indigo.PluginBase):
 				self.wifiMacAv["numberOfCycles"][fiveORtwo] +=1
 
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		return  "ok"
 ##############################################
 	def parseWIFILogA(self,wifiLog,fiveORtwo):
@@ -5305,7 +5336,7 @@ class Plugin(indigo.PluginBase):
 				self.wifiMacAv["numberOfCycles"][fiveORtwo] +=1
 				
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 
 		return  "ok"
 
@@ -5329,7 +5360,7 @@ class Plugin(indigo.PluginBase):
 
 
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		return
 
 
@@ -5543,7 +5574,7 @@ class Plugin(indigo.PluginBase):
 					pass
 			self.executeUpdateStatesList()        
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 			
 		return
 
@@ -5583,7 +5614,7 @@ class Plugin(indigo.PluginBase):
 	#				if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u" updating MAC: "+theMAC)
 					self.updateIndigoIpVariableFromDeviceData(theMAC)
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		return
 
 ##############################################
@@ -5752,7 +5783,7 @@ class Plugin(indigo.PluginBase):
 
 
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		return
 ##############################################
 	def deleteIndigoIpDevicesData(self,theMACin):  # do this once in the beginning..
@@ -5792,7 +5823,7 @@ class Plugin(indigo.PluginBase):
 
 			self.getIndigoIpVariablesIntoData()
 		except Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		return
 
 ##############################################
@@ -5831,7 +5862,7 @@ class Plugin(indigo.PluginBase):
 					devI["noOfChanges"]			= int(dev.states["noOfChanges"])
 					devI["hardwareVendor"]		= dev.states["hardwareVendor"]
 					devI["deviceInfo"]			= dev.states["deviceInfo"]
-					try:    devI["lastFingUp"]	= time.mktime( datetime.datetime.strptime(dev.states["lastFingUp"],"%Y-%m-%d %H:%M:%S").timetuple()  )
+					try:    devI["lastFingUp"]	= devI["lastFingUp"]	= time.mktime( datetime.datetime.strptime(dev.states["lastFingUp"],"%Y-%m-%d %H:%M:%S").timetuple()  )
 					except: devI["lastFingUp"]	= time.time()
 					if "setWiFi" not in devI:   devI["setWiFi"] =copy.deepcopy(emptyAllDeviceInfo["setWiFi"])
 					devI["WiFi"]				= dev.states["WiFi"]
@@ -5865,7 +5896,7 @@ class Plugin(indigo.PluginBase):
 				self.executeUpdateStatesList()    
 
 		except  Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 			self.indiLOG.log(40, u"MAC#                           "+ theMAC)
 			try:
 				self.indiLOG.log(40, u" indigoIpVariableData:     "+unicode(self.indigoIpVariableData[theMAC]))
@@ -5958,7 +5989,7 @@ class Plugin(indigo.PluginBase):
 	#			self.indiLOG.log(20,u"not updating ipDevice"+devV["ipDevice"])
 
 		except  Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 			self.indiLOG.log(40, u"MAC#                           "+ theMAC)
 			try:
 				self.indiLOG.log(40, u" indigoIpVariableData:     "+unicode(self.indigoIpVariableData[theMAC]))
@@ -6015,7 +6046,7 @@ class Plugin(indigo.PluginBase):
 				if "deviceName" not in devI: 	devI["deviceName"]=""
 
 		except  Exception, e:
-			self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 			self.indiLOG.log(40, u"MAC# "+ theMAC+" indigoIpVariableData: "+unicode(self.indigoIpVariableData[theMAC]))
 			self.indiLOG.log(40, u"MAC# "+ theMAC+" allDeviceInfo:        "+ unicode(self.allDeviceInfo[theMAC]))
 
@@ -6162,7 +6193,7 @@ class Plugin(indigo.PluginBase):
 
 		except  Exception, e:
 			if len(unicode(e))  > 5 :
-				sself.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+				sself.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 			self.updateStatesList={}
 
 	def executeUpdateStatesList(self,newStates=""):
@@ -6205,7 +6236,7 @@ class Plugin(indigo.PluginBase):
 				return newStates              
 		except  Exception, e:
 			if len(unicode(e))  > 5 :
-				self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+				self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 
 
 	####----------------- if FINGSCAN is enabled send update signal  ---------
@@ -6228,11 +6259,11 @@ class Plugin(indigo.PluginBase):
 					indigo.server.broadcastToSubscribers(u"deviceStatusChanged", json.dumps(msg))
 				except  Exception, e:
 					if len(unicode(e)) > 5:
-						self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+						self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 
 		except  Exception, e:
 			if len(unicode(e)) > 5:
-				self.indiLOG.log(40, u"error in  Line '%s' ;  error='%s'" % (sys.exc_traceback.tb_lineno, e))
+				self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 			else:
 				x = "break"
 		return x

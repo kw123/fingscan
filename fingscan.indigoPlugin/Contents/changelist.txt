@@ -1,3 +1,9 @@
+Added features / changes in v7.30.41 @ 2019-12-04
+===================================================
+
+1. moved most of initializing code (reading from config, starting fing ..) into thread loop. that enabled time.sleep() to edit config 
+2. added check if mac number is properly defined in events, or deleted  ..added check for "error in  Line '2074' "
+
 Added features / changes in v7.30.39 @ 2019-12-04
 ===================================================
 
