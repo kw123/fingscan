@@ -1,3 +1,14 @@
+Added features / changes in v7.31.41 @ 2020-01-10
+===================================================
+
+1. enabled fing v 5.x for OSX catalina (>=10.15)
+   you MUST install fing version 5.x for this
+   either download 
+   https://www.fing.com/products/development-toolkit  use OSX button
+   or use
+   /Library/Application Support/Perceptive Automation/Indigo 7.4/Plugins/fingscan.indigoPlugin/Contents/Server Plugin/CLI_macOSX_5.4.0.zip
+
+
 Added features / changes in v7.30.41 @ 2019-12-04
 ===================================================
 

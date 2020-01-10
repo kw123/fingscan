@@ -207,15 +207,11 @@ class Plugin(indigo.PluginBase):
 			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
 			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
 			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
-			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
-			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
 			self.errorLog(u"The pluginname is not correct, please reinstall or rename")
 			self.errorLog(u"It should be   /Libray/....../Plugins/"+self.pluginName+".indigPlugin")
 			p=max(0,self.pathToPlugin.find("/Contents/Server"))
 			self.errorLog(u"It is: "+self.pathToPlugin[:p])
 			self.errorLog(u"please check your download folder, delete old *.indigoPlugin files or this will happen again during next update")
-			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
-			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
 			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
 			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
 			self.errorLog(u"---------------------------------------------------------------------------------------------------------------" )
@@ -233,15 +229,15 @@ class Plugin(indigo.PluginBase):
 			self.fingErrorFileName0         = "fingerror.log"
 			self.fingServicesFileName0      = "fingservices.json"
 			self.fingServicesLOGFileName0   = "fingservices.log"
-			self.fingDataFileName			= self.indigoPreferencesPluginDir+"fing.data"
-			self.fingLogFileName            = self.indigoPreferencesPluginDir+"fing.log"
-			self.fingErrorFileName          = self.indigoPreferencesPluginDir+"fingerror.log"
+			self.fingDataFileName			= self.indigoPreferencesPluginDir+self.fingDataFileName0	
+			self.fingLogFileName            = self.indigoPreferencesPluginDir+self.fingLogFileName0 
+			self.fingErrorFileName          = self.indigoPreferencesPluginDir+self.fingErrorFileName0 
+			self.fingServicesFileName       = self.indigoPreferencesPluginDir+self.fingServicesFileName0 
+			self.fingServicesLOGFileName    = self.indigoPreferencesPluginDir+self.fingServicesLOGFileName0
+			self.fingServicesOutputFileName = self.indigoPreferencesPluginDir+"fingservices.txt"
+			self.ignoredMACFile             = self.indigoPreferencesPluginDir+"ignoredMAC"
 			self.fingPasswordFileName       = self.indigoPreferencesPluginDir+"parameter"
 			self.fingSaveFileName           = self.indigoPreferencesPluginDir+"fingsave.data"
-			self.fingServicesFileName       = self.indigoPreferencesPluginDir+"fingservices.json"
-			self.fingServicesOutputFileName = self.indigoPreferencesPluginDir+"fingservices.txt"
-			self.fingServicesLOGFileName    = self.indigoPreferencesPluginDir+"fingservices.log"
-			self.ignoredMACFile             = self.indigoPreferencesPluginDir+"ignoredMAC"
 			self.fingEXEpath				= "/usr/local/bin/fing"
 
 			if not os.path.exists(self.indigoPreferencesPluginDir):
@@ -339,13 +335,6 @@ class Plugin(indigo.PluginBase):
 				del ret
 			except:
 				pass
-			if not os.path.isfile(self.fingDataFileName):
-				subprocess.Popen("echo 0 > '"+ self.fingDataFileName.replace(" ","%20")+ "' &",shell=True )
-				self.sleep(0.1)
-				if not os.path.isfile(self.fingDataFileName):
-					self.indiLOG.log(40, u"could not create file: "+self.fingDataFileName+" stopping program")
-					self.quitNOW = "directory /  file problem"
-					return
 
 			
 ############ if there are PING jobs left from last run, kill them
@@ -435,6 +424,16 @@ class Plugin(indigo.PluginBase):
 							self.sleep(2)
 				except:
 					pass
+
+				cmd = "cd '"+self.indigoPreferencesPluginDir+"'; echo '"+self.yourPassword+ "' | sudo /bin/chmod -R 777 *"
+				os.system(cmd) 
+				if not os.path.isfile(self.fingDataFileName):
+					subprocess.Popen( "echo 0 > '"+ self.fingDataFileName+ "' &",shell=True )
+					self.sleep(0.2)
+					if not os.path.isfile(self.fingDataFileName):
+						self.indiLOG.log(40, u"could not create file: "+self.fingDataFileName+" stopping program")
+						#self.quitNOW = "directory /  file problem"
+						#return
 
 			if self.passwordOK == "2": 
 				# set proper attributes for catalina 
@@ -528,6 +527,13 @@ class Plugin(indigo.PluginBase):
 				if self.decideMyLog(u"Logic"): self.indiLOG.log(20,"setting attribute for catalina  with:  {}".format(cmd))
 				if self.decideMyLog(u"Logic"): self.indiLOG.log(20,"setting attribute for catalina  result:{}".format(ret))
 				self.indiLOG.log(20,"fing install check done")
+
+				opsys, fingVersion = self.checkVersion()
+				if opsys >= 10.15 and fingVersion < 5 and fingVersion >0 :
+					self.indiLOG.log(50,"\nmiss match version of opsys:{} and fing:{} you need to upgrade FING to 64 bits. Download from\nhttps://www.fing.com/products/development-toolkit  use OSX button\nor use\n{}CLI_macOSX_5.4.0.zip\nto install".format(opsys,fingVersion,self.pathToPlugin))
+					for ii in range(1000):			
+						time.sleep(2)
+
 
 ############ get WIFI router info if available
 			self.routerType	= self.pluginPrefs.get(u"routerType","0")
@@ -756,6 +762,21 @@ class Plugin(indigo.PluginBase):
 
 
 		return
+
+
+########################################
+	def checkVersion(self):
+		import platform
+		try:
+			opsys		= platform.mac_ver()[0].split(".")
+			opsys		= float(opsys[0]+"."+opsys[1])
+			cmd 		= self.fingEXEpath+" -v"
+			ret 		= subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[0].strip("\n").split(".")
+			fingVersion	= float(ret[0]+"."+ret[1])
+			return opsys, fingVersion
+		except  Exception, e:
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
+		return 0, 0						
 
 
 ########################################
@@ -2839,79 +2860,88 @@ class Plugin(indigo.PluginBase):
 	
 ########################################
 	def initFing(self,restartFing):
-		
-		if self.passwordOK !="2": return -1
-		self.fingRestartCount +=1
-
-		if self.fingRestartCount > 5:  # starts # 1
-			self.indiLOG.log(30,u"  (re)started FING 5 times, quiting ... reloading the plugin ")
-			self.quitNOW ="FING problem"
-			return -1
-			
-		## create directory if it does not exist
 		try:
-			subprocess.Popen("mkdir "+  self.indigoPreferencesPluginDir + "  > /dev/null 2>&1 &",shell=True)
-		except:
-			pass
+			if self.passwordOK != "2": return -1
+			self.fingRestartCount +=1
+
+			if self.fingRestartCount > 5:  # starts # 1
+				self.indiLOG.log(30,u"  (re)started FING 5 times, quiting ... reloading the plugin ")
+				self.quitNOW ="FING problem"
+				return -1
+			
+			## create directory if it does not exist
+			try:
+				subprocess.Popen("mkdir "+  self.indigoPreferencesPluginDir + "  > /dev/null 2>&1 &",shell=True)
+			except:
+				pass
 
 
 		
 			
-		if os.path.exists(self.fingDataFileName):
-			pass
-		else:  ## if not create file
-			subprocess.Popen("echo 0 > '"+ self.fingDataFileName+ "' &",shell=True )
-			self.sleep(1)
+			if os.path.exists(self.fingDataFileName):
+				pass
+			else:  ## if not create file
+				subprocess.Popen("echo 0 > '"+ self.fingDataFileName+ "' &",shell=True )
+				self.sleep(1)
 
-		dataFileTimeOld = os.path.getmtime(self.fingDataFileName)  ## use for   if new filesize is longer  than old fs  fing is running
+			dataFileTimeOld = os.path.getmtime(self.fingDataFileName)  ## use for   if new filesize is longer  than old fs  fing is running
 
 
-		if restartFing ==1:
-			retCode = self.killFing("all")
-		else:
+			if restartFing ==1:
+				retCode = self.killFing("all")
+			else:
+				pids, parentPids = self.testFing()
+				if len(pids) == 1 : return 1
+				if len(pids) > 1 :
+					retCode = self.killFing(u"onlyParents")
+					return 1
+
+
+			# start fing, send to background, dont wait, create 2 output files:  one table format file and one logfile
+			params =  {"yourPassword":self.yourPassword, "theNetwork":self.theNetwork, "netwType":self.netwType,"logLevel": 20, "fingEXEpath":self.fingEXEpath}
+			f = open(self.indigoPreferencesPluginDir+"paramsForStart","w")
+			f.write(json.dumps(params))
+			f.close()
+			cmd = "/usr/bin/python2.7 '"+self.pathToPlugin+"startfing.py' '"+self.indigoPreferencesPluginDir+"paramsForStart'  &"
+			if False:
+				if self.theNetwork !="":
+					cmd ="cd '"+self.indigoPreferencesPluginDir+"';echo '" + self.yourPassword + "' | sudo -S '"+self.fingEXEpath+"' "+self.theNetwork+"/"+str(self.netwType)+" -o table,csv,'" +  self.fingDataFileName0+ "'  log,csv,'" + self.fingLogFileName0+ "'  >> '" + self.fingErrorFileName0+"'  > /dev/null 2>&1 &"
+				else:
+					cmd ="cd '"+self.indigoPreferencesPluginDir+"';echo '" + self.yourPassword + "' | sudo -S '"+self.fingEXEpath+"' -o table,csv,'" +  self.fingDataFileName0+ "'  log,csv,'" + self.fingLogFileName0+ "'  >> '" + self.fingErrorFileName0+ "'  > /dev/null 2>&1 &"
+			if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"FING cmd= {}".format(cmd) )
+			os.system(cmd)
+			if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"  waiting for FING to start and produce output " +  str(resp) + "pid:"+str(pid))
+			self.sleep( 1 )
+			self.killFing(u"onlyParents")
+
+			self.indiLOG.log(20,u"FING waiting for first data")
+
+			found = False
+			for ii in range(5):
+				self.sleep( 20 )
+				self.indiLOG.log(20,u"FING initializing checking if output created, old timeStamp:{}; new timeStamp:{}".format(dataFileTimeOld,os.path.getmtime(self.fingDataFileName)) )
+				if dataFileTimeOld != os.path.getmtime(self.fingDataFileName):
+					found = True
+					self.indiLOG.log(20,u"FING initialized ..  created new data   waiting ~ 1 minute for stable operation")
+					break
+			if not found: 
+				self.indiLOG.log(20,u"FING initialized .. data file not created, return")
+				return 0
+
+		
+			#test if it is actually running
 			pids, parentPids = self.testFing()
-			if len(pids) == 1 : return 1
-			if len(pids) > 1 :
-				retCode = self.killFing(u"onlyParents")
+			self.indiLOG.log(30,u"  FING pids after step3 = " +  str(pids))
+			if len(pids) > 0:
+				self.indiLOG.log(30,u"(re)started FING ")
+				self.indiLOG.log(30,u"FING initialized")
 				return 1
 
+			self.indiLOG.log(30,u"  (re)start FING not successful ")
 
-#		try:
-		# start fing, send to background, dont wait, create 2 output files:  one table format file and one logfile
-		if self.theNetwork !="":
-			cmd ="cd '"+self.indigoPreferencesPluginDir+"';echo '" + self.yourPassword + "' | sudo -S '"+self.fingEXEpath+"' "+self.theNetwork+"/"+str(self.netwType)+" -o table,csv,'" +  self.fingDataFileName0+ "'  log,csv,'" + self.fingLogFileName0+ "'  >> '" + self.fingErrorFileName0+"'  > /dev/null 2>&1 &"
-		else:
-			cmd ="cd '"+self.indigoPreferencesPluginDir+"';echo '" + self.yourPassword + "' | sudo -S '"+self.fingEXEpath+"' -o table,csv,'" +  self.fingDataFileName0+ "'  log,csv,'" + self.fingLogFileName0+ "'  >> '" + self.fingErrorFileName0+ "'  > /dev/null 2>&1 &"
-		if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"FING cmd= %s" % cmd)
-		ret = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-		resp = ret.communicate()[0]
-		pid = ret.pid
-		del ret
-		if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"  waiting for FING to start and produce output " +  str(resp) + "pid:"+str(pid))
-		self.sleep( 1 )
-		self.killFing(u"onlyParents")
-
-
-		found = False
-		for ii in range(5):
-			self.sleep( 20 )
-			self.indiLOG.log(20,u"FING initializing checking if output created, old date:{}; new date:{}".format(dataFileTimeOld,os.path.getmtime(self.fingDataFileName)) )
-			if dataFileTimeOld != os.path.getmtime(self.fingDataFileName):
-				found = True
-				self.indiLOG.log(20,u"FING initialized ..  created new data   waiting ~ 1 minute for stable operation")
-				break
-		if not found: return 0
-		
-		#test if it is actually running
-		pids, parentPids = self.testFing()
-		self.indiLOG.log(30,u"  FING pids 3= " +  str(pids))
-		if len(pids) > 0:
-			self.indiLOG.log(30,u"   (re)started FING ")
-			self.indiLOG.log(30,u"FING initialized")
-			return 1
-
-		self.indiLOG.log(30,u"  (re)start FING not successful ")
-		return 0 #  not successful
+			return 0 #  not successful
+		except  Exception, e:
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 	
 	
 	
@@ -3035,7 +3065,7 @@ class Plugin(indigo.PluginBase):
 			if p[1] ==" ": continue
 			parentPids.append(p[1])
 			# pids has the process ids #  of fing and parent shell as simple string have removed PID # 1 = the root
-		return fingPids,parentPids
+		return fingPids, parentPids
 	
 	
 	
@@ -3044,26 +3074,27 @@ class Plugin(indigo.PluginBase):
 	def getfingLog(self):
 		## get size of finglog file to check if there is new data
 		try:
+			if not os.path.isfile(self.fingLogFileName): return 
 			self.fingLogFileSizeNEW = int(os.path.getsize(self.fingLogFileName))
+			if  self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"  FING LOG data old  " + str(self.fingLogFileSizeold) + " new " + str(self.fingLogFileSizeNEW))
 			if self.fingLogFileSizeold != self.fingLogFileSizeNEW:
-#				if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"  FING LOG data new " + str(self.fingLogFileSizeold) + " " + str(self.fingLogFileSizeNEW))
+				self.fingLogFileSizeold = self.fingLogFileSizeNEW
 			
 			## get last line of finglog file
 
-				lines = subprocess.Popen(["tail", "-1", self.fingLogFileName], stdout=subprocess.PIPE).communicate()[0].strip("\n")
-				self.fingData =[ map(str,line.split(";")) for line in lines ]
+				lines = subprocess.Popen(["tail", "-1", self.fingLogFileName], stdout=subprocess.PIPE).communicate()[0].strip("\n").split("\n")
+				self.fingData =[ line.split(";") for line in lines ]
 				if len(self.fingData[0]) < 7: return 0
 				if self.fingData[0][5] in self.ignoredMAC: return 0
 				self.indigoNeedsUpdate = True
-				
+
 				self.fingNumberOfdevices = 1
-				self.fingLogFileSizeold  = self.fingLogFileSizeNEW
-				self.fingDate            = self.column(self.fingData[0])
-				self.fingStatus          = self.column(self.fingData[1])
-				self.fingIPNumbers       = self.column(self.fingData[2])
-				self.fingDeviceInfo      = self.column(self.fingData[4])
-				self.fingMACNumbers      = self.column(self.fingData[5])
-				self.fingVendor          = self.column(self.fingData[6])
+				self.fingDate            = self.column(self.fingData,0)
+				self.fingStatus          = self.column(self.fingData,1)
+				self.fingIPNumbers       = self.column(self.fingData,2)
+				self.fingDeviceInfo      = self.column(self.fingData,4)
+				self.fingMACNumbers      = self.column(self.fingData,5)
+				self.fingVendor          = self.column(self.fingData,6)
 				self.finglogerrorCount   = 0
 				for kk in range(1):
 					if self.fingMACNumbers[kk] in self.inbetweenPing:	# if this is listed as down in inbetween pings, remove as we have new info.
@@ -3071,6 +3102,7 @@ class Plugin(indigo.PluginBase):
 							del self.inbetweenPing[self.fingMACNumbers[kk]]
 
 					if self.fingStatus[kk] =="down":
+						theMAC = self.fingMACNumbers[kk]
 						if theMAC in self.allDeviceInfo and self.allDeviceInfo[theMAC]["useWakeOnLanSecs"] > 0:  
 							if self.sendWakewOnLanAndPing(theMAC,nBC= 2, waitForPing=500, countPings=2, waitBeforePing = 0.5, waitAfterPing = 0.1, calledFrom="getfingLog") ==0:
 								self.fingStatus[kk] =="up"
@@ -3104,8 +3136,9 @@ class Plugin(indigo.PluginBase):
 				return 0
 			else:
 				f = open ( self.fingDataFileName , "r")
-				self.fingData = [ map(str,line.split(";")) for line in f ]
+				lines = f.read().strip("\n").split("\n")
 				f.close()
+				self.fingData = [ line.split(";") for line in lines ]
 				self.fingNumberOfdevices    = len(self.fingData)
 				self.fingDataModTimeOLD     = self.fingDataModTimeNEW
 				self.fingIPNumbers          = self.column(self.fingData,0)
@@ -4833,6 +4866,8 @@ class Plugin(indigo.PluginBase):
 			self.pluginState  = "end"
 			self.pluginPrefs["EVENTS"]	=	json.dumps(self.EVENTS)
 
+			self.killFing("all")
+		
 			try:
 				quitNowX = self.quitNow
 			except:
