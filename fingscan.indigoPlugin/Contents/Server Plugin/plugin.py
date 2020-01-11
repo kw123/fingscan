@@ -425,6 +425,8 @@ class Plugin(indigo.PluginBase):
 				except:
 					pass
 
+				cmd = "cd '"+self.indigoPreferencesPluginDir+"'; echo '"+self.yourPassword+ "' | sudo /usr/sbin/chown "+self.MACuserName+" *"
+				os.system(cmd) 
 				cmd = "cd '"+self.indigoPreferencesPluginDir+"'; echo '"+self.yourPassword+ "' | sudo /bin/chmod -R 777 *"
 				os.system(cmd) 
 				if not os.path.isfile(self.fingDataFileName):
@@ -528,8 +530,8 @@ class Plugin(indigo.PluginBase):
 				if self.decideMyLog(u"Logic"): self.indiLOG.log(20,"setting attribute for catalina  result:{}".format(ret))
 				self.indiLOG.log(20,"fing install check done")
 
-				opsys, self.fingVersion = self.checkVersion()
-				if opsys >= 10.15 and self.fingVersion < 5 and self.fingVersion >0 :
+				self.opsys, self.fingVersion = self.checkVersion()
+				if self.opsys >= 10.15 and self.fingVersion < 5 and self.fingVersion >0 :
 					self.indiLOG.log(50,"\nmiss match version of opsys:{} and fing:{} you need to upgrade FING to 64 bits. Download from\nhttps://www.fing.com/products/development-toolkit  use OSX button\nor use\n{}CLI_macOSX_5.4.0.zip\nto install".format(opsys,fingVersion,self.pathToPlugin))
 					for ii in range(1000):			
 						time.sleep(2)
@@ -2598,16 +2600,18 @@ class Plugin(indigo.PluginBase):
 ## cd '/Library/Application Support/Perceptive Automation/Indigo 7.4/Preferences/Plugins/com.karlwachs.fingscan/';echo 'your osx password here.. no quotes' | sudo -S /usr/local/bin/fing  -s 192.168.1.0/24 -o json,fingservices.json > fingservices.log
 		try:
 
-			cmd ="echo '" +self.yourPassword + "' | sudo -S rm "+self.fingServicesFileName
-			subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-			if self.fingVersion >=5:
+			cmd ="echo '" +self.yourPassword + "' | sudo -S rm '"+self.fingServicesFileName+"'"
+			ret = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
+			if self.decideMyLog(u"Special"): self.indiLOG.log(20," del cmd: {}, ret: {}".format(cmd, ret) )
+			if self.opsys >= 10.15:
 				cmd ="cd '"+self.indigoPreferencesPluginDir+"';echo '"+self.yourPassword+"' | sudo -S "+self.fingEXEpath+"  -s "+self.theNetwork+"/"+str(self.netwType)+" -o json > "+self.fingServicesFileName0
 			else:
 				cmd ="cd '"+self.indigoPreferencesPluginDir+"';echo '"+self.yourPassword+"' | sudo -S "+self.fingEXEpath+"  -s "+self.theNetwork+"/"+str(self.netwType)+" -o json,"+self.fingServicesFileName0+" > "+self.fingServicesLOGFileName0
+		
 
 			self.indiLOG.log(20,u"fing network scan: "+self.theNetwork+u"/"+str(self.netwType))
+			if self.decideMyLog(u"Special"): self.indiLOG.log(20,"fing under opsys: {} command: {}".format(self.opsys, cmd) )
 			ret =subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
-			if self.decideMyLog(u"Special"): self.indiLOG.log(20,cmd)
 			
 
 		except Exception, e:
@@ -2616,12 +2620,15 @@ class Plugin(indigo.PluginBase):
 			return
 
 		## read fing output file
+		fingOut = ""
 		try:
 			f = open(self.fingServicesFileName,"r")
 			fingOut = f.read()
 			f.close()
 			#self.indiLOG.log(20, u"  json fingOut {}".format(fingOut))
-
+			if fingOut.find("> Service scan starting.") > -1:
+				ff = fingOut.find("\n[") 
+				fingOut = fingOut[ff+1:]
 		except Exception, e:
 			self.indiLOG.log(40, u"  fing details failed , output file: {}".format(fingOut))
 			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
@@ -2904,7 +2911,7 @@ class Plugin(indigo.PluginBase):
 
 
 			# start fing, send to background, dont wait, create 2 output files:  one table format file and one logfile
-			params =  {"yourPassword":self.yourPassword, "theNetwork":self.theNetwork, "netwType":self.netwType,"logLevel": 20, "fingEXEpath":self.fingEXEpath}
+			params =  {"yourPassword":self.yourPassword, "theNetwork":self.theNetwork, "netwType":self.netwType,"logLevel": 20, "fingEXEpath":self.fingEXEpath,"macUser":self.MACuserName}
 			f = open(self.indigoPreferencesPluginDir+"paramsForStart","w")
 			f.write(json.dumps(params))
 			f.close()
@@ -2975,7 +2982,7 @@ class Plugin(indigo.PluginBase):
 
 
 		if pidsToKill != " ":
-			cmd = "echo '" + self.yourPassword + "' | sudo -S /bin/kill " + pidsToKill +" > /dev/null 2>&1 &"
+			cmd = "echo '" + self.yourPassword + "' | sudo -S /bin/kill -9 " + pidsToKill +" > /dev/null 2>&1 &"
 			if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"  FING kill cmd:" + cmd)
 			ret= subprocess.Popen(cmd,shell=True) # kill fing
 			del ret
@@ -3058,7 +3065,7 @@ class Plugin(indigo.PluginBase):
 		for pid  in pids:
 			if int(pid) < 10: continue
 			if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"killing PID: "+pid)
-			ret= subprocess.Popen( "echo '" + self.yourPassword + "' | sudo -S /bin/kill " + pid,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+			ret= subprocess.Popen( "echo '" + self.yourPassword + "' | sudo -S /bin/kill -9 " + pid,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 			ret.stdout.close()
 			ret.stderr.close()
 			del ret

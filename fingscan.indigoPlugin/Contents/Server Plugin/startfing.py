@@ -15,7 +15,7 @@ import fcntl
 #################################
 def startFing():
 	global indigoPreferencesPluginDir
-	global logfileName, logLevel, printON, fingDataFileName, fingLogFileName, fingErrorFileName
+	global logfileName, logLevel,  fingDataFileName, fingLogFileName, fingErrorFileName
 	global fingEXEpath, theNetwork, yourPassword,  netwType
 		
 	try:
@@ -63,7 +63,7 @@ def checkVersion():
 
 def doFingV5(fingVersion, opsys):
 	global indigoPreferencesPluginDir
-	global logfileName, logLevel, printON, fingDataFileName, fingLogFileName, fingErrorFileName
+	global logfileName, logLevel,  fingDataFileName, fingLogFileName, fingErrorFileName
 	global fingEXEpath, theNetwork, yourPassword, theNetwork, netwType
 	global startCommand
 
@@ -175,37 +175,36 @@ def doFingV5(fingVersion, opsys):
 #################################
 def stopOldPGMs():
 	global indigoPreferencesPluginDir
-	global logfileName, logLevel, printON, fingDataFileName, fingLogFileName, fingErrorFileName
+	global logfileName, logLevel,  fingDataFileName, fingLogFileName, fingErrorFileName
 	global fingEXEpath, theNetwork, yourPassword, theNetwork, netwType
-	stopPGM('Plugin/startfing.py', mypid =os.getpid())
+	stopPGM('Plugin/startfing.py', mypid = str(os.getpid()) )
 	stopPGM('/usr/local/lib/fing/fing.bin')
 	stopPGM('/usr/local/bin/fing')
 
 #################################
 def stopPGM(pgm, mypid =""):
 	global indigoPreferencesPluginDir
-	global logfileName, logLevel, printON, fingDataFileName, fingLogFileName, fingErrorFileName
+	global logfileName, logLevel,  fingDataFileName, fingLogFileName, fingErrorFileName
 	global fingEXEpath, theNetwork, yourPassword, theNetwork, netwType
 
 	pids = subprocess.Popen("ps -ef | grep '"+pgm+"' | grep -v grep | awk '{print $2}'",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[0]
 	pids = pids.split("\n")
 	for pid in pids:
-		if len(str(pid)) < 2:      continue
-		if str(pid) == str(mypid): continue
-		cmd = "echo '" + yourPassword + "' | sudo -S /bin/kill " + str(pid) +" > /dev/null 2>&1 &"
+		if len(pid) < 3: continue # 100
+		if pid == mypid: continue # dont kill myself
+		cmd = "echo '" + yourPassword + "' | sudo -S /bin/kill -9 " + str(pid) +" > /dev/null 2>&1 &"
 		#logger.log(20,u"  FING kill cmd:" + cmd)
 		ret= subprocess.Popen(cmd,shell=True) # kill fing
 
 ####### main pgm / loop ############
 global indigoPreferencesPluginDir
-global logfileName, logLevel, printON, fingDataFileName, fingLogFileName, fingErrorFileName
+global logfileName, logLevel,  fingDataFileName, fingLogFileName, fingErrorFileName
 global fingEXEpath, theNetwork, yourPassword, theNetwork, netwType
 global startCommand
 
 startCommand = "/usr/bin/python2.7 '"+sys.argv[0] +"' '" +sys.argv[1]+"'"
-print "startcommand:", startCommand
+#print "startcommand:", startCommand
 
-printON = False
 
 pluginDir					= sys.argv[0].split("startFing.py")[0]
 indigoDir					= pluginDir.split("Plugins/")[0]
@@ -213,27 +212,36 @@ indigoPreferencesPluginDir 	= indigoDir+"Preferences/Plugins/com.karlwachs.fings
 logfileName 				= indigoDir+"Logs/com.karlwachs.fingscan/plugin.log"
 fingDataFileName			= "fing.data"
 fingLogFileName				= "fing.log"
-### logfile setup
-print pluginDir
-print indigoDir
 
-f = open(sys.argv[1],"r")
+f 							= open(sys.argv[1],"r")
 params 						= json.loads(f.read())
 f.close()
+
+
 fingEXEpath					= params["fingEXEpath"]
 logLevel 					= params["logLevel"]
 yourPassword 				= params["yourPassword"]
 theNetwork 					= params["theNetwork"]
 netwType 					= params["netwType"]
+macUser 					= params["macUser"]
+
+
+
 
 logging.basicConfig(level=logging.DEBUG, filename= logfileName,format='%(module)-23s L:%(lineno)3d Lv:%(levelno)s %(message)s', datefmt='%H:%M:%S')
 logger = logging.getLogger(__name__)
 #
-if not logLevel:
+if logLevel > 20:
 	logger.setLevel(logging.ERROR)
 else:
 	logger.setLevel(logging.DEBUG)
+
 stopOldPGMs()
+
+cmd = "cd '"+indigoPreferencesPluginDir+"'; echo '"+yourPassword+ "' | sudo /usr/sbin/chown "+macUser+" *"
+os.system(cmd) 
+cmd = "cd '"+indigoPreferencesPluginDir+"'; echo '"+yourPassword+ "' | sudo /bin/chmod -R 777 *"
+os.system(cmd) 
 
 
 cmd ="cd '"+indigoPreferencesPluginDir+"';echo '" +yourPassword + "' | sudo -S rm "+fingDataFileName

@@ -1,3 +1,10 @@
+Added features / changes in v7.31.48 @ 2020-01-11
+===================================================
+
+1. enabled service scan menu point for catalina.. 3rd time is the charm
+.. and thanks to David for patiently helping debugging 
+
+
 Added features / changes in v7.31.44 @ 2020-01-11
 ===================================================
 
