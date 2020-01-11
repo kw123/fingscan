@@ -316,7 +316,7 @@ class Plugin(indigo.PluginBase):
 
 ############ startup message
 			self.debugLevel			= []
-			for d in ["Logic","Ping","Wifi","Events","iFind","piBeacon","Unifi","BC","all"]:
+			for d in ["Logic","Ping","Wifi","Events","iFind","piBeacon","Unifi","BC","Special","all"]:
 				if self.pluginPrefs.get(u"debug"+d, False): self.debugLevel.append(d)
 			self.setLogfile(self.pluginPrefs.get("logFileActive2", "standard"))
 			 
@@ -770,7 +770,7 @@ class Plugin(indigo.PluginBase):
 		try:
 			opsys		= platform.mac_ver()[0].split(".")
 			opsys		= float(opsys[0]+"."+opsys[1])
-			cmd 		= self.fingEXEpath+" -v"
+			cmd 		= "echo '"+self.yourPassword+ "' | sudo -S "+self.fingEXEpath+" -v"
 			ret 		= subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[0].strip("\n").split(".")
 			fingVersion	= float(ret[0]+"."+ret[1])
 			return opsys, fingVersion
@@ -1782,7 +1782,7 @@ class Plugin(indigo.PluginBase):
 			rebootRequired   = False
 			
 			self.debugLevel			= []
-			for d in ["Logic","Ping","Wifi","Events","iFind","piBeacon","Unifi","BC","all"]:
+			for d in ["Logic","Ping","Wifi","Events","iFind","piBeacon","Unifi","BC","Special","all"]:
 				if u"debug"+d in valuesDict and valuesDict[u"debug"+d]: self.debugLevel.append(d)
 			self.setLogfile(valuesDict["logFileActive2"])
 
@@ -2598,14 +2598,16 @@ class Plugin(indigo.PluginBase):
 ## cd '/Library/Application Support/Perceptive Automation/Indigo 7.4/Preferences/Plugins/com.karlwachs.fingscan/';echo 'your osx password here.. no quotes' | sudo -S /usr/local/bin/fing  -s 192.168.1.0/24 -o json,fingservices.json > fingservices.log
 		try:
 
+			cmd ="echo '" +self.yourPassword + "' | sudo -S rm "+self.fingServicesFileName
+			subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 			if self.fingVersion >=5:
-				cmd ="cd '"+self.indigoPreferencesPluginDir+"';echo '"+self.yourPassword+"' | sudo -S "+self.fingEXEpath+"  -s "+self.theNetwork+"/"+str(self.netwType)+" -o json > "+self.fingServicesFileName0+" &"
+				cmd ="cd '"+self.indigoPreferencesPluginDir+"';echo '"+self.yourPassword+"' | sudo -S "+self.fingEXEpath+"  -s "+self.theNetwork+"/"+str(self.netwType)+" -o json > "+self.fingServicesFileName0
 			else:
 				cmd ="cd '"+self.indigoPreferencesPluginDir+"';echo '"+self.yourPassword+"' | sudo -S "+self.fingEXEpath+"  -s "+self.theNetwork+"/"+str(self.netwType)+" -o json,"+self.fingServicesFileName0+" > "+self.fingServicesLOGFileName0
 
 			self.indiLOG.log(20,u"fing network scan: "+self.theNetwork+u"/"+str(self.netwType))
 			ret =subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
-			if True or self.decideMyLog(u"Events"): self.indiLOG.log(20,cmd)
+			if self.decideMyLog(u"Special"): self.indiLOG.log(20,cmd)
 			
 
 		except Exception, e:
@@ -2618,11 +2620,10 @@ class Plugin(indigo.PluginBase):
 			f = open(self.fingServicesFileName,"r")
 			fingOut = f.read()
 			f.close()
-			if self.fingVersion >=5:
-				fingOut = "["+fingOut.split("\n[")[1]
+			#self.indiLOG.log(20, u"  json fingOut {}".format(fingOut))
 
 		except Exception, e:
-			self.indiLOG.log(40, u"  fing details failed , no output file")
+			self.indiLOG.log(40, u"  fing details failed , output file: {}".format(fingOut))
 			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 			return
 			
@@ -2881,9 +2882,7 @@ class Plugin(indigo.PluginBase):
 				subprocess.Popen("mkdir "+  self.indigoPreferencesPluginDir + "  > /dev/null 2>&1 &",shell=True)
 			except:
 				pass
-
-
-		
+	
 			
 			if os.path.exists(self.fingDataFileName):
 				pass
@@ -2915,9 +2914,9 @@ class Plugin(indigo.PluginBase):
 					cmd ="cd '"+self.indigoPreferencesPluginDir+"';echo '" + self.yourPassword + "' | sudo -S '"+self.fingEXEpath+"' "+self.theNetwork+"/"+str(self.netwType)+" -o table,csv,'" +  self.fingDataFileName0+ "'  log,csv,'" + self.fingLogFileName0+ "'  >> '" + self.fingErrorFileName0+"'  > /dev/null 2>&1 &"
 				else:
 					cmd ="cd '"+self.indigoPreferencesPluginDir+"';echo '" + self.yourPassword + "' | sudo -S '"+self.fingEXEpath+"' -o table,csv,'" +  self.fingDataFileName0+ "'  log,csv,'" + self.fingLogFileName0+ "'  >> '" + self.fingErrorFileName0+ "'  > /dev/null 2>&1 &"
-			if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"FING cmd= {}".format(cmd) )
+			if self.decideMyLog(u"Special"): self.indiLOG.log(20,u"FING cmd= {}".format(cmd) )
 			os.system(cmd)
-			if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"  waiting for FING to start and produce output " +  str(resp) + "pid:"+str(pid))
+			if self.decideMyLog(u"Special"): self.indiLOG.log(20,u"  waiting for FING to start and produce output pid")
 			self.sleep( 1 )
 			self.killFing(u"onlyParents")
 
@@ -3045,6 +3044,25 @@ class Plugin(indigo.PluginBase):
 					pass
 
 		return
+		
+########################################
+	def killPGM(self,whomToKill):
+		if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"killing pgm: "+str(whomToKill))
+
+		ret =subprocess.Popen("ps -ef | grep '"+whomToKill+"' | grep -v grep | awk '{print$2}'",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+		pids =ret.communicate()[0].split()
+		ret.stdout.close()
+		ret.stderr.close()
+		del ret
+			
+		for pid  in pids:
+			if int(pid) < 10: continue
+			if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"killing PID: "+pid)
+			ret= subprocess.Popen( "echo '" + self.yourPassword + "' | sudo -S /bin/kill " + pid,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+			ret.stdout.close()
+			ret.stderr.close()
+			del ret
+
 		
 		
 ########################################
@@ -4874,6 +4892,7 @@ class Plugin(indigo.PluginBase):
 			self.pluginPrefs["EVENTS"]	=	json.dumps(self.EVENTS)
 
 			self.killFing("all")
+			self.killPGM("/startfing.py")
 		
 			try:
 				quitNowX = self.quitNow

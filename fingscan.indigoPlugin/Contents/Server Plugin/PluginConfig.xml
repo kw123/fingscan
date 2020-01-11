@@ -205,7 +205,8 @@
     <Field    id="debugpiBeacon" type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (6) piBeacon:</Label>  </Field>
     <Field    id="debugUnifi"    type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (7) Unifi:</Label>  </Field>
     <Field    id="debugBC"       type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (8) send BC of status changes:</Label>  </Field>
-    <Field    id="debugpall"     type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (10) All:</Label>  </Field>
+    <Field    id="debugSpecial"  type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (9) special for debuuging and development:</Label>  </Field>
+    <Field    id="debugall"     type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (10) All:</Label>  </Field>
 
     <Field    id="logFileActive2"      type="menu"      defaultValue="standard"      > <Label> send logs to ..:</Label>
         <List>

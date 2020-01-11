@@ -52,7 +52,7 @@ def checkVersion():
 		opsys	=  platform.mac_ver()[0].split(".")
 		opsys	= float(opsys[0]+"."+opsys[1])
 		#logger.log(20,"{}".format(opsys))
-		cmd 	= fingEXEpath+" -v"
+		cmd 	= "echo '"+yourPassword+ "' | sudo -S "+fingEXEpath+" -v"
 		ret 	= subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[0].strip("\n").split(".")
 		fingVersion	= float(ret[0]+"."+ret[1])
 		#logger.log(20,"{}  {}".format(ret, fingVersion))
@@ -65,11 +65,13 @@ def doFingV5(fingVersion, opsys):
 	global indigoPreferencesPluginDir
 	global logfileName, logLevel, printON, fingDataFileName, fingLogFileName, fingErrorFileName
 	global fingEXEpath, theNetwork, yourPassword, theNetwork, netwType
+	global startCommand
+
 	buffer 		= 32000
 	yearTag		= datetime.datetime.now().strftime("%Y/%m")
 	netTag		= theNetwork.split(".")[0]+"."
 
-	#logger.log(20,"yearTag: {}, netTag: {}".format(yearTag, netTag) )
+	logger.log(20,"into doFingV5 with yearTag: {}, netTag: {}, version: {};  opsys: {}".format(yearTag, netTag, fingVersion, opsys) )
 	try:
 			fingFormat= " -o table,csv,  log,csv "
 			if theNetwork !="":
@@ -89,10 +91,11 @@ def doFingV5(fingVersion, opsys):
 					continue
 				break
 			time.sleep(2)
-			stopPGM('/bin/sh /usr/local/bin/fing')
+			#stopPGM('sudo -S /usr/local/bin/fing')
+			#stopPGM('/bin/sh /usr/local/bin/fing')
 
 			if ListenProcessFileHandle =="": return 
-			logger.log(20,"fing.bin launched, version: {};  opsys: {}".format(fingVersion, opsys))
+			logger.log(20,"fing.bin launched")
 
 			flags = fcntl.fcntl(ListenProcessFileHandle.stdout, fcntl.F_GETFL)  # get current p.stdout flags
 			fcntl.fcntl(ListenProcessFileHandle.stdout, fcntl.F_SETFL, flags | os.O_NONBLOCK)
@@ -121,6 +124,12 @@ def doFingV5(fingVersion, opsys):
 						lastForcedRestartTimeStamp = 1 # this forces a restart of the listener
 					continue
 
+				if lines.find("Discovery stopped") >-1:
+					logger.log(40,"restart of startfing due to discovery stppped message from fing.bin")
+	 				os.system(startCommand)
+					
+					
+
 				if len(lines) > 10:  
 					for line in lines.split("\n"): 
 						if line.find(netTag) == 0:
@@ -128,11 +137,12 @@ def doFingV5(fingVersion, opsys):
 						if line.find(yearTag) == 0:
 							logLines.append(line)
 
+					#logger.log(20,"lines {}".format(lines) )
 					#logger.log(20,"data {}".format(dataLines) )
 					#logger.log(20,"log  {}".format(logLines) )
 
 				if lines.find("Discovery round completed") > -1:
-					#logger.log(20,"Discovery round completed")
+					##logger.log(20,"Discovery round completed {}".format(dataLines) )
 					dataOut = ""
 					for line in dataLines:
 						dataOut += line+"\n"
@@ -190,6 +200,10 @@ def stopPGM(pgm, mypid =""):
 global indigoPreferencesPluginDir
 global logfileName, logLevel, printON, fingDataFileName, fingLogFileName, fingErrorFileName
 global fingEXEpath, theNetwork, yourPassword, theNetwork, netwType
+global startCommand
+
+startCommand = "/usr/bin/python2.7 '"+sys.argv[0] +"' '" +sys.argv[1]+"'"
+print "startcommand:", startCommand
 
 printON = False
 
@@ -203,7 +217,7 @@ fingLogFileName				= "fing.log"
 print pluginDir
 print indigoDir
 
-f = open(indigoDir+"Preferences/Plugins/com.karlwachs.fingscan/paramsForStart","r")
+f = open(sys.argv[1],"r")
 params 						= json.loads(f.read())
 f.close()
 fingEXEpath					= params["fingEXEpath"]
