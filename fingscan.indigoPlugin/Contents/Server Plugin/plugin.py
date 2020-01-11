@@ -528,8 +528,8 @@ class Plugin(indigo.PluginBase):
 				if self.decideMyLog(u"Logic"): self.indiLOG.log(20,"setting attribute for catalina  result:{}".format(ret))
 				self.indiLOG.log(20,"fing install check done")
 
-				opsys, fingVersion = self.checkVersion()
-				if opsys >= 10.15 and fingVersion < 5 and fingVersion >0 :
+				opsys, self.fingVersion = self.checkVersion()
+				if opsys >= 10.15 and self.fingVersion < 5 and self.fingVersion >0 :
 					self.indiLOG.log(50,"\nmiss match version of opsys:{} and fing:{} you need to upgrade FING to 64 bits. Download from\nhttps://www.fing.com/products/development-toolkit  use OSX button\nor use\n{}CLI_macOSX_5.4.0.zip\nto install".format(opsys,fingVersion,self.pathToPlugin))
 					for ii in range(1000):			
 						time.sleep(2)
@@ -2597,23 +2597,30 @@ class Plugin(indigo.PluginBase):
 		ret=""
 ## cd '/Library/Application Support/Perceptive Automation/Indigo 7.4/Preferences/Plugins/com.karlwachs.fingscan/';echo 'your osx password here.. no quotes' | sudo -S /usr/local/bin/fing  -s 192.168.1.0/24 -o json,fingservices.json > fingservices.log
 		try:
-			cmd ="cd '"+self.indigoPreferencesPluginDir+"'&echo '"+self.yourPassword+"' | sudo -S "+self.fingEXEpath+"  -s "+self.theNetwork+"/"+str(self.netwType)+" -o json,"+self.fingServicesFileName0+" > "+self.fingServicesLOGFileName0
-			self.indiLOG.log(10,u"fing network scan: "+self.theNetwork+u"/"+str(self.netwType))
-			if self.decideMyLog(u"Events"): self.indiLOG.log(10,cmd)
-			
+
+			if self.fingVersion >=5:
+				cmd ="cd '"+self.indigoPreferencesPluginDir+"';echo '"+self.yourPassword+"' | sudo -S "+self.fingEXEpath+"  -s "+self.theNetwork+"/"+str(self.netwType)+" -o json > "+self.fingServicesFileName0+" &"
+			else:
+				cmd ="cd '"+self.indigoPreferencesPluginDir+"';echo '"+self.yourPassword+"' | sudo -S "+self.fingEXEpath+"  -s "+self.theNetwork+"/"+str(self.netwType)+" -o json,"+self.fingServicesFileName0+" > "+self.fingServicesLOGFileName0
+
+			self.indiLOG.log(20,u"fing network scan: "+self.theNetwork+u"/"+str(self.netwType))
 			ret =subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
+			if True or self.decideMyLog(u"Events"): self.indiLOG.log(20,cmd)
+			
 
 		except Exception, e:
 			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 			self.indiLOG.log(40, u"  fing details failed: fing returned an error: "+unicode(ret))
 			return
 
-			
 		## read fing output file
 		try:
 			f = open(self.fingServicesFileName,"r")
 			fingOut = f.read()
 			f.close()
+			if self.fingVersion >=5:
+				fingOut = "["+fingOut.split("\n[")[1]
+
 		except Exception, e:
 			self.indiLOG.log(40, u"  fing details failed , no output file")
 			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))

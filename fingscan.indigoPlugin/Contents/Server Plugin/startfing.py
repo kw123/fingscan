@@ -61,7 +61,7 @@ def checkVersion():
 		logger.log(40,"in Line {} has error={}".format(sys.exc_traceback.tb_lineno, e))
 	return 0,0
 
-def doFingV5(fingVersion):
+def doFingV5(fingVersion, opsys):
 	global indigoPreferencesPluginDir
 	global logfileName, logLevel, printON, fingDataFileName, fingLogFileName, fingErrorFileName
 	global fingEXEpath, theNetwork, yourPassword, theNetwork, netwType
@@ -156,7 +156,6 @@ def doFingV5(fingVersion):
 					logLines = []
 	
 
-			# set the O_NONBLOCK flag of ListenProcessFileHandle.stdout file descriptor:
 	
 	except  Exception, e:
 		logger.log(40,"in Line {} has error={}".format(sys.exc_traceback.tb_lineno, e))
