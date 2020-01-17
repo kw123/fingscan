@@ -532,7 +532,8 @@ class Plugin(indigo.PluginBase):
 
 				self.opsys, self.fingVersion = self.checkVersion()
 				if self.opsys >= 10.15 and self.fingVersion < 5 and self.fingVersion >0 :
-					self.indiLOG.log(50,"\nmiss match version of opsys:{} and fing:{} you need to upgrade FING to 64 bits. Download from\nhttps://www.fing.com/products/development-toolkit  use OSX button\nor use\n{}CLI_macOSX_5.4.0.zip\nto install".format(opsys,fingVersion,self.pathToPlugin))
+					self.indiLOG.log(50,"\nmiss match version of opsys:{} and fing:{} you need to upgrade FING to 64 bit version (>=5). Download from\nhttps://www.fing.com/products/development-toolkit  use OSX button"+\
+					"\nor use\nCLI_macOSX_5.4.0.zip\n included in the plugin download to install\nthen delete fing.log and fing.data in the indigo preference directory and reload the plugin".format(self.opsys,fingVersion))
 					for ii in range(1000):			
 						time.sleep(2)
 
@@ -2600,7 +2601,7 @@ class Plugin(indigo.PluginBase):
 ## cd '/Library/Application Support/Perceptive Automation/Indigo 7.4/Preferences/Plugins/com.karlwachs.fingscan/';echo 'your osx password here.. no quotes' | sudo -S /usr/local/bin/fing  -s 192.168.1.0/24 -o json,fingservices.json > fingservices.log
 		try:
 
-			cmd ="echo '" +self.yourPassword + "' | sudo -S rm '"+self.fingServicesFileName+"'"
+			cmd ="echo '" +self.yourPassword + "' | sudo -S /bin/rm '"+self.fingServicesFileName+"'"
 			ret = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
 			if self.decideMyLog(u"Special"): self.indiLOG.log(20," del cmd: {}, ret: {}".format(cmd, ret) )
 			if self.opsys >= 10.15:
@@ -2909,9 +2910,9 @@ class Plugin(indigo.PluginBase):
 					retCode = self.killFing(u"onlyParents")
 					return 1
 
-
+ 
 			# start fing, send to background, dont wait, create 2 output files:  one table format file and one logfile
-			params =  {"yourPassword":self.yourPassword, "theNetwork":self.theNetwork, "netwType":self.netwType,"logLevel": 20, "fingEXEpath":self.fingEXEpath,"macUser":self.MACuserName}
+			params =  {"yourPassword":"&a3"+self.yourPassword[::-1]+"#5B", "theNetwork":self.theNetwork, "netwType":self.netwType,"logLevel": 20, "fingEXEpath":self.fingEXEpath,"macUser":self.MACuserName}
 			f = open(self.indigoPreferencesPluginDir+"paramsForStart","w")
 			f.write(json.dumps(params))
 			f.close()

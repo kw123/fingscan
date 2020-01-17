@@ -202,10 +202,7 @@ global logfileName, logLevel,  fingDataFileName, fingLogFileName, fingErrorFileN
 global fingEXEpath, theNetwork, yourPassword, theNetwork, netwType
 global startCommand
 
-startCommand = "/usr/bin/python2.7 '"+sys.argv[0] +"' '" +sys.argv[1]+"'"
-#print "startcommand:", startCommand
-
-
+startCommand 				= "/usr/bin/python2.7 '"+sys.argv[0] +"' '" +sys.argv[1]+"'"
 pluginDir					= sys.argv[0].split("startFing.py")[0]
 indigoDir					= pluginDir.split("Plugins/")[0]
 indigoPreferencesPluginDir 	= indigoDir+"Preferences/Plugins/com.karlwachs.fingscan/"
@@ -220,7 +217,7 @@ f.close()
 
 fingEXEpath					= params["fingEXEpath"]
 logLevel 					= params["logLevel"]
-yourPassword 				= params["yourPassword"]
+yourPassword 				= params["yourPassword"][3:-3][::-1] 
 theNetwork 					= params["theNetwork"]
 netwType 					= params["netwType"]
 macUser 					= params["macUser"]
@@ -230,29 +227,34 @@ macUser 					= params["macUser"]
 
 logging.basicConfig(level=logging.DEBUG, filename= logfileName,format='%(module)-23s L:%(lineno)3d Lv:%(levelno)s %(message)s', datefmt='%H:%M:%S')
 logger = logging.getLogger(__name__)
+
+
 #
 if logLevel > 20:
 	logger.setLevel(logging.ERROR)
 else:
 	logger.setLevel(logging.DEBUG)
+logger.log(20,"========= start   @ {}   =========== ".format(datetime.datetime.now()))
+
+
 
 stopOldPGMs()
 
-cmd = "cd '"+indigoPreferencesPluginDir+"'; echo '"+yourPassword+ "' | sudo /usr/sbin/chown "+macUser+" *"
-os.system(cmd) 
-cmd = "cd '"+indigoPreferencesPluginDir+"'; echo '"+yourPassword+ "' | sudo /bin/chmod -R 777 *"
-os.system(cmd) 
+#cmd = "cd '"++"'; echo '"+yourPassword+ "' | sudo /usr/sbin/chown "+macUser+" *"
+#os.system(cmd) 
+#cmd = "echo '"+yourPassword+ "' | sudo /bin/chmod -R 777 '"+indigoPreferencesPluginDir+"'"
+#os.system(cmd) 
 
 
-cmd ="cd '"+indigoPreferencesPluginDir+"';echo '" +yourPassword + "' | sudo -S rm "+fingDataFileName
+cmd ="echo '" +yourPassword + "' | sudo -S /bin/rm '"+indigoPreferencesPluginDir+fingDataFileName+"'"
 subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 #logger.log(40,cmd)
-cmd ="cd '"+indigoPreferencesPluginDir+"';echo '" +yourPassword + "' | sudo -S rm "+fingLogFileName
+cmd ="echo '" +yourPassword + "' | sudo -S /bin/rm '"+indigoPreferencesPluginDir+fingLogFileName+"'"
 subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 #logger.log(40,cmd)
+cmd ="echo 0 > '"+indigoPreferencesPluginDir+fingLogFileName+"'"
 
 	
-logger.log(20,"========= start   @ {}   =========== ".format(datetime.datetime.now()))
 startFing()
 logger.log(20,"========= stopped @ {}   =========== ".format(datetime.datetime.now()))
 sys.exit(0)		
