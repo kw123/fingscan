@@ -1,7 +1,13 @@
+Added features / changes in v7.31.51 @ 2020-01-17
+===================================================
+
+1. fix: Error error in Line# 535 ; error=global name 'fingVersion' is not defined
+
+
 Added features / changes in v7.31.50 @ 2020-01-17
 ===================================================
 
-1. efix: Error error in Line# 535 ; error=global name 'opsys' is not defined
+1. fix: Error error in Line# 535 ; error=global name 'opsys' is not defined
 
 
 Added features / changes in v7.31.49 @ 2020-01-11

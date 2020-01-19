@@ -533,7 +533,7 @@ class Plugin(indigo.PluginBase):
 				self.opsys, self.fingVersion = self.checkVersion()
 				if self.opsys >= 10.15 and self.fingVersion < 5 and self.fingVersion >0 :
 					self.indiLOG.log(50,"\nmiss match version of opsys:{} and fing:{} you need to upgrade FING to 64 bit version (>=5). Download from\nhttps://www.fing.com/products/development-toolkit  use OSX button"+\
-					"\nor use\nCLI_macOSX_5.4.0.zip\n included in the plugin download to install\nthen delete fing.log and fing.data in the indigo preference directory and reload the plugin".format(self.opsys,fingVersion))
+					"\nor use\nCLI_macOSX_5.4.0.zip\n included in the plugin download to install\nthen delete fing.log and fing.data in the indigo preference directory and reload the plugin".format(self.opsys,self.fingVersion))
 					for ii in range(1000):			
 						time.sleep(2)
 
