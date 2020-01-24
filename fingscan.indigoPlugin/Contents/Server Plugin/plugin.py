@@ -602,16 +602,19 @@ class Plugin(indigo.PluginBase):
 				self.netwInfo =  self.IPaddressCalc.makeJson()
 			except:
 				self.netwInfo = {'netWorkId': '192.168.1.0', 'broadcast': '192.168.1.255', 'netMask': '255.255.255.0', 'maxHosts': 254, 'hostRange': '192.168.1.1 - 192.168.1.254'}
-			self.indiLOG.log(20,"network info: "+unicode(self.netwInfo))
+			self.indiLOG.log(30,"network info: "+unicode(self.netwInfo))
 			self.broadcastIP = self.netwInfo["broadcast"]
 
 
 ############ for triggers:
 			self.currentEventN = "0"
 			try:
-				self.EVENTS=json.loads(self.pluginPrefs["EVENTS"])
+				xxx = ""
+				xxx = self.pluginPrefs["EVENTS"]
+				self.EVENTS=json.loads(xxx)
 			except:
 				self.EVENTS = {}
+				self.indiLOG.log(30,"empty or bad read of EVENT from prefs file: len(data): {}; \ndata: {} .. {}".format(len(xxx), xxx[0:100],xxx[-100:]) )
 
 			timeNow = time.time()
 			self.checkTriggerInitialized =False
@@ -1999,7 +2002,7 @@ class Plugin(indigo.PluginBase):
 							try:
 								indigo.devices[int(self.EVENTS[n]["IPdeviceMACnumber"][nDev])]
 							except:
-								self.indiLOG.log(40, u"cleanupEVENTS removing device from evants as indigo device does not exist:"+ unicode(self.EVENTS[n]["IPdeviceMACnumber"][nDev]) ) 
+								self.indiLOG.log(40, u"cleanupEVENTS removing device from EVENTS as indigo device does not exist: {}".format(self.EVENTS[n]["IPdeviceMACnumber"][nDev]) ) 
 								self.EVENTS[n]["IPdeviceMACnumber"][nDev] = "0"   
 
 				

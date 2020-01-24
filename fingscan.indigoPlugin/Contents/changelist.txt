@@ -1,3 +1,9 @@
+Added features / changes in v7.31.52 @ 2020-01-23
+===================================================
+
+1. added loggin statement in case empty or bad data is read from indigo prefs file for EVENTS data
+
+
 Added features / changes in v7.31.51 @ 2020-01-17
 ===================================================
 
