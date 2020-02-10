@@ -128,6 +128,7 @@ class Plugin(indigo.PluginBase):
 
 		major, minor, release 			= map(int, indigo.server.version.split("."))
 		self.indigoVersion 				= float(major)+float(minor)/10.
+		self.indigoRelease 				= release
 
 		self.pluginVersion				= pluginVersion
 		self.pluginId					= pluginId
@@ -4630,13 +4631,68 @@ class Plugin(indigo.PluginBase):
 		return
 	###########################	   cProfile stuff   ############################ END
 
+	####-----------	------	 ---------
+	def setSqlLoggerIgnoreStatesAndVariables(self):
+		try:
+			if self.indigoVersion <  7.4:                             return 
+			if self.indigoVersion == 7.4 and self.indigoRelease == 0: return 
+			#tt = ["beacon",              "rPI","rPI-Sensor","BLEconnect","sensor"]
 
+			outOffD = ""
+			outOffV = ""
+
+			for dev in indigo.devices.iter(self.pluginId):
+					sp = dev.sharedProps
+					if "sqlLoggerIgnoreStates" not in sp:
+						sp["sqlLoggerIgnoreStates"] = "lastfingup"
+						dev.replaceSharedPropsOnServer(sp)
+						outOffD += dev.name+";"
+					elif sp["sqlLoggerIgnoreStates"].find("lastfingup") == -1:
+						sp["sqlLoggerIgnoreStates"] += ",lastfingup"
+						dev.replaceSharedPropsOnServer(sp)
+						outOffD += dev.name+";"
+
+			varExcludeSQLList = ["ipDevsLastDevChangedIndigoName","ipDevsLastUpdate", "ipDevsNewDeviceNo",  "ipDevsNewIPNumber", "ipDevsOldNewIPNumber"]
+			if True:
+				for var in indigo.variables.iter():
+					if var.name.find("ipDevice") >-1:
+						varExcludeSQLList.append(var.name)
+
+			for v in varExcludeSQLList:
+					var = indigo.variables[v]
+					sp = var.sharedProps
+					#self.indiLOG.log(30,"setting /testing off: Var: {} sharedProps:{}".format(var.name.encode("utf8"), sp) )
+					if "sqlLoggerIgnoreChanges" in sp and sp["sqlLoggerIgnoreChanges"] == "true": 
+						continue
+					#self.indiLOG.log(30,"====set to off ")
+					outOffV += var.name+"; "
+					sp["sqlLoggerIgnoreChanges"] = "true"
+					var.replaceSharedPropsOnServer(sp)
+					if False: # check if it was written
+						var = indigo.variables[v]
+						sp = var.sharedProps
+						self.indiLOG.log(20,"switching off SQL logging for variable :{}: sp:{}".format(var.name.encode("utf8"), sp) )
+					
+
+			if len(outOffV) > 0: 
+				self.indiLOG.log(20," \n")
+				self.indiLOG.log(20,"switching off SQL logging for variables\n :{}".format(outOffV.encode("utf8")) )
+				self.indiLOG.log(20,"switching off SQL logging for variables END\n")
+			if len(outOffD) > 0: 
+				self.indiLOG.log(20," \n")
+				self.indiLOG.log(20,"switching off SQL logging for devices/state[lastfingup]\n :{}".format(outOffD.encode("utf8")) )
+				self.indiLOG.log(20,"switching off SQL logging for devices END\n")
+		except Exception, e:
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
+
+		return 
 
 ####-----------------   main loop          ---------
 	def runConcurrentThread(self):
 
 		self.initConfig()
 
+		self.setSqlLoggerIgnoreStatesAndVariables()
 
 		self.dorunConcurrentThread()
 		self.checkcProfileEND()

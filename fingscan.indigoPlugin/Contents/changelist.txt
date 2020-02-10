@@ -1,3 +1,9 @@
+Added features / changes in v7.31.53 @ 2020-02-02
+===================================================
+
+1. added suppression of varibale SQL logging, available with indigo 7.4.1
+
+
 Added features / changes in v7.31.52 @ 2020-01-23
 ===================================================
 
