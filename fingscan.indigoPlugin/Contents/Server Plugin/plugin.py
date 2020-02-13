@@ -631,6 +631,8 @@ class Plugin(indigo.PluginBase):
 ############ en/ disable mac to vendor lookup
 		
 			self.enableMACtoVENDORlookup    = self.pluginPrefs.get(u"enableMACtoVENDORlookup","21")
+			try: int(self.enableMACtoVENDORlookup)
+			except: self.enableMACtoVENDORlookup ="0"
 			self.waitForMAC2vendor = False
 			if self.enableMACtoVENDORlookup != "0":
 				self.M2V = M2Vclass.MAP2Vendor( pathToMACFiles=self.indigoPreferencesPluginDir+"mac2Vendor/", refreshFromIeeAfterDays = int(self.enableMACtoVENDORlookup), myLogger = self.indiLOG.log )
@@ -4530,7 +4532,8 @@ class Plugin(indigo.PluginBase):
 
 ########################################
 	def getVendortName(self,MAC):
-		if self.enableMACtoVENDORlookup !="0" and not self.waitForMAC2vendor:
+		if self.enableMACtoVENDORlookup == "0" : return 
+		if not self.waitForMAC2vendor:
 			self.waitForMAC2vendor = self.M2V.makeFinalTable(quiet=False)
 		return  self.M2V.getVendorOfMAC(MAC)
 

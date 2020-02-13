@@ -40,11 +40,11 @@
 
     <Field defaultValue="21" id="enableMACtoVENDORlookup" type="menu" alignText="right">
                 <List>
-                <Option value="0"  >disable </Option>
-                <Option value="7"  >enable, refresh every  7 days </Option>
-                <Option value="14" >enable, refresh every 14 days </Option>
-                <Option value="21" >enable, refresh every 21 days </Option>
-                <Option value="30" >enable, refresh every 30 days </Option>
+					<Option value="0"  >disable </Option>
+					<Option value="7"  >enable, refresh every  7 days </Option>
+					<Option value="14" >enable, refresh every 14 days </Option>
+					<Option value="21" >enable, refresh every 21 days </Option>
+					<Option value="30" >enable, refresh every 30 days </Option>
                 </List>
         <Label>MAC# to vendor lookup</Label>
     </Field>

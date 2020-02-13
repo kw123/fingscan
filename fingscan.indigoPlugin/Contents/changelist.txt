@@ -1,7 +1,13 @@
-Added features / changes in v7.31.53 @ 2020-02-02
+Added features / changes in v7.31.54 @ 2020-02-13
 ===================================================
 
-1. added suppression of varibale SQL logging, available with indigo 7.4.1
+1. fixed mac to vendor look up plugin exit when disabled
+
+
+Added features / changes in v7.31.53 @ 2020-02-09
+===================================================
+
+1. added suppression of variables SQL logging, available with indigo 7.4.1
 
 
 Added features / changes in v7.31.52 @ 2020-01-23
