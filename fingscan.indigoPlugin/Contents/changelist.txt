@@ -1,3 +1,23 @@
+Added features / changes in v7.31.57 @ 2020-10-12
+===================================================
+
+1. if a devices is not found (indigo return error), it is not auto-removed from events
+   the user is asked to remove device from event list
+   this should cover the casese where indigo has timeouts
+
+
+Added features / changes in v7.31.56 @ 2020-06-25
+===================================================
+
+1. changed debug logic message for logfile filesize,
+
+
+Added features / changes in v7.31.55 @ 2020-02-18
+===================================================
+
+1. when vendor lookup is disabled, and new device is added, "none" type error occured. fixed now 
+
+
 Added features / changes in v7.31.54 @ 2020-02-13
 ===================================================
 

@@ -739,19 +739,21 @@ class Plugin(indigo.PluginBase):
 				if self.allDeviceInfo[theMAC]["hardwareVendor"].find("\n") >-1: 
 					update = 1
 					self.allDeviceInfo[theMAC]["hardwareVendor"] = self.allDeviceInfo[theMAC]["hardwareVendor"].strip("\n").strip()
-				if self.decideMyLog(u"Logic"): self.indiLOG.log(10, theMAC+"  devID:"+str(self.allDeviceInfo[theMAC]["deviceId"])+" existingVendor >>"+self.allDeviceInfo[theMAC]["hardwareVendor"]+"<<" )
+				if self.decideMyLog(u"Logic"): self.indiLOG.log(10, "{}  devID:{} existingVendor >>{}<<".format(theMAC, self.allDeviceInfo[theMAC]["deviceId"], self.allDeviceInfo[theMAC]["hardwareVendor"]) )
 				if self.allDeviceInfo[theMAC]["deviceId"] !=0:             
 					if len(self.allDeviceInfo[theMAC][u"hardwareVendor"]) < 3 or  (self.allDeviceInfo[theMAC][u"hardwareVendor"].find("<html>")) > -1 :
-						vend= self.getVendortName(theMAC)
-						if self.decideMyLog(u"Logic"): self.indiLOG.log(10, theMAC+" Vendor info  >>"+vend+"<<" )
+						vend = self.getVendortName(theMAC)
+						if vend == None: vend = ""
+						if self.decideMyLog(u"Logic"): self.indiLOG.log(10, "{}  Vendor info  >>{}<<".format(theMAC,vend ) )
 						if vend != ""  or self.allDeviceInfo[theMAC][u"hardwareVendor"].find("<html>") > -1: 
 							update = 2
 
 				if update > 0:
 					if update == 1: 
 						vend = self.allDeviceInfo[theMAC]["hardwareVendor"].strip("\n")
+						if vend == None: vend = ""
 					try: 
-						self.indiLOG.log(10, " updating :"+theMAC+"  "+str(self.allDeviceInfo[theMAC]["deviceId"])+"  to >>"+vend +"<<")
+						self.indiLOG.log(10, " updating :{}  {}  to >>{}<<".format(theMAC, self.allDeviceInfo[theMAC]["deviceId"], vend))
 						self.allDeviceInfo[theMAC][u"hardwareVendor"]  = vend
 						dev = indigo.devices[self.allDeviceInfo[theMAC]["deviceId"]]
 						dev.updateStateOnServer("hardwareVendor",vend)
@@ -2001,11 +2003,14 @@ class Plugin(indigo.PluginBase):
 								pass                               
 												
 					if int(nDev) >= piBeaconStart:#  here the mac number is the indigo device # , remove it if the indigo device is gone
-						if self.EVENTS[n]["IPdeviceMACnumber"][nDev] !="" and self.EVENTS[n]["IPdeviceMACnumber"][nDev] !="0":
+						if self.EVENTS[n]["IPdeviceMACnumber"][nDev] != "" and self.EVENTS[n]["IPdeviceMACnumber"][nDev] !="0":
 							try:
 								indigo.devices[int(self.EVENTS[n]["IPdeviceMACnumber"][nDev])]
-							except:
-								self.indiLOG.log(40, u"cleanupEVENTS removing device from EVENTS as indigo device does not exist: {}".format(self.EVENTS[n]["IPdeviceMACnumber"][nDev]) ) 
+							except Exception, e:
+								self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
+								self.indiLOG.log(40, u"cleanupEVENTS:  please remove device from EVENTS as indigo device does not exist: {}".format(self.EVENTS[n]["IPdeviceMACnumber"][nDev]) ) 
+								continue
+								# dont auto delete let user remove from event listing
 								self.EVENTS[n]["IPdeviceMACnumber"][nDev] = "0"   
 
 				
@@ -3115,9 +3120,13 @@ class Plugin(indigo.PluginBase):
 		try:
 			if not os.path.isfile(self.fingLogFileName): return 
 			self.fingLogFileSizeNEW = int(os.path.getsize(self.fingLogFileName))
-			if  self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"  FING LOG data old  " + str(self.fingLogFileSizeold) + " new " + str(self.fingLogFileSizeNEW))
+			if  self.decideMyLog(u"Logic"): 
+				if self.fingLogFileSizeold == self.fingLogFileSizeNEW:
+					self.indiLOG.log(20,u"  FING LOG data ==> no change  file size: {}".format(self.fingLogFileSizeNEW))
 			if self.fingLogFileSizeold != self.fingLogFileSizeNEW:
 				self.fingLogFileSizeold = self.fingLogFileSizeNEW
+				if  self.decideMyLog(u"Logic"): 
+					self.indiLOG.log(20,u"  FING LOG data ==> changed    file size: {}".format(self.fingLogFileSizeNEW))
 			
 			## get last line of finglog file
 
@@ -4532,10 +4541,10 @@ class Plugin(indigo.PluginBase):
 
 ########################################
 	def getVendortName(self,MAC):
-		if self.enableMACtoVENDORlookup == "0" : return 
+		if self.enableMACtoVENDORlookup == "0" : return ""
 		if not self.waitForMAC2vendor:
 			self.waitForMAC2vendor = self.M2V.makeFinalTable(quiet=False)
-		return  self.M2V.getVendorOfMAC(MAC)
+			return  self.M2V.getVendorOfMAC(MAC)
 
 
 
