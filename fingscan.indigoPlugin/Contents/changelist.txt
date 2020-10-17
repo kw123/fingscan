@@ -1,3 +1,10 @@
+Added features / changes in v7.31.58 @ 2020-10-17
+===================================================
+
+1. added check if vendor field is empty
+2. added a lot of unicode ie u" instead of " and unicode() instead of str()
+
+
 Added features / changes in v7.31.57 @ 2020-10-12
 ===================================================
 
