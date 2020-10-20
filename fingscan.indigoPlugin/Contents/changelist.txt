@@ -1,3 +1,16 @@
+Added features / changes in v7.31.60 @ 2020-10-20
+===================================================
+
+1. added several saev prefs commands in code to make sure event defs are not lost
+
+
+
+Added features / changes in v7.31.59 @ 2020-10-19
+===================================================
+
+1. unicode formating and int devide // instead of /
+
+
 Added features / changes in v7.31.58 @ 2020-10-17
 ===================================================
 

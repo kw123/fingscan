@@ -251,6 +251,7 @@ class Plugin(indigo.PluginBase):
 					os.system(u"cp -R " + self.indigoPluginDirOld+u"* '" + self.indigoPreferencesPluginDir+u"'" )
 
 
+			self.savePrefs 					= 0
 			self.updateStatesList			= {}
 			self.updatePrefs				= False
 			self.fingDataModTimeOLD			= 0
@@ -1777,6 +1778,7 @@ class Plugin(indigo.PluginBase):
 			if self.decideMyLog(u"Unifi"): self.indiLOG.log(20,u"self.unifiDevices  "+unicode(self.unifiDevices))
 			if valuesDict[u"unifiEnabled"]: self.updateUnifi()
 
+			self.savePrefs = 1
 		except Exception, e:
 			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		if len(errorDict) > 0: return  valuesDict, errorDict
@@ -2053,6 +2055,7 @@ class Plugin(indigo.PluginBase):
 			self.EVENTS={}
 			self.cleanUpEvents()
 			self.pluginPrefs[u"EVENTS"]	=	json.dumps(self.EVENTS)
+			indigo.server.savePluginPrefs() 
 			if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"ResetEVENTS done")
 		except Exception, e:
 			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
@@ -2776,7 +2779,7 @@ class Plugin(indigo.PluginBase):
 		if numberIn <100: return unicode(numberIn)
 		nMod = unicode(numberIn%100)
 		if len(nMod) <2: nMod = u"0"+nMod  # 105 ==> A05; 115 ==> A15 205 ==> B05;  215 ==> B15
-		x = numberIn/100
+		x = numberIn//100
 		if x ==1: return u"A"+nMod
 		if x ==2: return u"B"+nMod
 		if x ==3: return u"C"+nMod
@@ -4707,8 +4710,10 @@ class Plugin(indigo.PluginBase):
 
 		self.setSqlLoggerIgnoreStatesAndVariables()
 
+		indigo.server.savePluginPrefs() 
 		self.dorunConcurrentThread()
 		self.checkcProfileEND()
+		indigo.server.savePluginPrefs() 
 
 		self.sleep(1)
 		if self.quitNOW !="":
@@ -4751,9 +4756,15 @@ class Plugin(indigo.PluginBase):
 		lastFingDATA = lastFingActivity
 		rebootMinute = 19 # 19 minutes after midnight, dont do it too close to 00:00 because of other processes might be active
 
+
 		self.timeOfStart= time.time()
 		try:
 			while self.quitNOW == u"no":
+
+				if self.savePrefs > 0: 
+					self.savePrefs = 0
+					indigo.server.savePluginPrefs() 
+
 				if self.redoAWAY >0:
 					self.sleep(1)
 					self.redoAWAY -=1
@@ -4843,6 +4854,7 @@ class Plugin(indigo.PluginBase):
 				if self.updatePrefs:
 					self.updatePrefs = False
 					self.pluginPrefs[u"EVENTS"]	=	json.dumps(self.EVENTS)
+					indigo.server.savePluginPrefs() 
 
 				
 				if time.time()-lastFingActivity > 280:
@@ -4970,6 +4982,7 @@ class Plugin(indigo.PluginBase):
 
 			self.pluginState  = u"end"
 			self.pluginPrefs[u"EVENTS"]	=	json.dumps(self.EVENTS)
+			indigo.server.savePluginPrefs() 
 
 			self.killFing(u"all")
 			self.killPGM(u"/startfing.py")
@@ -5005,6 +5018,7 @@ class Plugin(indigo.PluginBase):
 			self.pluginPrefs[u"EVENTS"]	    =	json.dumps(self.EVENTS)
 			self.pluginPrefs[u"piBeacon"]	=	json.dumps(self.piBeaconDevices)
 			self.pluginPrefs[u"UNIFI"]	    =	json.dumps(self.unifiDevices)
+			indigo.server.savePluginPrefs() 
 			try:
 				quitNowX = self.quitNow
 			except:
@@ -6242,7 +6256,7 @@ class Plugin(indigo.PluginBase):
 	def padIP(self,xxx):
 		if xxx == None:
 			return " ".ljust(25)
-		ddd =len(xxx)
+		ddd = len(xxx)
 		pad = u"   "
 		if ddd == 11:	pad = u"       "
 		if ddd == 12:	pad = u"     "
@@ -6263,20 +6277,20 @@ class Plugin(indigo.PluginBase):
 		if xxx == None:
 			return " ".ljust(25)
 		xxx=int(xxx)
-		if xxx < 10       : return u"    "+unicode(xxx)+u"               "
-		if xxx < 100      : return u"    "+unicode(xxx)+u"             "
-		if xxx < 1000     : return u"    "+unicode(xxx)+u"           "
-		if xxx < 10000    : return u"    "+unicode(xxx)+u"         "
+		if xxx < 10:	return u"    "+unicode(xxx)+u"               "
+		if xxx < 100:	return u"    "+unicode(xxx)+u"             "
+		if xxx < 1000:	return u"    "+unicode(xxx)+u"           "
+		if xxx < 10000:	return u"    "+unicode(xxx)+u"         "
 		return u"    "+unicode(xxx)+u"       "
 	
 	
 ########################################
 	def padStatus(self,xxx):
-		if xxx == u"up"     : return u"       "
-		if xxx == u"down"   : return u"   "
-		if xxx == u"expired": return u""
-		if xxx == u"changed": return u""
-		if xxx == u"double" : return u" "
+		if xxx == u"up":		return u"       "
+		if xxx == u"down":	 	return u"   "
+		if xxx == u"expired":	return u""
+		if xxx == u"changed":	return u""
+		if xxx == u"double":	return u" "
 		return u" "
 	
 ########################################
@@ -6299,7 +6313,7 @@ class Plugin(indigo.PluginBase):
 		theScale = NofA * Ascal + NofB * Bscal + NofC * Cscal + NofD * Dscal + NofE * Escal + NofF * Fscal + NofN * Nscal
 		##12*ee --> 12*dd = 12 blanks  difference --> 78 --> 120:  44/12 = 3.5
 		theNumberOfBlanks = int(((115 - theScale) / 3.5))
-		theNumberOfBlanks =min(10,max(0,theNumberOfBlanks))
+		theNumberOfBlanks = min(10,max(0,theNumberOfBlanks))
 		
 		blanks = "    "
 		for kk in range(1,theNumberOfBlanks):
@@ -6314,11 +6328,11 @@ class Plugin(indigo.PluginBase):
 		else: last =""
 		ips[3] = last+digit
 		if u"changed" in ipN:
-			ips[3]+=u"-changed"
+			ips[3] += u"-changed"
 		elif u"double" in ipN:
-			ips[3]+=u"-double"
+			ips[3] += u"-double"
 		else:
-			ips[3]+=u"        "
+			ips[3] += u"        "
 		return ".".join(ips)
 	####################  utilities -- end #######################
 	def checkTimeZone (self,InfoTimeStamp):
