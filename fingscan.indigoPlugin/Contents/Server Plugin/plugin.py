@@ -327,7 +327,8 @@ class Plugin(indigo.PluginBase):
 
 ############ set basic parameters to default before we use them
 
-			self.enableBroadCastEvents  = self.pluginPrefs.get(u"enableBroadCastEvents","0")
+			try: self.enableBroadCastEvents  = self.pluginPrefs.get(u"enableBroadCastEvents","0")
+			except: self.enableBroadCastEvents = "0"
 			self.sendBroadCastEventsList    = []
 
 
@@ -1799,6 +1800,8 @@ class Plugin(indigo.PluginBase):
 			self.setLogfile(valuesDict[u"logFileActive2"])
 
 			self.enableBroadCastEvents  = valuesDict[u"enableBroadCastEvents"]
+			if self.enableBroadCastEvents not in ["0","all","individual"]:
+				self.enableBroadCastEvents  = "0"
 
 			xx   = valuesDict[u"indigoDevicesFolderName"]
 			if xx != self.indigoDevicesFolderName:

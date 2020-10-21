@@ -1,7 +1,13 @@
+Added features / changes in v7.31.61 @ 2020-10-21
+===================================================
+
+1. set enableBroadCastEvents to defalut  if not set in config
+
+
 Added features / changes in v7.31.60 @ 2020-10-20
 ===================================================
 
-1. added several saev prefs commands in code to make sure event defs are not lost
+1. added several save prefs commands in code to make sure event defs are not lost
 
 
 

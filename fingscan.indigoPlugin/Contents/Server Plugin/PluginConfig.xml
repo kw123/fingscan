@@ -72,7 +72,7 @@
 <Label>use UNIFI devices for tracking</Label></Field>
 
 
-<Field    id="enableBroadCastEvents" type="menu"  defaultValue="false" tooltip="if enabled any change of status of a up/down devices will send indigo broadcast  to read the status and use it to determine home or away events">
+<Field    id="enableBroadCastEvents" type="menu"  defaultValue="0" tooltip="if enabled any change of status of a up/down devices will send indigo broadcast  to read the status and use it to determine home or away events">
     <List>
         <Option value="0"          >disable</Option>
         <Option value="all"        >ENABLE ALL:   for all devices that have an up/ down status</Option>
