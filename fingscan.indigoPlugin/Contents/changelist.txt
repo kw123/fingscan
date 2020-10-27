@@ -1,3 +1,9 @@
+Added features / changes in v7.31.63 @ 2020-10-27
+===================================================
+
+1. added check (try, except)  for datestamp in fing.data
+
+
 Added features / changes in v7.31.62 @ 2020-10-27
 ===================================================
 

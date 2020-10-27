@@ -2953,7 +2953,9 @@ class Plugin(indigo.PluginBase):
 			found = False
 			for ii in range(5):
 				self.sleep( 20 )
-				self.indiLOG.log(20,u"Checking if FING created output, old timeStamp:{}; new timeStamp:{}".format(dataFileTimeOld,os.path.getmtime(self.fingDataFileName)) )
+				try:	gtime= os.path.getmtime(self.fingDataFileName)
+				except: continue
+				self.indiLOG.log(20,u"Checking if FING created output, old timeStamp:{}; new timeStamp:{}".format(dataFileTimeOld, gtime)) )
 				if dataFileTimeOld != os.path.getmtime(self.fingDataFileName):
 					found = True
 					self.indiLOG.log(20,u"Initializing ..  FING created new data   waiting ~ 1 minute for stable operation")
