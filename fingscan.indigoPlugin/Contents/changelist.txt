@@ -1,7 +1,13 @@
+Added features / changes in v7.31.62 @ 2020-10-27
+===================================================
+
+1. added debug-log statements for startfing
+
+
 Added features / changes in v7.31.61 @ 2020-10-21
 ===================================================
 
-1. set enableBroadCastEvents to defalut  if not set in config
+1. set enableBroadCastEvents to default  if not set in config
 
 
 Added features / changes in v7.31.60 @ 2020-10-20

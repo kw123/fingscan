@@ -108,6 +108,7 @@ emptyEVENT ={#              -including Idevices option-------------             
 emptyWiFiMacList=[u"x",u"x","",u"x",u"x","","","","","","",""]
 indigoMaxDevices = 1024
 emptyWifiMacAv={u"sumSignal":{u"2GHz":0.,u"5GHz":0.},u"numberOfDevices":{u"2GHz":0.,u"5GHz":0.},u"curAvSignal":{u"2GHz":0.,u"5GHz":0.},u"curDev":{u"2GHz":0.,u"5GHz":0.},u"numberOfCycles":{u"2GHz":0.,u"5GHz":0.},u"noiseLevel":{u"2GHz": u"0",u"5GHz": u"0"}}
+_debAreas = [u"Logic",u"Ping",u"Wifi",u"Events",u"iFind",u"piBeacon",u"Unifi",u"BC",u"Special",u"StartFi",u"all"]
 
 
 
@@ -319,7 +320,7 @@ class Plugin(indigo.PluginBase):
 
 ############ startup message
 			self.debugLevel			= []
-			for d in [u"Logic",u"Ping",u"Wifi",u"Events",u"iFind",u"piBeacon",u"Unifi",u"BC",u"Special",u"all"]:
+			for d in _debAreas:
 				if self.pluginPrefs.get(u"debug"+d, False): self.debugLevel.append(d)
 			self.setLogfile(self.pluginPrefs.get(u"logFileActive2", u"standard"))
 			 
@@ -1795,7 +1796,7 @@ class Plugin(indigo.PluginBase):
 			rebootRequired   = False
 			
 			self.debugLevel			= []
-			for d in [u"Logic",u"Ping",u"Wifi",u"Events",u"iFind",u"piBeacon",u"Unifi",u"BC",u"Special",u"all"]:
+			for d in _debAreas:
 				if u"debug"+d in valuesDict and valuesDict[u"debug"+d]: self.debugLevel.append(d)
 			self.setLogfile(valuesDict[u"logFileActive2"])
 
@@ -2928,7 +2929,10 @@ class Plugin(indigo.PluginBase):
 
  
 			# start fing, send to background, dont wait, create 2 output files:  one table format file and one logfile
-			params =  {"yourPassword":"&a3"+self.yourPassword[::-1]+"#5B", "theNetwork":self.theNetwork, "netwType":self.netwType,"logLevel": 20, "fingEXEpath":self.fingEXEpath,"macUser":self.MACuserName}
+			if self.decideMyLog(u"startFi"):	deblevelForStartFing = 0
+			else:								deblevelForStartFing = 20
+			
+			params =  {"yourPassword":"&a3"+self.yourPassword[::-1]+"#5B", "theNetwork":self.theNetwork, "netwType":self.netwType,"logLevel": deblevelForStartFing, "fingEXEpath":self.fingEXEpath,"macUser":self.MACuserName}
 			f = open(self.indigoPreferencesPluginDir+"paramsForStart","w")
 			f.write(json.dumps(params))
 			f.close()
@@ -2938,9 +2942,9 @@ class Plugin(indigo.PluginBase):
 					cmd ="cd '"+self.indigoPreferencesPluginDir+"';echo '" + self.yourPassword + "' | sudo -S '"+self.fingEXEpath+"' "+self.theNetwork+"/"+unicode(self.netwType)+" -o table,csv,'" +  self.fingDataFileName0+ "'  log,csv,'" + self.fingLogFileName0+ "'  >> '" + self.fingErrorFileName0+"'  > /dev/null 2>&1 &"
 				else:
 					cmd ="cd '"+self.indigoPreferencesPluginDir+"';echo '" + self.yourPassword + "' | sudo -S '"+self.fingEXEpath+"' -o table,csv,'" +  self.fingDataFileName0+ "'  log,csv,'" + self.fingLogFileName0+ "'  >> '" + self.fingErrorFileName0+ "'  > /dev/null 2>&1 &"
-			if self.decideMyLog(u"Special"): self.indiLOG.log(20,u"FING cmd= {}".format(cmd) )
+			if self.decideMyLog(u"startFi"): self.indiLOG.log(20,u"FING cmd= {}".format(cmd) )
 			os.system(cmd)
-			if self.decideMyLog(u"Special"): self.indiLOG.log(20,u"  waiting for FING to start and produce output pid")
+			if self.decideMyLog(u"startFi"): self.indiLOG.log(20,u"  waiting for FING to start and produce output pid")
 			self.sleep( 1 )
 			self.killFing(u"onlyParents")
 

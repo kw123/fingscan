@@ -31,7 +31,7 @@ def startFing():
 			else:
 				cmd =u"cd '"+indigoPreferencesPluginDir+u"';echo '" +yourPassword +u"' | sudo -S '"+fingEXEpath+"' "+formatFING+" > /dev/null 2>&1 &"
 			os.system(cmd)
-			logger.log(20,u"fing.bin launched, version: {},  opsys: {}".format(fingVersion, opsys))
+			if logLevel > 0: logger.log(20,u"fing.bin launched, version: {},  opsys: {}".format(fingVersion, opsys))
 			time.sleep(0.5)
 			stopPGM(u'/bin/sh /usr/local/bin/fing')
 			return 
@@ -51,11 +51,10 @@ def checkVersion():
 	try:
 		opsys	=  platform.mac_ver()[0].split(".")
 		opsys	= float(opsys[0]+"."+opsys[1])
-		#logger.log(20,"{}".format(opsys))
 		cmd 	= u"echo '"+yourPassword+ u"' | sudo -S "+fingEXEpath+u" -v"
 		ret 	= subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[0].strip("\n").split(".")
 		fingVersion	= float(ret[0]+"."+ret[1])
-		#logger.log(20,"{}  {}".format(ret, fingVersion))
+		if logLevel > 0: logger.log(20,"chk versions.opsys: {};   fingVersion:{} from cmd:{};   ".format(opsys, fingVersion, cmd))
 		return opsys, fingVersion
 	except  Exception, e:
 		logger.log(40,u"in Line {} has error={}".format(sys.exc_traceback.tb_lineno, e))
@@ -71,7 +70,7 @@ def doFingV5(fingVersion, opsys):
 	yearTag		= datetime.datetime.now().strftime(u"%Y/%m")
 	netTag		= theNetwork.split(u".")[0]+"."
 
-	logger.log(20,u"into doFingV5 with yearTag: {}, netTag: {}, version: {};  opsys: {}".format(yearTag, netTag, fingVersion, opsys) )
+	if logLevel > 0: logger.log(20,u"into doFingV5 with yearTag: {}, netTag: {}, version: {};  opsys: {}".format(yearTag, netTag, fingVersion, opsys) )
 	try:
 			fingFormat= u" -o table,csv,  log,csv "
 			if theNetwork !="":
@@ -79,6 +78,7 @@ def doFingV5(fingVersion, opsys):
 			else:
 				cmd =u"cd '"+indigoPreferencesPluginDir+u"';echo '" +yourPassword + u"' | sudo -S '"+fingEXEpath+u"' "+fingFormat+u" &"
 
+			if logLevel > 0:logger.log(20,u"fing start command: {}".format(cmd)) 
 			ListenProcessFileHandle =""
 			for ii in range(3):
 				ListenProcessFileHandle = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -193,7 +193,7 @@ def stopPGM(pgm, mypid =""):
 		if len(pid) < 3: continue # 100
 		if pid == mypid: continue # dont kill myself
 		cmd = u"echo '" + yourPassword + u"' | sudo -S /bin/kill -9 " + str(pid) +u" > /dev/null 2>&1 &"
-		#logger.log(20,u"  FING kill cmd:" + cmd)
+		if logLevel > 0: logger.log(20,u"  FING kill cmd:" + cmd)
 		ret= subprocess.Popen(cmd,shell=True) # kill fing
 
 ####### main pgm / loop ############
@@ -230,17 +230,14 @@ logger = logging.getLogger(__name__)
 
 
 #
-if logLevel > 20:
-	logger.setLevel(logging.ERROR)
-else:
-	logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.DEBUG)
 logger.log(20,u"========= start   @ {}   =========== ".format(datetime.datetime.now()))
 
 
 
 stopOldPGMs()
 
-#cmd = "cd '"++"'; echo '"+yourPassword+ "' | sudo /usr/sbin/chown "+macUser+" *"
+#cmd = "cd '"+"'; echo '"+yourPassword+ "' | sudo /usr/sbin/chown "+macUser+" *"
 #os.system(cmd) 
 #cmd = "echo '"+yourPassword+ "' | sudo /bin/chmod -R 777 '"+indigoPreferencesPluginDir+"'"
 #os.system(cmd) 
@@ -248,13 +245,13 @@ stopOldPGMs()
 
 cmd = u"echo '" +yourPassword + u"' | sudo -S /bin/rm '"+indigoPreferencesPluginDir+fingDataFileName+u"'"
 subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-#logger.log(40,cmd)
+if logLevel > 0:  logger.log(40,cmd)
 cmd = u"echo '" +yourPassword + u"' | sudo -S /bin/rm '"+indigoPreferencesPluginDir+fingLogFileName+u"'"
 subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-#logger.log(40,cmd)
+if logLevel > 0: logger.log(40,cmd)
 cmd = u"echo 0 > '"+indigoPreferencesPluginDir+fingLogFileName+"'"
 
 	
 startFing()
-logger.log(20,u"========= stopped @ {}   =========== ".format(datetime.datetime.now()))
+if logLevel > 0: logger.log(20,u"========= stopped @ {}   =========== ".format(datetime.datetime.now()))
 sys.exit(0)		
