@@ -95,8 +95,10 @@ emptyEVENT ={#              -including Idevices option-------------             
 	u"nextTimeToCheck"	   :{u"1":1.0,u"2":1.0,u"3":1.0,u"4":1.0,u"5":1.0,u"6":1.0,u"7":1.0,u"8":1.0,u"9":1.0,u"10":1.0,u"11":1.0,u"12":1.0,u"13":1.0,u"14":1.0,u"15":1.0,u"16":1.0,u"17":1.0,u"18":1.0,u"19":1.0,u"20":1.0,u"21":1.0,u"22":1.0,u"23":1.0,u"24":1.0,u"25":1.0,u"26":1.0,u"27":1.0,u"28":1.0,u"29":1.0,u"30":1.0,u"31":1.0,u"32":1.0,u"33":1.0,u"34":1.0},
 	u"oneAway": u"0",
 	u"allAway": u"0",
+	u"nAway": 0,
 	u"allHome": u"0",
 	u"oneHome": u"0",
+	u"nHome": 0,
 	u"distanceAwayLimit": 66666.,
 	u"distanceHomeLimit": -1,
 	u"minimumTimeAway": 300,
@@ -828,11 +830,18 @@ class Plugin(indigo.PluginBase):
 				pass
 			self.FINGscanFolderID = indigo.variables.folders[u"FINGscanEvents"].id
 			for i in self.EVENTS:
-				try:
-					indigo.variable.create(u"allHome_"+unicode(i),u"",folder=self.FINGscanFolderID)
-					indigo.variable.create(u"oneHome_"+unicode(i),u"",folder=self.FINGscanFolderID)
-				except:
-					pass
+				try: 	indigo.variable.create(u"allHome_"+unicode(i),u"",folder=self.FINGscanFolderID)
+				except:	pass
+				try: 	indigo.variable.create(u"oneHome_"+unicode(i),u"",folder=self.FINGscanFolderID)
+				except:	pass
+				try: 	indigo.variable.create(u"nHome_"+unicode(i),u"",folder=self.FINGscanFolderID)
+				except:	pass
+				try: 	indigo.variable.create(u"allAway_"+unicode(i),u"",folder=self.FINGscanFolderID)
+				except:	pass
+				try: 	indigo.variable.create(u"oneAway_"+unicode(i),u"",folder=self.FINGscanFolderID)
+				except:	pass
+				try: 	indigo.variable.create(u"nAway_"+unicode(i),u"",folder=self.FINGscanFolderID)
+				except:	pass
 
 			
 			if init: 
@@ -845,24 +854,21 @@ class Plugin(indigo.PluginBase):
 
 
 
-			for i in self.EVENTS:
-				try:
-					indigo.variable.create(u"allAway_"+unicode(i),u"",folder=self.FINGscanFolderID)
-					indigo.variable.create(u"oneAway_"+unicode(i),u"",folder=self.FINGscanFolderID)
-				except:
-					pass
 			for nEvent in self.EVENTS:
-				evnt=self.EVENTS[nEvent]
-				if "oneHome" not in evnt: continue
-				
-				xx=  indigo.variables[u"oneHome_"+nEvent].value
-				if evnt[u"oneHome"]  !=  xx:                     indigo.variable.updateValue(u"oneHome_"+nEvent,evnt[u"oneHome"])
-				xx=  indigo.variables[u"allHome_"+nEvent].value
-				if evnt[u"allHome"]  !=  xx:                     indigo.variable.updateValue(u"allHome_"+nEvent,evnt[u"allHome"])
-				xx=  indigo.variables[u"oneAway_"+nEvent].value
-				if evnt[u"oneAway"]  !=  xx:                     indigo.variable.updateValue(u"oneAway_"+nEvent,evnt[u"oneAway"])
-				xx=  indigo.variables[u"allAway_"+nEvent].value
-				if evnt[u"allAway"]  !=  xx:                     indigo.variable.updateValue(u"allAway_"+nEvent,evnt[u"allAway"])
+				evnt = self.EVENTS[nEvent]
+				if u"oneHome" not in evnt: continue
+				xx =  unicode(indigo.variables[u"oneHome_"+nEvent].value)
+				if evnt[u"oneHome"]  !=  xx:                	indigo.variable.updateValue(u"oneHome_"+nEvent,evnt[u"oneHome"])
+				xx =  unicode(indigo.variables[u"allHome_"+nEvent].value)
+				if evnt[u"allHome"]  !=  xx:               		indigo.variable.updateValue(u"allHome_"+nEvent,evnt[u"allHome"])
+				xx =  unicode(indigo.variables[u"allHome_"+nEvent].value)
+				if evnt[u"nHome"]  !=  xx:                  	indigo.variable.updateValue(u"nHome_"+nEvent,unicode(evnt[u"nHome"]))
+				xx =  unicode(indigo.variables[u"oneAway_"+nEvent].value)
+				if evnt[u"oneAway"]  !=  xx:                  	indigo.variable.updateValue(u"oneAway_"+nEvent,evnt[u"oneAway"])
+				xx =  unicode(indigo.variables[u"allAway_"+nEvent].value)
+				if evnt[u"allAway"]  !=  xx:             		indigo.variable.updateValue(u"allAway_"+nEvent,evnt[u"allAway"])
+				xx =  unicode(indigo.variables[u"nAway_"+nEvent].value)
+				if evnt[u"nAway"]  !=  xx:                    	indigo.variable.updateValue(u"nAway_"+nEvent,unicode(evnt[u"nAway"]))
 		except Exception, e:
 			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
 		return
@@ -2056,9 +2062,9 @@ class Plugin(indigo.PluginBase):
 ########################################
 	def	resetEvents(self):
 		try:
-			self.EVENTS={}
+			self.EVENTS = {}
 			self.cleanUpEvents()
-			self.pluginPrefs[u"EVENTS"]	=	json.dumps(self.EVENTS)
+			self.pluginPrefs[u"EVENTS"]	= json.dumps(self.EVENTS)
 			indigo.server.savePluginPrefs() 
 			if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"ResetEVENTS done")
 		except Exception, e:
@@ -2189,8 +2195,10 @@ class Plugin(indigo.PluginBase):
 				out+=   	u"Time right now:          :"+timeNowHMS.rjust(12)+"\n"
 				out+=   	u"ALL Devices         Home :"+unicode(evnt[u"allHome"]).rjust(12)+u"  -- reacts after minTimeNotHome"+"\n"
 				out+=   	u"AtLeast ONE Device  Home :"+unicode(evnt[u"oneHome"]).rjust(12)+u"  -- reacts after minTimeNotHome"+"\n"
+				out+=   	u"n Devices           Home :"+unicode(evnt[u"nHome"]).rjust(12)  +u"  -- reacts after minTimeNotHome"+"\n"
 				out+=   	u"ALL Devices         Away :"+unicode(evnt[u"allAway"]).rjust(12)+u"  -- reacts minTimeAway bf Trig"+"\n"
 				out+=   	u"AtLeast ONE Device  Away :"+unicode(evnt[u"oneAway"]).rjust(12)+u"  -- reacts minTimeAway bf Trig"+"\n"
+				out+=   	u"n Devices           Away :"+unicode(evnt[u"nAway"]).rjust(12)  +u"  -- reacts minTimeAway bf Trig"+"\n"
 				if prntDist:
 					out+=  u"minDist.toBeAway         :"+unicode(u"%5.2f"%float(evnt[u"distanceAwayLimit"])).rjust(12)+u"\n"
 					out+=  u"minDist.toBeNotHome      :"+unicode(u"%5.2f"%float(evnt[u"distanceHomeLimit"])).rjust(12)+u"\n"
@@ -3751,7 +3759,10 @@ class Plugin(indigo.PluginBase):
 				minAwayTime =999999
 				maxHomeTime =0
 				maxAwayTime =0
-				
+
+				evnt[u"nHome"]  = 0		
+				evnt[u"nAway"]  = 0		
+
 				for nDev in evnt[u"IPdeviceMACnumber"]:
 					if evnt[u"IPdeviceMACnumber"][nDev] == u"0": continue
 					if evnt[u"IPdeviceMACnumber"][nDev] == "": continue
@@ -3832,8 +3843,8 @@ class Plugin(indigo.PluginBase):
 
 
 					## check iFind devcies
-					metersH=-8888888888
-					metersA=-1.
+					metersH = -8888888888
+					metersA = -1.
 					if len(evnt[u"iDeviceName"][nDev]) > 1 and (
 						evnt[u"iDeviceUseForAway"][nDev] == u"1" or
 						evnt[u"iDeviceUseForHome"][nDev] == u"1"): 
@@ -4013,7 +4024,7 @@ class Plugin(indigo.PluginBase):
 						if (AwayStat[nDev] and AwayDist[nDev]) :
 							if float(evnt[u"minimumTimeAway"]) >0.:
 								evnt[u"currentStatusAway"][nDev]	= u"startedTimer"
-								allAway=False  # added , was missing 
+								allAway = False  # added , was missing 
 							else:
 								evnt[u"currentStatusAway"][nDev]	= u"AWAY"
 								oneAway = True
@@ -4021,16 +4032,16 @@ class Plugin(indigo.PluginBase):
 							evnt[u"secondsOfLastOFF"][nDev]= timeNowm2
 							evnt[u"timeOfLastOFF"][nDev]= timeNowHMS
 						else:
-							allAway=False
+							allAway = False
 					elif evnt[u"currentStatusAway"][nDev] == "startedTimer":
 						   if (AwayStat[nDev] and AwayDist[nDev]):
 								if AwayTime[nDev] >= float(evnt[u"minimumTimeAway"]):
 									evnt[u"currentStatusAway"][nDev] = u"AWAY"
 								else:    
-									allAway=False
+									allAway = False
 						   else:    
 								evnt[u"currentStatusAway"][nDev] = u"0"
-								allAway=False
+								allAway = False
 					 
 					if evnt[u"currentStatusAway"][nDev] == u"AWAY":
 						if (AwayStat[nDev] and AwayDist[nDev]):
@@ -4044,6 +4055,10 @@ class Plugin(indigo.PluginBase):
 							allAway = False
 							evnt[u"currentStatusAway"][nDev]	= u"0"
 							evnt[u"secondsOfLastOFF"][nDev]= timeNowm2
+					if evnt[u"currentStatusAway"][nDev] == u"AWAY":
+						evnt[u"nAway"] += 1
+
+
 	#### home status
 					if evnt[u"currentStatusHome"][nDev] == u"0": # was not home
 						if (HomeStat[nDev] or HomeDist[nDev]):
@@ -4056,13 +4071,13 @@ class Plugin(indigo.PluginBase):
 							if maxHomeTime >= float(evnt[u"minimumTimeHome"]):
 								allHomeTrigger =True
 						else:
-							allHome=False
+							allHome = False
 					else:  # it is or was  home
 						if (HomeStat[nDev] or HomeDist[nDev]): # still home: restart timer
 							evnt[u"timeOfLastON"][nDev]= timeNowHMS
 							evnt[u"secondsOfLastON"][nDev]= timeNowm2
 							evnt[u"currentStatusHome"][nDev]	= u"HOME"
-							oneHome =True
+							oneHome = True
 							# this is wrong:
 							#if minHomeTime >= float(evnt[u"minimumTimeHome"]):
 							#    oneHomeTrigger =True
@@ -4070,16 +4085,18 @@ class Plugin(indigo.PluginBase):
 							#    allHomeTrigger =True
 						else:
 							evnt[u"currentStatusHome"][nDev]	= u"0"
-							allHome=False
+							allHome = False
+					if evnt[u"currentStatusHome"][nDev]	== u"HOME":
+						evnt[u"nHome"] += 1
 					if self.decideMyLog(u"Events"): out+="EVENT# "+unicode(nEvent).ljust(2)+u"  "+unicode(nDev).rjust(3)+"   " +unicode(HomeStat[nDev]).ljust(12)+ unicode(HomeTime[nDev]).ljust(12) + unicode(HomeDist[nDev]).ljust(12)+ unicode(AwayStat[nDev]).ljust(12)+ unicode(AwayTime[nDev]).ljust(12)+ unicode(AwayDist[nDev]).ljust(12) + unicode(oneHome).ljust(8)+ unicode(allHome).ljust(8)+ unicode(oneAway).ljust(8)+ unicode(allAway).ljust(8) +"\n"
 
 
 				if self.decideMyLog(u"Events"): out+="EVENT# "+unicode(nEvent).ljust(2)+u"  "+u"oneHome:" + evnt[u"oneHome"]+"; allHome:" + evnt[u"allHome"]+"; oneAway:" + evnt[u"oneAway"]+"; allAway:" + evnt[u"allAway"] +"\n"
 				if time.time() - self.timeOfStart > 100:
 					if oneHome:
-						if evnt[u"oneHome"]!= u"1" :
+						if evnt[u"oneHome"] != u"1" :
 							if oneHomeTrigger:
-								evnt[u"oneHome"]= u"1"
+								evnt[u"oneHome"] = u"1"
 								self.updatePrefs = True
 								indigo.variable.updateValue(u"oneHome_"+nEvent,u"1")
 								if self.checkTriggerInitialized:
@@ -4092,9 +4109,9 @@ class Plugin(indigo.PluginBase):
 							indigo.variable.updateValue(u"oneHome_"+nEvent,u"0")
 							self.updatePrefs = True
 					if allHome:
-						if evnt[u"allHome"] !=  u"1":
+						if evnt[u"allHome"] != u"1":
 							if allHomeTrigger:
-								evnt[u"allHome"]= u"1"
+								evnt[u"allHome"] = u"1"
 								self.updatePrefs = True
 								indigo.variable.updateValue(u"allHome_"+nEvent,u"1")
 								if self.checkTriggerInitialized:
@@ -4140,6 +4157,13 @@ class Plugin(indigo.PluginBase):
 							evnt[u"oneAway"] = u"0"
 							indigo.variable.updateValue(u"oneAway_"+nEvent, u"0")
 							self.updatePrefs = True
+
+					if unicode(evnt[u"nAway"]) != indigo.variables[u"nAway_"+nEvent].value:
+						indigo.variable.updateValue(u"nAway_"+nEvent, unicode(evnt[u"nAway"]))
+					if unicode(evnt[u"nHome"]) != indigo.variables[u"nHome_"+nEvent].value:
+						indigo.variable.updateValue(u"nHome_"+nEvent, unicode(evnt[u"nHome"]))
+
+
 
 				if self.decideMyLog(u"Events"): self.printEvents(printEvents=nEvent)
 	#		if self.decideMyLog(u"Events"): self.indiLOG.log(10,u" leaving checkTriggers   ---->")
