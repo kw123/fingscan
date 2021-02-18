@@ -1,3 +1,11 @@
+Added features / changes in v7.32.65 @ 2021-2-18
+===================================================
+
+1. fixed error message: fingscan Error error in Line# 788 ; error=list index out of range
+   replaced with a more meaning full error message
+   happens when fing is not (properly) installed or password is not set 
+
+
 Added features / changes in v7.32.64 @ 2020-11-24
 ===================================================
 

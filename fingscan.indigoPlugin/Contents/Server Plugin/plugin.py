@@ -543,7 +543,11 @@ class Plugin(indigo.PluginBase):
 					u"\nor use\nCLI_macOSX_5.4.0.zip\n included in the plugin download to install\nthen delete fing.log and fing.data in the indigo preference directory and reload the plugin".format(self.opsys,self.fingVersion))
 					for ii in range(1000):			
 						time.sleep(2)
-
+				if self.fingVersion  ==-1 :
+					self.indiLOG.log(50,u"\nfing version not avaibale, is it installed? should be:{}\nsleeping now for 1 hour, you need to install / configure fing and restart".format(self.fingEXEpath))
+					for ii in range(1000):			
+						time.sleep(2)
+			
 
 ############ get WIFI router info if available
 			self.routerType	= self.pluginPrefs.get(u"routerType","0")
@@ -786,12 +790,17 @@ class Plugin(indigo.PluginBase):
 			opsys		= platform.mac_ver()[0].split(u".")
 			opsys		= float(opsys[0]+u"."+opsys[1])
 			cmd 		= u"echo '"+self.yourPassword+ u"' | sudo -S "+self.fingEXEpath+" -v"
-			ret 		= subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[0].strip("\n").split(".")
-			fingVersion	= float(ret[0]+"."+ret[1])
+			ret0 		= subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[0]
+			ret 		= ret0.strip("\n").split(".")
+			if len(ret) > 1:
+				fingVersion	= float(ret[0]+"."+ret[1])
+			else:
+				self.indiLOG.log(40, u"error in get fing version#: seems that either {} in not installed or password>>{}<< not correct,\nreturned text from fing probe:{}:  {}".format(self.fingEXEpath, self.yourPassword, cmd, ret0))
+				fingVersion	= -1.0
 			return opsys, fingVersion
 		except  Exception, e:
 			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
-		return 0, 0						
+		return 0, -1.0			
 
 
 ########################################
