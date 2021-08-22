@@ -418,137 +418,9 @@ class Plugin(indigo.PluginBase):
 				self.passwordOK = u"2"
 			self.indiLOG.log(20,u"get password done;  checking if FING is installed ")
 
-############ install FING executables
-			#paths for fing executables files to be installed
-			if self.passwordOK == u"2": 
-				try:
-					ret = unicode(subprocess.Popen(u"echo '"+self.yourPassword+ u"' | sudo -S  /bin/mkdir /usr/local/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-					if len(ret) > 1 and ret.find("File exists") ==-1 :
-						self.indiLOG.log(20,u"mk fing dir:   "+ret.strip(u"\n"))
-						if ret.find(u"incorrect password") >-1  or ret.find(u"Sorry, try again") >-1: 
-							self.indiLOG.log(30,u"please corrrect password in config and reload plugin , skipping fing install")
-							self.passwordOK = u"0"
-							self.sleep(2)
-				except:
-					pass
-
-				cmd = u"cd '"+self.indigoPreferencesPluginDir+u"'; echo '"+self.yourPassword+ u"' | sudo /usr/sbin/chown "+self.MACuserName+" *"
-				os.system(cmd) 
-				cmd = u"cd '"+self.indigoPreferencesPluginDir+u"'; echo '"+self.yourPassword+ u"' | sudo /bin/chmod -R 777 *"
-				os.system(cmd) 
-				if not os.path.isfile(self.fingDataFileName):
-					subprocess.Popen( u"echo 0 > '"+ self.fingDataFileName+ u"' &",shell=True )
-					self.sleep(0.2)
-					if not os.path.isfile(self.fingDataFileName):
-						self.indiLOG.log(40, u"could not create file: "+self.fingDataFileName+u" stopping program")
-						#self.quitNOW = u"directory /  file problem"
-						#return
-
-			if self.passwordOK == u"2": 
-				# set proper attributes for catalina 
-				ret = subprocess.Popen(u"echo '"+self.yourPassword+ u"' | sudo -S /usr/bin/xattr -rd com.apple.quarantine '"+self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/fing'",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
-				if not os.path.isfile(self.fingEXEpath):
-					try:
-						ret = unicode(subprocess.Popenu("echo '"+self.yourPassword+ u"' | sudo -S  /bin/mkdir /usr/local/bin/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-						if len(ret) > 1 and ret.find(u"File exists") ==-1 :self.indiLOG.log(30,u"mk fing dir:  "+ret.strip("\n"))
-					except:
-						pass
-					try:
-						ret = unicode(subprocess.Popen(u"echo '"+self.yourPassword+ u"' | sudo -S  /bin/mkdir /usr/local/lib/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-						if len(ret) > 1 and ret.find(u"File exists") ==-1 :self.indiLOG.log(30,u"mk fing dir:  "+ret.strip("\n"))
-					except:
-						pass
-					try:
-						ret = unicode(subprocess.Popen(u"echo '"+self.yourPassword+ u"' | sudo -S  /bin/mkdir /usr/local/share/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-						if len(ret) > 1 and ret.find(u"File exists") ==-1 :self.indiLOG.log(30,u"mk fing dir:  "+ret.strip("\n"))
-					except:
-						pass
-					try:
-						ret = unicode(subprocess.Popen(u"echo '"+self.yourPassword+ u"' | sudo -S  /bin/mkdir /usr/local/share/fing/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-						if len(ret) > 1 and ret.find(u"File exists") ==-1 :self.indiLOG.log(30,u"mk fing dir "+ret.strip("\n"))
-					except:
-						pass
-					try:
-						ret = unicode(subprocess.Popen(u"echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /usr/local/lib/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-						if len(ret) > 1 and ret.find(u"File exists") ==-1 :self.indiLOG.log(30,u"mk fing dir:  "+ret.strip("\n"))
-					except:
-						pass
-					try:
-						ret = unicode(subprocess.Popen(u"echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /usr/local/lib/fing/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-						if len(ret) > 1 and ret.find(u"File exists") ==-1 :self.indiLOG.log(30,u"mk fing dir:  "+ret.strip("\n"))
-					except:
-						pass
-					try:
-						ret = unicode(subprocess.Popen(u"echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /etc/fing/   ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-						if len(ret) > 1 and ret.find(u"File exists") ==-1 :self.indiLOG.log(30,u"mk fing dir "+ret.strip("\n"))
-					except:
-						pass
-					try:
-						ret = unicode(subprocess.Popen(u"echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /var/log/fing/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-						if len(ret) > 1 and ret.find(u"File exists") ==-1 :self.indiLOG.log(30,u"mk fing dir:  "+ret.strip("\n"))
-					except:
-						pass
-					try:
-						ret = unicode(subprocess.Popen(u"echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /var/data/ ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-						if len(ret) > 1 and ret.find(u"File exists") ==-1 :self.indiLOG.log(30,u"mk fing dir:  "+ret.strip("\n"))
-					except:
-						pass
-					try:
-						ret = unicode(subprocess.Popen(u"echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /var/data/fing/ ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-						if len(ret) > 1 and ret.find(u"File exists") ==-1 and ret.find("Password:") ==-1 :self.indiLOG.log(30,u"mk fing dir:  "+ret.strip("\n"))
-					except:
-						pass
-					## copy files to /usr/local/bin  ..
-
-					cmd = u"echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/fing'            /usr/local/bin"
-					ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-					if len(ret) > 1 and ret.find(u"File exists") ==-1 and ret.find("Password:") ==-1:self.indiLOG.log(30,u"copy fing:  "+ret.strip("\n"))
-
-					cmd = u"echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/share/'          /usr/local/share"
-					ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-					if len(ret) > 1 and ret.find(u"File exists") ==-1 and ret.find("Password:") ==-1:self.indiLOG.log(30,u"copy fing:  "+ret.strip("\n"))
-
-					cmd = u"echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/lib/'            /usr/local/lib"
-					ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-					if self.decideMyLog(u"Logic"): self.indiLOG.log(30,cmd)
-					if len(ret) > 1 and ret.find(u"File exists") ==-1 and ret.find("Password:") ==-1:self.indiLOG.log(30,u"copy fing:  "+ret.strip("\n"))
-
-					cmd = u"echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/var/data/'       /var/data"
-					ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-					if self.decideMyLog(u"Logic"): self.indiLOG.log(30,u"mv fing files: "+cmd)
-					if len(ret) > 1 and ret.find(u"File exists") ==-1 and ret.find("Password:") ==-1:self.indiLOG.log(30,u"copy fing:  "+ret.strip("\n"))
-
-					cmd = u"echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/var/log/'        /var/log/fing"
-					ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-					if self.decideMyLog(u"Logic"): self.indiLOG.log(30,u"mv fing files: "+cmd)
-					if len(ret) > 1 and ret.find(u"File exists") ==-1 and ret.find("Password:") ==-1:self.indiLOG.log(30,u"copy fing:  "+ret.strip("\n"))
-
-					cmd = u"echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/etc/fing'        /etc"
-					ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
-					if self.decideMyLog(u"Logic"): self.indiLOG.log(30,u"mv fing files: "+cmd)
-					if len(ret) > 1 and ret.find(u"File exists") ==-1 and ret.find("Password:") ==-1:self.indiLOG.log(30,u"copy fing:  "+ret.strip("\n"))
-
-
-			if self.passwordOK == u"2": 
-				### set proper attributes for >= catalina OS 
-				cmd = u"echo '"+self.yourPassword+ u"' | sudo -S /usr/bin/xattr -rd com.apple.quarantine '"+self.fingEXEpath+"'"
-				ret = subprocess.Popen(u"echo '"+self.yourPassword+ "' | sudo -S /usr/bin/xattr -rd com.apple.quarantine '"+self.fingEXEpath+"'",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
-				if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"setting attribute for catalina  with:  {}".format(cmd))
-				if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"setting attribute for catalina  result:{}".format(ret))
-				self.indiLOG.log(20,u"fing install check done")
-
-				self.opsys, self.fingVersion = self.checkVersion()
-				if self.opsys >= 10.15 and self.fingVersion < 5 and self.fingVersion >0 :
-					self.indiLOG.log(50,u"\nmiss match version of opsys:{} and fing:{} you need to upgrade FING to 64 bit version (>=5). Download from\nhttps://www.fing.com/products/development-toolkit  use OSX button"+\
-					u"\nor use\nCLI_macOSX_5.4.0.zip\n included in the plugin download to install\nthen delete fing.log and fing.data in the indigo preference directory and reload the plugin".format(self.opsys,self.fingVersion))
-					for ii in range(1000):			
-						time.sleep(2)
-				if self.fingVersion  ==-1 :
-					self.indiLOG.log(50,u"\nfing version not avaibale, is it installed? should be:{}\nsleeping now for 1 hour, you need to install / configure fing and restart".format(self.fingEXEpath))
-					for ii in range(1000):			
-						time.sleep(2)
-			
-
+############ install FING executables, set rights ... 
+			self.setupFingPgm()
+	
 ############ get WIFI router info if available
 			self.routerType	= self.pluginPrefs.get(u"routerType","0")
 			self.routerPWD	= u""
@@ -647,9 +519,6 @@ class Plugin(indigo.PluginBase):
 			if self.enableMACtoVENDORlookup != u"0":
 				self.M2V = M2Vclass.MAP2Vendor( pathToMACFiles=self.indigoPreferencesPluginDir+u"mac2Vendor/", refreshFromIeeAfterDays = int(self.enableMACtoVENDORlookup), myLogger = self.indiLOG.log )
 				self.waitForMAC2vendor = self.M2V.makeFinalTable(quiet=True)
-
-
-
 
 
 ############ check for piBeacon plugin devcies
@@ -781,6 +650,152 @@ class Plugin(indigo.PluginBase):
 
 
 		return
+
+
+########################################
+	def setupFingPgm(self):
+		try:
+
+			#paths for fing executables files to be installed
+			if self.passwordOK == u"2": 
+				try:
+					ret = unicode(subprocess.Popen(u"echo '"+self.yourPassword+ u"' | sudo -S  /bin/mkdir /usr/local/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+					if len(ret) > 1 and ret.find("File exists") ==-1 :
+						self.indiLOG.log(20,u"mk fing dir:   "+ret.strip(u"\n"))
+						if ret.find(u"incorrect password") >-1  or ret.find(u"Sorry, try again") >-1: 
+							self.indiLOG.log(30,u"please corrrect password in config and reload plugin , skipping fing install")
+							self.passwordOK = u"0"
+							self.sleep(2)
+				except:
+					pass
+
+				cmd = u"cd '"+self.indigoPreferencesPluginDir+u"'; echo '"+self.yourPassword+ u"' | sudo /usr/sbin/chown "+self.MACuserName+" *"
+				os.system(cmd) 
+				cmd = u"cd '"+self.indigoPreferencesPluginDir+u"'; echo '"+self.yourPassword+ u"' | sudo /bin/chmod -R 777 *"
+				os.system(cmd) 
+				if not os.path.isfile(self.fingDataFileName):
+					subprocess.Popen( u"echo 0 > '"+ self.fingDataFileName+ u"' &",shell=True )
+					self.sleep(0.2)
+					if not os.path.isfile(self.fingDataFileName):
+						self.indiLOG.log(40, u"could not create file: "+self.fingDataFileName+u" stopping program")
+						#self.quitNOW = u"directory /  file problem"
+						#return
+
+
+			if self.passwordOK == u"2": 
+				# set proper attributes for catalina 
+				ret = subprocess.Popen(u"echo '"+self.yourPassword+ u"' | sudo -S /usr/bin/xattr -rd com.apple.quarantine '"+self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/fing'",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
+				if not os.path.isfile(self.fingEXEpath):
+					try:
+						ret = unicode(subprocess.Popenu("echo '"+self.yourPassword+ u"' | sudo -S  /bin/mkdir /usr/local/bin/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+						if len(ret) > 1 and ret.find(u"File exists") ==-1 :self.indiLOG.log(30,u"mk fing dir:  "+ret.strip("\n"))
+					except:
+						pass
+					try:
+						ret = unicode(subprocess.Popen(u"echo '"+self.yourPassword+ u"' | sudo -S  /bin/mkdir /usr/local/lib/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+						if len(ret) > 1 and ret.find(u"File exists") ==-1 :self.indiLOG.log(30,u"mk fing dir:  "+ret.strip("\n"))
+					except:
+						pass
+					try:
+						ret = unicode(subprocess.Popen(u"echo '"+self.yourPassword+ u"' | sudo -S  /bin/mkdir /usr/local/share/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+						if len(ret) > 1 and ret.find(u"File exists") ==-1 :self.indiLOG.log(30,u"mk fing dir:  "+ret.strip("\n"))
+					except:
+						pass
+					try:
+						ret = unicode(subprocess.Popen(u"echo '"+self.yourPassword+ u"' | sudo -S  /bin/mkdir /usr/local/share/fing/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+						if len(ret) > 1 and ret.find(u"File exists") ==-1 :self.indiLOG.log(30,u"mk fing dir "+ret.strip("\n"))
+					except:
+						pass
+					try:
+						ret = unicode(subprocess.Popen(u"echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /usr/local/lib/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+						if len(ret) > 1 and ret.find(u"File exists") ==-1 :self.indiLOG.log(30,u"mk fing dir:  "+ret.strip("\n"))
+					except:
+						pass
+					try:
+						ret = unicode(subprocess.Popen(u"echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /usr/local/lib/fing/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+						if len(ret) > 1 and ret.find(u"File exists") ==-1 :self.indiLOG.log(30,u"mk fing dir:  "+ret.strip("\n"))
+					except:
+						pass
+					try:
+						ret = unicode(subprocess.Popen(u"echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /etc/fing/   ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+						if len(ret) > 1 and ret.find(u"File exists") ==-1 :self.indiLOG.log(30,u"mk fing dir "+ret.strip("\n"))
+					except:
+						pass
+					try:
+						ret = unicode(subprocess.Popen(u"echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /var/log/fing/  ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+						if len(ret) > 1 and ret.find(u"File exists") ==-1 :self.indiLOG.log(30,u"mk fing dir:  "+ret.strip("\n"))
+					except:
+						pass
+					try:
+						ret = unicode(subprocess.Popen(u"echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /var/data/ ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+						if len(ret) > 1 and ret.find(u"File exists") ==-1 :self.indiLOG.log(30,u"mk fing dir:  "+ret.strip("\n"))
+					except:
+						pass
+					try:
+						ret = unicode(subprocess.Popen(u"echo '"+self.yourPassword+ "' | sudo -S  /bin/mkdir /var/data/fing/ ",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+						if len(ret) > 1 and ret.find(u"File exists") ==-1 and ret.find("Password:") ==-1 :self.indiLOG.log(30,u"mk fing dir:  "+ret.strip("\n"))
+					except:
+						pass
+					## copy files to /usr/local/bin  ..
+
+					cmd = u"echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/fing'            /usr/local/bin"
+					ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+					if len(ret) > 1 and ret.find(u"File exists") ==-1 and ret.find("Password:") ==-1:self.indiLOG.log(30,u"copy fing:  "+ret.strip("\n"))
+
+					cmd = u"echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/share/'          /usr/local/share"
+					ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+					if len(ret) > 1 and ret.find(u"File exists") ==-1 and ret.find("Password:") ==-1:self.indiLOG.log(30,u"copy fing:  "+ret.strip("\n"))
+
+					cmd = u"echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/lib/'            /usr/local/lib"
+					ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+					if self.decideMyLog(u"Logic"): self.indiLOG.log(30,cmd)
+					if len(ret) > 1 and ret.find(u"File exists") ==-1 and ret.find("Password:") ==-1:self.indiLOG.log(30,u"copy fing:  "+ret.strip("\n"))
+
+					cmd = u"echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/var/data/'       /var/data"
+					ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+					if self.decideMyLog(u"Logic"): self.indiLOG.log(30,u"mv fing files: "+cmd)
+					if len(ret) > 1 and ret.find(u"File exists") ==-1 and ret.find("Password:") ==-1:self.indiLOG.log(30,u"copy fing:  "+ret.strip("\n"))
+
+					cmd = u"echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/var/log/'        /var/log/fing"
+					ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+					if self.decideMyLog(u"Logic"): self.indiLOG.log(30,u"mv fing files: "+cmd)
+					if len(ret) > 1 and ret.find(u"File exists") ==-1 and ret.find("Password:") ==-1:self.indiLOG.log(30,u"copy fing:  "+ret.strip("\n"))
+
+					cmd = u"echo '"+self.yourPassword+ "' | sudo -S /bin/cp -r  '" +self.indigoPath+"Plugins/fingscan.indigoPlugin/Contents/Server Plugin/fingEXE/etc/fing'        /etc"
+					ret = unicode(subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[1])
+					if self.decideMyLog(u"Logic"): self.indiLOG.log(30,u"mv fing files: "+cmd)
+					if len(ret) > 1 and ret.find(u"File exists") ==-1 and ret.find("Password:") ==-1:self.indiLOG.log(30,u"copy fing:  "+ret.strip("\n"))
+
+
+			if self.passwordOK == u"2": 
+				### set proper attributes for >= catalina OS 
+				cmd = u"echo '"+self.yourPassword+ u"' | sudo -S /usr/bin/xattr -rd com.apple.quarantine '"+self.fingEXEpath+"'"
+				ret = subprocess.Popen(u"echo '"+self.yourPassword+ "' | sudo -S /usr/bin/xattr -rd com.apple.quarantine '"+self.fingEXEpath+"'",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
+				if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"setting attribute for catalina  with:  {}".format(cmd))
+				if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"setting attribute for catalina  result:{}".format(ret))
+				cmd = u"echo '"+self.yourPassword+ u"' | sudo -S /usr/bin/xattr -rd com.apple.quarantine  /usr/local/lib/fing/*"
+				ret = subprocess.Popen(u"echo '"+self.yourPassword+ "' | sudo -S /usr/bin/xattr -rd com.apple.quarantine /usr/local/lib/fing/*",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
+				if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"setting attribute for catalina  with:  {}".format(cmd))
+				if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"setting attribute for catalina  result:{}".format(ret))
+				self.indiLOG.log(20,u"fing install check done")
+
+				self.opsys, self.fingVersion = self.checkVersion()
+				if self.opsys >= 10.15 and self.fingVersion < 5 and self.fingVersion >0 :
+					self.indiLOG.log(50,u"\nmiss match version of opsys:{} and fing:{} you need to upgrade FING to 64 bit version (>=5). Download from\nhttps://www.fing.com/products/development-toolkit  use OSX button"+\
+					u"\nor use\nCLI_macOSX_5.4.0.zip\n included in the plugin download to install\nthen delete fing.log and fing.data in the indigo preference directory and reload the plugin".format(self.opsys,self.fingVersion))
+					for ii in range(1000):			
+						time.sleep(2)
+				if self.fingVersion  ==-1 :
+					self.indiLOG.log(50,u"\nfing version not available, is it installed? should be:{}\nsleeping now for 1 hour, you need to install / configure fing and restart, also try:".format(self.fingEXEpath))
+					self.indiLOG.log(50,u"sudo /usr/bin/xattr -rd com.apple.quarantine  /usr/local/lib/fing/*")
+					self.indiLOG.log(50,u"sudo /usr/bin/xattr -rd com.apple.quarantine  /usr/local/bin/fing")
+					for ii in range(1000):			
+						time.sleep(2)
+			
+		except  Exception, e:
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
+		return	
+
 
 
 ########################################
@@ -2813,10 +2828,15 @@ class Plugin(indigo.PluginBase):
 	def getIgnoredMAC(self):
 		self.ignoredMAC ={}
 		try:
-			f= open (self.ignoredMACFile , "r")
-			self.ignoredMAC =json.loads(f.read())
+			f = open (self.ignoredMACFile , "r")
+			xx =json.loads(f.read())
 			f.close()
-		except: pass
+			# now make it all upper case
+			for mm in xx:
+				self.ignoredMAC[mm.upper()] = 1
+		except  Exception, e:
+			self.indiLOG.log(40, u"error in  Line# {} ;  error={}".format(sys.exc_traceback.tb_lineno, e))
+			self.indiLOG.log(40, u"getIgnoredMAC file read:{}".format(xx))
 		self.saveIgnoredMAC()
 
 ########################################

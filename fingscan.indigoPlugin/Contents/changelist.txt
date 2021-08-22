@@ -1,3 +1,12 @@
+Added features / changes in v7.32.66 @ 2021-2-19
+===================================================
+
+1. added upper() for reading ignored mac to allow 
+     aa:bb:cc:dd:ee:ff besides AA:BB:CC:DD:EE:FF
+     in file ignoredMAC
+
+
+
 Added features / changes in v7.32.65 @ 2021-2-18
 ===================================================
 
@@ -11,7 +20,7 @@ Added features / changes in v7.32.64 @ 2020-11-24
 
 1. added variables: nAwayX and nHomeX = number of devices in event group X being away / home)
   you can use that to trigger on eg 2 or more devices in the event group being home or away.
-  eg: asume you have defined an event group X with 5 members
+  eg: assume you have defined an event group X with 5 members
   set up trigger with "variable changed" nAwayX and becomes >1 
     it would trigger if it goes from 1 to 2 devices away, not from 2 to 3 
   and similar to nHomeX
