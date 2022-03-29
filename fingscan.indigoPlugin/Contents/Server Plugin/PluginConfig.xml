@@ -6,13 +6,22 @@
     </Field>
     <Field id="simpleSeparator11" type="separator"/>
   
+	<Field id="instructions1" type="label" >
+		<Label>
+Before running make sure that you have installed fing binaries, install FING  64 bit version (>=5).
+ Download from https://www.fing.com/products/development-toolkit  use OSX button
+ or use CLI_macOSX_5.4.0.zip  included in the plugin download to install
+ Then delete fing.log and fing.data (if exist) in the indigo preference directory 
+  /Library/Application Support/Perceptive Automation/Indigo xx.y/Preferences/Plugins/com.karlwachs.fingscan
+  Reload the plugin
+</Label>
+	</Field>
 
-
-<Field defaultValue="" id="network" type="textfield" alignText="right" default="192.168.1.0">
+<Field defaultValue="192.168.1.0" id="network" type="textfield" alignText="right" >
     <Label>Network starting # to be scanned</Label></Field>
 <Field defaultValue="24" id="netwType" type="menu" alignText="right">
             <List>
-            <Option value="16" >/16 = 16 bits: 0..65535  if you really need that many numbers.. scans will take a long time!! </Option>
+            <Option value="16" >/16 = 16 bits: 0..65535  if you really need that many numbers.. scans will take a long time! ;)</Option>
             <Option value="17" >/17 = 15 bits: 0..32767</Option>
             <Option value="18" >/18 = 14 bits: 0..16383</Option>
             <Option value="19" >/19 = 13 bits: 0..8193</Option>
@@ -20,14 +29,16 @@
             <Option value="21" >/21 = 11 bits: 0..2047</Option>
             <Option value="22" >/22 = 10 bits: 0..1011 </Option>
             <Option value="23" >/23 =  9 bits: 0..512</Option>
-            <Option value="24" >/24 =  8 bits: 0..255 </Option>
-            <Option value="25" >/25 =  7 bits: 0..128 </Option>
+            <Option value="24" >/24 =  8 bits: 0..254 </Option>
+            <Option value="25" >/25 =  7 bits: 0..127 </Option>
             <Option value="26" >/26 =  6 bits: 0..63 </Option>
             <Option value="27" >/27 =  5 bits: 0..31 </Option>
             <Option value="28" >/28 =  4 bits: 0..15 </Option>
             <Option value="29" >/29 =  3 bits: 0..7 </Option>
+            <Option value="30" >/30 =  2 bits: 0..3 </Option>
+            <Option value="31" >/31 =  1 bits: 0..1 </Option>
             </List>
-<Label>Network type = ip number range</Label></Field>
+<Label>Number of ip numbers (2**(32-x)</Label></Field>
 <Field id="infoLabel00" type="label" alignText="right">
         <Label>eg 192.168.1.0/24= ...0..255 or 192.168.1.64/27 =...64..96  </Label>    </Field>
 
@@ -201,7 +212,6 @@
     <Field    id="debugPing"     type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (2) PING:</Label>  </Field>
     <Field    id="debugWifi"     type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (3) WiFi:</Label>  </Field>
     <Field    id="debugEvents"   type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (4) Events:</Label>  </Field>
-    <Field    id="debugiFind"    type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (5) iFind:</Label>  </Field>
     <Field    id="debugpiBeacon" type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (6) piBeacon:</Label>  </Field>
     <Field    id="debugUnifi"    type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (7) Unifi:</Label>  </Field>
     <Field    id="debugBC"       type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (8) send BC of status changes:</Label>  </Field>

@@ -9,6 +9,10 @@ import logging.handlers
 global logging, logger
 import platform
 import fcntl
+try:
+	unicode("x")
+except:
+	unicode = str
 
 #  /usr/bin/python2.7 '/Library/Application Support/Perceptive Automation/Indigo 7.4/Plugins/fingscan.indigoPlugin/Contents/Server Plugin/startfing.py' '/Library/Application Support/Perceptive Automation/Indigo 7.4/Preferences/Plugins/com.karlwachs.fingscan/paramsForStart' & 
 ####### main pgm / loop ############
@@ -42,8 +46,8 @@ def startFing():
 		elif opsys >= 10.15 and fingVersion < 5:
 			logger.log(40,u"miss match version of opsys:{} and fing:{} you need to upgrade FING to 64 bits".format(opsys,fingversion))
 
-	except  Exception, e:
-		logger.log(40,u"in Line {} has error={}".format(sys.exc_traceback.tb_lineno, e))
+	except  Exception as e:
+		exceptionHandler(40,e)
 	
 
 def checkVersion():
@@ -52,12 +56,13 @@ def checkVersion():
 		opsys	=  platform.mac_ver()[0].split(".")
 		opsys	= float(opsys[0]+"."+opsys[1])
 		cmd 	= u"echo '"+yourPassword+ u"' | sudo -S "+fingEXEpath+u" -v"
-		ret 	= subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[0].strip("\n").split(".")
+		ret, err= readPopen(cmd)
+		ret = ret.strip("\n").split(".")
 		fingVersion	= float(ret[0]+"."+ret[1])
 		if logLevel > 0: logger.log(20,"chk versions.opsys: {};   fingVersion:{} from cmd:{};   ".format(opsys, fingVersion, cmd))
 		return opsys, fingVersion
-	except  Exception, e:
-		logger.log(40,u"in Line {} has error={}".format(sys.exc_traceback.tb_lineno, e))
+	except  Exception as e:
+		exceptionHandler(40,e)
 	return 0,0
 
 def doFingV5(fingVersion, opsys):
@@ -83,11 +88,12 @@ def doFingV5(fingVersion, opsys):
 			for ii in range(3):
 				ListenProcessFileHandle = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 				##pid = ListenProcessFileHandle.pid
-				##self.myLog( text=u" pid= " + unicode(pid) )
-				msg = unicode(ListenProcessFileHandle.stderr)
+				msg2 = unicode(ListenProcessFileHandle.stderr)
+				msg  = unicode(ListenProcessFileHandle.stdout)
+				logger.log(40,u"msg  {} -- {}".format( msg, msg2) )
 				if msg.find(u"open file") == -1:	# try this again
-					self.indiLOG.log(40,u"uType {}; IP#: {}; error connecting {}".formaat(uType, ipNumber, msg) )
-					self.sleep(20)
+					logger.log(40,u"error connecting {}".format( msg) )
+					time.sleep(20)
 					continue
 				break
 			time.sleep(2)
@@ -106,14 +112,14 @@ def doFingV5(fingVersion, opsys):
 			while True:
 				time.sleep(0.1)
 				try:
-					lines = os.read(ListenProcessFileHandle.stdout.fileno(), buffer) ## = 32k
-				except	Exception, e:
+					lines = os.read(ListenProcessFileHandle.stdout.fileno(), buffer).decode('utf_8') ## = 32k
+				except	Exception as e:
 					time.sleep(0.2)
 					if unicode(e).find(u"[Errno 35]") > -1:	 # "Errno 35" is the normal response if no data, if other error stop and restart
 						msgSleep = 0.4 # nothing new, can wait
 					else:
 						if len(unicode(e)) > 5:
-							out = u"os.read(ListenProcessFileHandle.stdout.fileno(),{})  in Line {} has error={}\n ip:{}  type: {}".format(buffer, sys.exc_traceback.tb_lineno, e, ipNumber,uType)
+							out = u"os.read(ListenProcessFileHandle.stdout.fileno(),{})  in Line {} has error={}\n ip:{}  type: {}".format(buffer, sys.exc_info()[2].tb_lineno, e, ipNumber,uType)
 							try: out+= u"  fileNo: {}".format(ListenProcessFileHandle.stdout.fileno() )
 							except: pass
 							if unicode(e).find(u"[Errno 22]") > -1:  # "Errno 22" is  general read error "wrong parameter"
@@ -126,7 +132,7 @@ def doFingV5(fingVersion, opsys):
 
 				if lines.find(u"Discovery stopped") >-1:
 					logger.log(40,u"restart of startfing due to discovery stppped message from fing.bin")
-	 				os.system(startCommand)
+					os.system(startCommand)
 					
 					
 
@@ -167,10 +173,35 @@ def doFingV5(fingVersion, opsys):
 	
 
 	
-	except  Exception, e:
-		logger.log(40,u"in Line {} has error={}".format(sys.exc_traceback.tb_lineno, e))
+	except  Exception as e:
+		exceptionHandler(40,e)
 	return 
 
+
+####-------------------------------------------------------------------------####
+def readPopen(cmd):
+		try:
+			if type(cmd) == type([]):
+				ret, err = subprocess.Popen(cmd,stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+			else:
+				ret, err = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+			return ret.decode('utf_8'), err.decode('utf_8')
+		except Exception as e:
+			exceptionHandler(40,e)
+
+####-----------------  exception logging ---------
+def exceptionHandler(level, exception_error_message):
+
+		try: 
+			if u"{}".format(exception_error_message).find("None") >-1: return 
+		except: 
+			pass
+
+		filename, line_number, method, statement = traceback.extract_tb(sys.exc_info()[2])[-1]
+		#module = filename.split('/')
+		log_message = "'{}'".format(exception_error_message )
+		log_message +=  "\n{} @line {}: '{}'".format(method, line_number, statement)
+		logger.log(level, log_message)
 
 #################################
 def stopOldPGMs():
@@ -187,8 +218,8 @@ def stopPGM(pgm, mypid =""):
 	global logfileName, logLevel,  fingDataFileName, fingLogFileName, fingErrorFileName
 	global fingEXEpath, theNetwork, yourPassword, theNetwork, netwType
 
-	pids = subprocess.Popen(u"ps -ef | grep '"+pgm+u"' | grep -v grep | awk '{print $2}'",shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[0]
-	pids = pids.split(u"\n")
+	ret, err= readPopen(u"ps -ef | grep '"+pgm+u"' | grep -v grep | awk '{print $2}'")
+	pids = ret.split(u"\n")
 	for pid in pids:
 		if len(pid) < 3: continue # 100
 		if pid == mypid: continue # dont kill myself
