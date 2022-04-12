@@ -873,8 +873,8 @@ class Plugin(indigo.PluginBase):
 
 		retCode = 1
 		for nn in range(nPings):            
-			retCode = subprocess.call(u'/sbin/ping -o '+Wait+' '+Count+u' -q '+ipN+u' >/dev/null',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE) # "call" will wait until its done and deliver retcode 0 or >0
-			if self.decideMyLog(u"Ping"): self.indiLOG.log(20,u"ping resp:"+ipN+u"  :" +unicode(retCode) )
+			retCode = subprocess.call(u'/sbin/ping -o {} {} -q {} >/dev/null'.format(Wait, Count, ipN),shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE) # "call" will wait until its done and deliver retcode 0 or >0
+			if self.decideMyLog(u"Ping"): self.indiLOG.log(20,u"ping resp:{}: {}".format(ipN, retCode) )
 			if retCode ==0: return 0
 			if nn != nPings-1: self.sleep(waitAfterPing)
 		return retCode
@@ -3424,6 +3424,7 @@ class Plugin(indigo.PluginBase):
 					ipN = devI[u"ipNumber"].split("-")[0]# just in case ...it is "-changed"
 					nPing +=1
 					if self.inbetweenPingType == u"parallel":
+						cmd = "for ((i=0;i<{};i++)); do /sbin/ping -c 2 -W {} -o {} &>/dev/null  && echo up > '{}pings/{}.ping' && sleep {}; done".format(maxPingsBeforeReset, pingWait, ipN, self.indigoPreferencesPluginDir, ipN.split(".")[3], sleepT)
 						if theMAC in self.pingJobs:
 							pingPid = self.pingJobs[theMAC]
 							if pingPid >0:
@@ -3432,30 +3433,32 @@ class Plugin(indigo.PluginBase):
 										self.inbetweenPing[theMAC] = u"up"
 										self.excludeMacFromPing[theMAC] = -99999999 # it answered at least once, never never firewall again
 										continue # all done still up
-									resp, err = self.readPopen("ps -ef  | grep ' {}".format(pingPid)+" ' ")
-									ok = resp.find("do /sbin/ping") > -1
+									resp, err = self.readPopen("ps -ef  | grep ' {} ' | grep {} | grep -v grep".format(pingPid, ipN))
+									ok = resp.find(cmd[:50]) > -1
+									if self.decideMyLog(u"Ping"): self.indiLOG.log(10,u" ping cheking if ping is running for {} grep  result:\n{}".format(ipN, resp))
 									if ok:
-										if self.decideMyLog(u"Ping"): self.indiLOG.log(10,u" ping file for "+ipN+u" older than  : {}".format(maxOldTimeStamp)+" secs")
+										if self.decideMyLog(u"Ping"): self.indiLOG.log(10,u" ping file for {} older than  : {} secs".format(ipN, maxOldTimeStamp))
 										self.inbetweenPing[theMAC] = u"down"
 										self.updateIndigoIpDeviceFromDeviceData(theMAC, [u"status"],justStatus=u"down")
-										oneDown=True
+										oneDown =  True
 										self.killPing (theMAC,ipnumber =ipN)
-										pingPid=-1
+										pingPid = -1
 										continue
-								except:  # file not created, either down or firewalled
-									resp, err = self.readPopen("ps -ef  | grep ' {}".format(pingPid)+" ' ")
-									ok= resp.find("do /sbin/ping")>-1
+								except:
+									resp, err = self.readPopen("ps -ef  | grep ' {} ' | grep {} | grep -v grep".format(pingPid, ipN) )
+									ok = resp.find(cmd[:50]) > -1
 									if ok: # still running?
 											if self.decideMyLog(u"Ping"): self.indiLOG.log(10,u" ping file  not created , device is down "+ipN)
 											self.killPing (theMAC)# yes, kill it
 											if self.excludeMacFromPing[theMAC] <0: continue
 											if self.checkIfFirewalled(devI[u"deviceName"],theMAC, ipN) > 0: continue
+									else:
+											if self.decideMyLog(u"Ping"): self.indiLOG.log(10,u" ping shell loop not running: {}".format(cmd[:50]))
 										
-						ret, err = self.readPopen("for ((i=0;i<{}".format(maxPingsBeforeReset)+";i++)); do /sbin/ping -c 2 -W {}".format(pingWait)+" -o "+ipN+" &>/dev/null  && echo up>"+self.indigoPreferencesPluginDir+"pings/"+ipN.split(".")[3]+".ping && sleep {}".format(sleepT)+" ; done")
-		#				if self.decideMyLog(u"Ping"): self.indiLOG.log(20,u"ret : {}".format(ret.communicate()))
-						pid = ret.pid
+						pid = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).pid
 						self.pingJobs[theMAC] = pid
-						if self.decideMyLog(u"Ping"): self.indiLOG.log(10,u"launching ping for : "+ipN +u" pid= {}".format(pid)+u" theMAC="  +theMAC +u" timestamp="+datetime.datetime.now().strftime(u"%M:%S"))
+						if self.decideMyLog(u"Ping"): self.indiLOG.log(10,u"launching ping cmd:"+cmd)
+						if self.decideMyLog(u"Ping"): self.indiLOG.log(10,u" ... {} pid= {} theMAC= {} timestamp={}".format(ipN, pid, theMAC, datetime.datetime.now().strftime(u"%M:%S")))
 						continue
 					
 						
@@ -6464,7 +6467,7 @@ class Plugin(indigo.PluginBase):
 
 
 ####-------------------------------------------------------------------------####
-	def readPopen(self, cmd):
+	def readPopen(self, cmd, pid = False):
 		try:
 			if type(cmd) == type([]):
 				ret, err = subprocess.Popen(cmd,stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
