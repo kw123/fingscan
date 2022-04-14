@@ -363,7 +363,7 @@ class Plugin(indigo.PluginBase):
 			self.theNetwork					= u"0.0.0.0"
 
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 
 		self.checkcProfile()
 
@@ -523,7 +523,7 @@ class Plugin(indigo.PluginBase):
 				aa = self.theNetwork+u"/"+self.netwType
 				self.netwInfo = self.IPCalculator(self.theNetwork, self.netwType)
 			except Exception as e:
-				self.exceptionHandler(40,e)
+				self.exceptionHandler(40, e)
 				self.netwInfo = {u'netWorkId': u'192.168.1.0', u'broadcast': u'192.168.1.255', u'netMask': u'255.255.255.0', u'maxHosts': 254, u'hostRange': u'192.168.1.1 - 192.168.1.254'}
 			self.indiLOG.log(30,u"network info: {}, netwType:{}".format(self.netwInfo, self.netwType))
 			self.broadcastIP = self.netwInfo[u"broadcast"]
@@ -679,13 +679,13 @@ class Plugin(indigo.PluginBase):
 						dev = indigo.devices[self.allDeviceInfo[theMAC][u"deviceId"]]
 						dev.updateStateOnServer(u"hardwareVendor",vend)
 					except Exception as e:
-						self.exceptionHandler(40,e)
+						self.exceptionHandler(40, e)
 						
 			self.MacToNamesOK = True
 				
 
 		except Exception as e:
-				self.exceptionHandler(40,e)
+				self.exceptionHandler(40, e)
 				self.quitNOW = u"restart required; {}".format(e) 
 				self.sleep(20)
 
@@ -754,7 +754,7 @@ class Plugin(indigo.PluginBase):
 						time.sleep(2)
 			
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return	
 
 
@@ -777,7 +777,7 @@ class Plugin(indigo.PluginBase):
 				fingVersion	= -1.0
 			return opsys, fingVersion
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return 0, -1.0			
 
 
@@ -843,7 +843,7 @@ class Plugin(indigo.PluginBase):
 				xx =  unicode(indigo.variables[u"nAway_"+nEvent].value)
 				if evnt[u"nAway"]  !=  xx:                    	indigo.variable.updateValue(u"nAway_"+nEvent,unicode(evnt[u"nAway"]))
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return
 
 
@@ -881,11 +881,15 @@ class Plugin(indigo.PluginBase):
 
 ########################################
 	def sendWakewOnLan(self, MAC, calledFrom=""):
-		data = ''.join([u'FF' * 6, MAC.replace(u':', '') * 16])
-		sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-		sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-		sock.sendto(data.decode(u"hex"), (self.broadcastIP, 9))
-		if self.decideMyLog(u"Ping"): self.indiLOG.log(20,u"sendWakewOnLan for "+MAC+u";  called from "+calledFrom+u";  bc ip: "+self.broadcastIP) 
+		try:
+			data = ''.join([u'FF' * 6, MAC.replace(u':', '') * 16])
+			if self.decideMyLog(u"Ping"): self.indiLOG.log(20,u"sendWakewOnLan for {};  called from {};  bc ip: {}".format(MAC, calledFrom, self.broadcastIP) )
+			sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+			sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+			sock.sendto(data.decode(u"hex"), (self.broadcastIP, 9))
+		except Exception as e:
+			self.exceptionHandler(40, e)
+			self.indiLOG.log(40,u"sendWakewOnLan for {};  called from {};  bc ip: {}".format(MAC, calledFrom, self.broadcastIP) )
 
 ########################################
 	def checkIfiFindisEnabled(self):
@@ -901,19 +905,19 @@ class Plugin(indigo.PluginBase):
 					return
 			self.pluginPrefs[u"iDevicesEnabled"] =False
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return
 
 ########################################
 	def getiFindFile(self):
 		try:
-			line, err = self.readPopen(u"ls '"+self.indigoPath+u"Preferences/Plugins/' | grep  '"+iFindPluginMinText+u"' | grep -v grep")
+			line, err = self.readPopen(u"ls '{}Preferences/Plugins/' | grep  '{}' | grep -v grep".format(self.indigoPath, iFindPluginMinText))
 			if len(line) > 0:
 				self.iFindStuffPlugin = line.split(u".indiPref")[0]
-			self.indiLOG.log(20,u"ifind plugin: "+ self.iFindStuffPlugin)
+			self.indiLOG.log(20,u"ifind plugin: {}".format(self.iFindStuffPlugin))
 
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return
 ########################################
 	def getpiBeaconAvailable(self):
@@ -943,7 +947,7 @@ class Plugin(indigo.PluginBase):
 			self.piBeaconDevicesAvailable= sorted(self.piBeaconDevicesAvailable, key=lambda tup: tup[1])    
 			self.piBeaconDevicesAvailable.append((1,u"do not use"))
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return
 ########################################
 	def getUnifiAvailable(self):
@@ -975,7 +979,7 @@ class Plugin(indigo.PluginBase):
 			self.unifiDevicesAvailable= sorted(self.unifiDevicesAvailable, key=lambda tup: tup[1])                
 			self.unifiDevicesAvailable.append((1,u"do not use"))
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return
 
 
@@ -995,7 +999,7 @@ class Plugin(indigo.PluginBase):
 				pass
 			self.indiLOG.log(10,u"\n")
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 
 
 ########################################
@@ -1007,7 +1011,7 @@ class Plugin(indigo.PluginBase):
 					self.deleteIndigoIpDevicesData(theMAC)
 					return
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 
 ########################################
 	def deviceStartComm(self, dev):
@@ -1018,7 +1022,7 @@ class Plugin(indigo.PluginBase):
 				if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"dev start called for "+dev.name)
 			return
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 	
 ########################################
 	def deviceStopComm(self, dev):
@@ -1039,7 +1043,7 @@ class Plugin(indigo.PluginBase):
 				else:nBinString += u"0"
 			return nBinString
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 
 
 ########################################
@@ -1120,7 +1124,7 @@ class Plugin(indigo.PluginBase):
 			
 		
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return valuesDict
 
 
@@ -1182,7 +1186,7 @@ class Plugin(indigo.PluginBase):
 				valuesDict[u"iDevicesEnabled"+nDev+"a"] =False
 		
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return valuesDict
 
 
@@ -1251,7 +1255,7 @@ class Plugin(indigo.PluginBase):
 
 		
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		#self.indiLOG.log(20,u"CALLBACKevent valuesDict:{}".format(valuesDict))
 		self.updatePrefs = True
 		return valuesDict
@@ -1266,7 +1270,7 @@ class Plugin(indigo.PluginBase):
 			for line in lines:
 				if self.decideMyLog(u"Ping"): self.indiLOG.log(20,unicode(line))
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 
 ########################################
 	def pingCALLBACKaction(self, action):
@@ -1324,7 +1328,7 @@ class Plugin(indigo.PluginBase):
 				if self.decideMyLog(u"piBeacon"): self.indiLOG.log(20,u" error from piBeacon, deviceId not in action: {}".format(action))
 				return
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 			self.indiLOG.log(40, unicode(action))
 			return
 		self.pluginPrefs[u"piBeacon"]	=	json.dumps(self.piBeaconDevices)
@@ -1364,7 +1368,7 @@ class Plugin(indigo.PluginBase):
 				if self.decideMyLog(u"Unifi"): self.indiLOG.log(20,u" error from unifi, deviceId not in action: {}".format(action))
 				return
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 			self.indiLOG.log(40, unicode(action))
 			return
 		self.pluginPrefs[u"UNIFI"]	=	json.dumps(self.unifiDevices)
@@ -1410,7 +1414,7 @@ class Plugin(indigo.PluginBase):
 	
 		
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 			self.piBeaconDevices={}
 		return
 
@@ -1452,7 +1456,7 @@ class Plugin(indigo.PluginBase):
 	
 		
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 			self.unifiDevices={}
 		return
 
@@ -1537,7 +1541,7 @@ class Plugin(indigo.PluginBase):
 			self.IPretList	= sorted(self.IPretList, key=lambda tup: tup[1]) #sort string, keep mac number with the text
 			self.IPretList.append((1,u"Not used"))
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		#self.indiLOG.log(20, u"IPdeviceMACnumberFilter called" )
 		return self.IPretList
 
@@ -1548,7 +1552,7 @@ class Plugin(indigo.PluginBase):
 		try:
 			retList =copy.deepcopy(self.piBeaconDevicesAvailable)
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 			return [(0,0)]
 		return retList
 
@@ -1558,7 +1562,7 @@ class Plugin(indigo.PluginBase):
 		try:
 			retList =copy.deepcopy(self.unifiDevicesAvailable)
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 			return [(0,0)]
 		return retList
 
@@ -1754,7 +1758,7 @@ class Plugin(indigo.PluginBase):
 
 			self.savePrefs = 1
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		if len(errorDict) > 0: return  valuesDict, errorDict
 		return  valuesDict
 
@@ -1900,7 +1904,7 @@ class Plugin(indigo.PluginBase):
 			self.printConfig()
 
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return True, valuesDict
 
 
@@ -1978,7 +1982,7 @@ class Plugin(indigo.PluginBase):
 							try:
 								indigo.devices[int(self.EVENTS[n][u"IPdeviceMACnumber"][nDev])]
 							except Exception as e:
-								self.exceptionHandler(40,e)
+								self.exceptionHandler(40, e)
 								self.indiLOG.log(40, u"cleanupEVENTS:  please remove device from EVENTS as indigo device does not exist: {}".format(self.EVENTS[n][u"IPdeviceMACnumber"][nDev]) ) 
 								continue
 								# dont auto delete let user remove from event listing
@@ -2017,7 +2021,7 @@ class Plugin(indigo.PluginBase):
 					self.EVENTS[nev][u"iDeviceName"][lDev]= unicode(idevId)
 					
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 			
 ########################################
 	def	resetEvents(self):
@@ -2028,7 +2032,7 @@ class Plugin(indigo.PluginBase):
 			indigo.server.savePluginPrefs() 
 			if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"ResetEVENTS done")
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return
 ########################################
 	def	resetDevices(self):
@@ -2052,7 +2056,7 @@ class Plugin(indigo.PluginBase):
 
 			if self.decideMyLog(u"WiFi"): self.indiLOG.log(30,u"ResetDEVICES done")
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return
 
 ########################################
@@ -2169,7 +2173,7 @@ class Plugin(indigo.PluginBase):
 				out+=      u"dataFormat               :{}".format(evnt[u"dataFormat"]).rjust(12)+u"\n"
 			self.indiLOG.log(10,out+u"\n")
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return
 ########################################
 	def printEventLine(self, name,nameText,nEvent,listOfDevs):
@@ -2218,7 +2222,7 @@ class Plugin(indigo.PluginBase):
 				out+= u"-------------------------------------------------------------------------------------------------------- "+ "\n"
 				self.indiLOG.log(10,out)
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 
 		return
 ########################################
@@ -2254,7 +2258,7 @@ class Plugin(indigo.PluginBase):
 			self.indiLOG.log(10,out)
 	
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 
 ########################################
 	def printUnifiDevs(self):
@@ -2283,13 +2287,13 @@ class Plugin(indigo.PluginBase):
 						out+= theString + u"\n"
 						
 					except Exception as e:
-						self.exceptionHandler(40,e)
+						self.exceptionHandler(40, e)
 						self.indiLOG.log(40, u" data wrong for {}".format(theMAC) +"    {}".format(self.unifiDevices[theMAC]))
 			out+= u"===      unifi devices  available  to fingscan    ===        END"
 			self.indiLOG.log(10,out)
 	
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 
 
 ########################################
@@ -2320,7 +2324,7 @@ class Plugin(indigo.PluginBase):
 				else:
 					out+= theMAC+u" -device is expired, not in dev list any more- {}".format(self.wifiMacList[theMAC]) +u" some times devices with wifi AND ethernet show this behaviour"+"\n"
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return out
 ########################################
 	def printWiFiAve(self, ghz,Header=False):
@@ -2337,7 +2341,7 @@ class Plugin(indigo.PluginBase):
 				 , self.wifiMacAv[u"noiseLevel"][ghz])
 				 
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return out+"\n"
 		
 
@@ -2379,7 +2383,7 @@ class Plugin(indigo.PluginBase):
 					if self.decideMyLog(u"Events"): self.indiLOG.log(10,u"firing trigger id : {}".format(trigId))
 					indigo.trigger.execute(trigger)
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return
 
 
@@ -2400,7 +2404,7 @@ class Plugin(indigo.PluginBase):
 			ret, err = self.readPopen("/usr/bin/security add-generic-password -a fingscanpy -w \'"+ storePassword+"\' -s "+name+" -U")
 			return
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 
 ########################################
 	def getPWD(self,name):
@@ -2415,7 +2419,7 @@ class Plugin(indigo.PluginBase):
 			except:  # bad return, no password stored, return "0"
 				return "0"
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 
 
 ########################################
@@ -2558,7 +2562,7 @@ class Plugin(indigo.PluginBase):
 			self.sleep(1)
 			self.indiLOG.log(10,u"       restore done")
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return
 
 
@@ -2595,7 +2599,7 @@ class Plugin(indigo.PluginBase):
 			
 
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 			self.indiLOG.log(40, u"  fing details failed: fing returned an error: {}- err".format(ret, err))
 			return
 
@@ -2611,7 +2615,7 @@ class Plugin(indigo.PluginBase):
 				fingOut = fingOut[ff+1:]
 		except Exception as e:
 			self.indiLOG.log(40, u"  fing details failed , output file: {}".format(fingOut))
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 			return
 			
 		## now get the list into theServices
@@ -2765,7 +2769,7 @@ class Plugin(indigo.PluginBase):
 			for mm in xx:
 				self.ignoredMAC[mm.upper()] = 1
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 			self.indiLOG.log(40, u"getIgnoredMAC file read:{}".format(xx))
 		self.saveIgnoredMAC()
 
@@ -2896,14 +2900,14 @@ class Plugin(indigo.PluginBase):
 
  
 			# start fing, send to background, dont wait, create 2 output files:  one table format file and one logfile
-			if self.decideMyLog(u"StartFi"):	deblevelForStartFing = 0
-			else:								deblevelForStartFing = 20
+			if self.decideMyLog(u"StartFi"):	deblevelForStartFing = 20
+			else:								deblevelForStartFing = 0
 			
-			params =  {"yourPassword":"&a3"+self.yourPassword[::-1]+"#5B", "theNetwork":self.theNetwork, "netwType":self.netwType,"logLevel": deblevelForStartFing, "fingEXEpath":self.fingEXEpath,"macUser":self.MACuserName}
+			params =  {"ppp":"&a3"+self.yourPassword[::-1]+"#5B", "theNetwork":self.theNetwork, "netwType":self.netwType,"logLevel": deblevelForStartFing, "fingEXEpath":self.fingEXEpath,"macUser":self.MACuserName, "pythonPath":self.pythonPath}
 			f = open(self.indigoPreferencesPluginDir+"paramsForStart","w")
 			f.write(json.dumps(params))
 			f.close()
-			cmd = "'"+self.pythonPath+"' '"+self.pathToPlugin+"startfing.py' '"+self.indigoPreferencesPluginDir+"paramsForStart'  &"
+			cmd = u"'{}' '{}startfing.py' '{}paramsForStart'  &".format(self.pythonPath, self.pathToPlugin, self.indigoPreferencesPluginDir)
 
 			if self.decideMyLog(u"StartFi"): self.indiLOG.log(20,u"FING cmd= {}".format(cmd) )
 			os.system(cmd)
@@ -2939,7 +2943,7 @@ class Plugin(indigo.PluginBase):
 
 			return 0 #  not successful
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 	
 	
 	
@@ -3002,9 +3006,9 @@ class Plugin(indigo.PluginBase):
 				ret, err = self.readPopen("/bin/kill {}".format(pid))
 
 
-			for i in range (1,255):
+			for i in range(1,2):
 				try:
-					os.remove("pings/{}.ping".format(self.indigoPreferencesPluginDir,i))
+					os.remove("{}pings/*.ping".format(self.indigoPreferencesPluginDir))
 				except:
 					pass
 
@@ -3028,13 +3032,13 @@ class Plugin(indigo.PluginBase):
 	def killPGM(self,whomToKill):
 		if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"killing pgm: {}".format(whomToKill))
 
-		ret, err = self.readPopen("ps -ef | grep '"+whomToKill+"' | grep -v grep | awk '{print$2}'")
+		ret, err = self.readPopen("ps -ef | grep '{}' | grep -v grep | awk '{{print$2}}'".format(whomToKill))
 		pids =ret.split()
 			
 		for pid  in pids:
 			if int(pid) < 10: continue
-			if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"killing PID: "+pid)
-			ret, err = self.readPopen( "echo '" + self.yourPassword + "' | sudo -S /bin/kill -9 " + pid)
+			if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u"killing PID: {}".format(pid))
+			ret, err = self.readPopen( "echo '{}' | sudo -S /bin/kill -9 {}".format(self.yourPassword, pid))
 		return 	
 		
 ########################################
@@ -3110,7 +3114,7 @@ class Plugin(indigo.PluginBase):
 			else:
 				return 0
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 			self.indiLOG.log(40,u"{}".format(self.fingData))
 			self.finglogerrorCount +=1
 			if self.finglogerrorCount > 40 and self.totalLoopCounter > 100 :
@@ -3188,7 +3192,7 @@ class Plugin(indigo.PluginBase):
 				 
 				return 1
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 			self.fingDataErrorCount +=1
 			if self.fingDataErrorCount > 1 :
 				self.indiLOG.log(30,u"fing.data file does not exist \n    trying {}".format(5-self.fingDataErrorCount)+u" more times")
@@ -3375,7 +3379,7 @@ class Plugin(indigo.PluginBase):
 				self.quitNOW = u"Indigo variable error 9"  ## someting must be wrong, lets restart
 				self.indiLOG.log(40, u"getting data from indigo: bad variable ipDevsNoOfDevices \n   please check if it has bad data, in doubt delete and let the program recreate  \n   stopping fingscan \n exec return code" +unicode(e) )
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 
 
 		return
@@ -3504,7 +3508,7 @@ class Plugin(indigo.PluginBase):
 
 
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		
 		return oneDown
 
@@ -3532,7 +3536,7 @@ class Plugin(indigo.PluginBase):
 				return 1
 
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 
 		return 0
 
@@ -3629,7 +3633,7 @@ class Plugin(indigo.PluginBase):
 					
 						
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 
 		self.triggerFromPlugin		= False
 		self.callingPluginName=[]
@@ -3729,7 +3733,7 @@ class Plugin(indigo.PluginBase):
 								try:
 									status = self.piBeaconDevices[theMAC][u"currentStatus"]
 								except:
-									self.exceptionHandler(40,e)
+									self.exceptionHandler(40, e)
 									self.indiLOG.log(40, u"error in checkTriggers, indigoID# "+theMAC+u" not in piBeacondevices  :  " + unicode(self.piBeaconDevices)[0:100]+u" ..  is  piBeacon plugin active? " )
 									status = u"0"
 									del self.piBeaconDevices[theMAC]
@@ -3746,7 +3750,7 @@ class Plugin(indigo.PluginBase):
 								try:
 									status = self.unifiDevices[theMAC][u"currentStatus"]
 								except Exception as e:
-									self.exceptionHandler(40,e)
+									self.exceptionHandler(40, e)
 									self.indiLOG.log(40, u"error in checkTriggers, indigoID# "+theMAC+u" not in unifidevices  :  " + unicode(self.unifiDevices)[0:100]+u" ..  is  unifi plugin active? " )
 									del self.unifiDevices[theMAC]
 									status =  u"0"
@@ -3777,7 +3781,7 @@ class Plugin(indigo.PluginBase):
 								try:
 									indigo.variable.create(varname,u"99")
 								except Exception as e:    
-									self.exceptionHandler(40,e)
+									self.exceptionHandler(40, e)
 									self.indiLOG.log(40, u"could not read or create variable  "+varname+u" for iFind communication, ignoring iFind communication")
 									continue
 							
@@ -4085,7 +4089,7 @@ class Plugin(indigo.PluginBase):
 			
 
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return
 	
 
@@ -4123,7 +4127,7 @@ class Plugin(indigo.PluginBase):
 				except:
 					pass
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 
 		return 1
 
@@ -4220,7 +4224,7 @@ class Plugin(indigo.PluginBase):
 							indigo.variable.create(u"ipDevsNoOfDevices", unicode(indigoNumberOfdevices))
 
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 
 		return 0
 	
@@ -4481,7 +4485,7 @@ class Plugin(indigo.PluginBase):
 				indigo.variable.create(u"ipDevsNoOfDevices", unicode(indigoNumberOfdevices))
 
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 
 
 		return 0
@@ -4489,7 +4493,7 @@ class Plugin(indigo.PluginBase):
 
 
 ########################################
-	def getVendortName(self,MAC):
+	def getVendortName(self, MAC):
 		if self.enableMACtoVENDORlookup == u"0" : return ""
 		if not self.waitForMAC2vendor:
 			self.waitForMAC2vendor = self.M2V.makeFinalTable(quiet=False)
@@ -4644,7 +4648,7 @@ class Plugin(indigo.PluginBase):
 				self.indiLOG.log(20,u"switching off SQL logging for devices/state[lastfingup]\n :{}".format(outOffD.encode("utf8")) )
 				self.indiLOG.log(20,u"switching off SQL logging for devices END\n")
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 
 		return 
 
@@ -4965,9 +4969,10 @@ class Plugin(indigo.PluginBase):
 			indigo.server.savePluginPrefs() 
 			try:
 				quitNowX = self.quitNow
-			except:
+			except Exception as e:
+				self.exceptionHandler(40, e)
 				quitNowX = u"please setup config"
-				self.indiLOG.log(20,u"-->  exception StopThread triggered ... stopped,  quitNOW was: {}".format(quitNowX))
+				self.indiLOG.log(40,u"-->  exception StopThread triggered ... stopped,  quitNOW was: {}".format(quitNowX))
 			self.quitNOW = u"no"
 			############ if there are PING jobs left  kill them
 		return
@@ -5006,7 +5011,7 @@ class Plugin(indigo.PluginBase):
 															)
 						if self.wifiMacList[theMAC][11] > 9999999: self.resetbadWifiTrigger() # reset counter if tooo big
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 
 		return
 
@@ -5131,7 +5136,7 @@ class Plugin(indigo.PluginBase):
 			self.badWiFiTrigger[u"numberOfSecondsBad"] =0
 			self.wifiMacAv=copy.deepcopy(emptyWifiMacAv)
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return
 
 ##############################################
@@ -5172,7 +5177,7 @@ class Plugin(indigo.PluginBase):
 			self.badWiFiTrigger[u"numberOfSecondsBad"] = time.time()
 			self.badWiFiTrigger[u"trigger"] -=1
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return False
 
 
@@ -5269,7 +5274,7 @@ class Plugin(indigo.PluginBase):
 				self.wifiMacAv[u"numberOfCycles"][fiveORtwo] +=1
 
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return  "ok"
 
 ##############################################
@@ -5363,7 +5368,7 @@ class Plugin(indigo.PluginBase):
 				self.wifiMacAv[u"numberOfCycles"][fiveORtwo] +=1
 
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return  "ok"
 ##############################################
 	def parseWIFILogA(self,wifiLog,fiveORtwo):
@@ -5432,7 +5437,7 @@ class Plugin(indigo.PluginBase):
 				self.wifiMacAv[u"numberOfCycles"][fiveORtwo] +=1
 				
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 
 		return  "ok"
 
@@ -5456,7 +5461,7 @@ class Plugin(indigo.PluginBase):
 
 
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return
 
 
@@ -5670,7 +5675,7 @@ class Plugin(indigo.PluginBase):
 					pass
 			self.executeUpdateStatesList()        
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 			
 		return
 
@@ -5710,7 +5715,7 @@ class Plugin(indigo.PluginBase):
 	#				if self.decideMyLog(u"Logic"): self.indiLOG.log(20,u" updating MAC: "+theMAC)
 					self.updateIndigoIpVariableFromDeviceData(theMAC)
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return
 
 ##############################################
@@ -5879,7 +5884,7 @@ class Plugin(indigo.PluginBase):
 
 
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return
 ##############################################
 	def deleteIndigoIpDevicesData(self,theMACin):  # do this once in the beginning..
@@ -5919,7 +5924,7 @@ class Plugin(indigo.PluginBase):
 
 			self.getIndigoIpVariablesIntoData()
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 		return
 
 ##############################################
@@ -5992,7 +5997,7 @@ class Plugin(indigo.PluginBase):
 				self.executeUpdateStatesList()    
 
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 			self.indiLOG.log(40, u"MAC#                           "+ theMAC)
 			try:
 				self.indiLOG.log(40, u" indigoIpVariableData:     {}".format(self.indigoIpVariableData[theMAC]))
@@ -6085,7 +6090,7 @@ class Plugin(indigo.PluginBase):
 	#			self.indiLOG.log(20,u"not updating ipDevice"+devV[u"ipDevice"])
 
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 			self.indiLOG.log(40, u"MAC#                           "+ theMAC)
 			try:
 				self.indiLOG.log(40, u" indigoIpVariableData:     {}".format(self.indigoIpVariableData[theMAC]))
@@ -6145,7 +6150,7 @@ class Plugin(indigo.PluginBase):
 				if "deviceName" not in devI:	devI[u"deviceName"]=""
 
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 			self.indiLOG.log(40, u"MAC# "+ theMAC+" indigoIpVariableData: {}".format(self.indigoIpVariableData[theMAC]))
 			self.indiLOG.log(40, u"MAC# "+ theMAC+" allDeviceInfo:        {}".format(self.allDeviceInfo[theMAC]))
 
@@ -6301,7 +6306,7 @@ class Plugin(indigo.PluginBase):
 			self.updateStatesList[devId][key] = value
 
 		except Exception as e:
-			sself.exceptionHandler(40,e)
+			sself.exceptionHandler(40, e)
 			self.updateStatesList={}
 
 	def executeUpdateStatesList(self,newStates=""):
@@ -6343,7 +6348,7 @@ class Plugin(indigo.PluginBase):
 			if  newStates != "":  
 				return newStates              
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 
 
 	####----------------- if FINGSCAN is enabled send update signal  ---------
@@ -6365,10 +6370,10 @@ class Plugin(indigo.PluginBase):
 					if self.decideMyLog(u"BC"): self.indiLOG.log(10,u"updating BC with " + unicode(msg) )
 					indigo.server.broadcastToSubscribers(u"deviceStatusChanged", json.dumps(msg))
 				except Exception as e:
-					self.exceptionHandler(40,e)
+					self.exceptionHandler(40, e)
 
 		except Exception as e:
-				self.exceptionHandler(40,e)
+				self.exceptionHandler(40, e)
 		return x
 
 ####-------------------------------------------------------------------------####
@@ -6398,7 +6403,7 @@ class Plugin(indigo.PluginBase):
 			if msgLevel in self.debugLevel:							 return True
 			return False
 		except Exception as e:
-				self.exceptionHandler(40,e)
+				self.exceptionHandler(40, e)
 		return False
 
 
@@ -6438,7 +6443,7 @@ class Plugin(indigo.PluginBase):
 					"hostRange":"{}".format("{} - {}".format(".".join(map(str, min_range)), ".".join(map(str, max_range)))),
 					"maxHosts":(2 ** sum(map(lambda x: sum(c == '1' for c in x), negation_Mask))) - 2}	   
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 
 
 ####-----------------  print to logfile or indigo log  ---------
@@ -6462,7 +6467,7 @@ class Plugin(indigo.PluginBase):
 					indigo.server.log(text, type=mType)
 
 		except	Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 			indigo.server.log(text)
 
 
@@ -6475,9 +6480,10 @@ class Plugin(indigo.PluginBase):
 				ret, err = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 			return ret.decode('utf_8'), err.decode('utf_8')
 		except Exception as e:
-			self.exceptionHandler(40,e)
+			self.exceptionHandler(40, e)
 
 
+####-------------------------------------------------------------------------####
 	def exceptionHandler(self, level, exception_error_message):
 
 		try: 

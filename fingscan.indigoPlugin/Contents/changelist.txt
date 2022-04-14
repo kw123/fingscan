@@ -1,3 +1,16 @@
+Added features / changes in v7.32.69 @ 2021-04-14
+===================================================
+
+1. isolate a possible no network state in wake on lan, with try: // except
+  the plugin will continue, but will not do wake on lan
+
+
+Added features / changes in v7.32.68 @ 2021-04-13
+===================================================
+
+1. fixed some logic and optimized code, fing now starts 30 secs faster 
+
+
 Added features / changes in v7.32.67 @ 2021-04-12
 ===================================================
 

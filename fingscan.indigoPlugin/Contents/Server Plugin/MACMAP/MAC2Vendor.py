@@ -29,6 +29,8 @@ class MAP2Vendor:
 		self.mac2VendorDict ={"6":{},"7":{},"9":{}}
 
 		self.MAChome	 = os.path.expanduser("~")+"/"
+
+		self.lastmakeFinalTable = 0
 		
 		if pathToMACFiles !="":
 			self.filePath = pathToMACFiles
@@ -119,8 +121,10 @@ class MAP2Vendor:
 		if not ( self.isFileCurrent("oui") or
 				 self.isFileCurrent("mam" )  or
 				 self.isFileCurrent("oui36") ):
-				if  self.getFilesStatus == "submitted"  :
-					self.myLog( u"MAP2Vendor initializing  still waitinmg for download")
+				if self.getFilesStatus == "submitted":
+					if time.time() - self.lastmakeFinalTable < 2: return ""
+					self.lastmakeFinalTable = time.time()
+					self.myLog( u"MAP2Vendor initializing, still waiting for download")
 				return False
 
 		self.getFilesStatus = "finished" 
