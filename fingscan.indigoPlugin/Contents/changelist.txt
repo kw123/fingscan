@@ -1,3 +1,13 @@
+Added features / changes in v7.32.70 @ 2021-04-15
+===================================================
+
+1. ip broadcast calculatiuon was messed up
+   was x.x.x.254 instead of x.x.x.255
+   error was:
+			max_range = copy.copy(broadcast) # copy.copy is needed, otherwise boradcast itself is changed
+			max_range[-1] -= 1
+
+
 Added features / changes in v7.32.69 @ 2021-04-14
 ===================================================
 

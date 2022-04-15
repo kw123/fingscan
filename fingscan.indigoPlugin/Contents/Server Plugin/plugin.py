@@ -4936,7 +4936,7 @@ class Plugin(indigo.PluginBase):
 			self.killPGM(u"/startfing.py")
 		
 			try:
-				quitNowX = self.quitNow
+				quitNowX = self.quitNOW
 			except:
 				quitNowX = u"please setup config , waiting"
 				self.indiLOG.log(40,u"-->  setup config, save, then a manual reload of plugin")
@@ -4968,7 +4968,7 @@ class Plugin(indigo.PluginBase):
 			self.pluginPrefs[u"UNIFI"]	    =	json.dumps(self.unifiDevices)
 			indigo.server.savePluginPrefs() 
 			try:
-				quitNowX = self.quitNow
+				quitNowX = self.quitNOW
 			except Exception as e:
 				self.exceptionHandler(40, e)
 				quitNowX = u"please setup config"
@@ -6416,7 +6416,6 @@ class Plugin(indigo.PluginBase):
 			for i in range(int(cdir)):
 				#print( i//8, i%8)
 				mask[i // 8] += 1 << (7 - i % 8)
-
 			binary_Mask   = list(map(lambda x: bin(x)[2:].zfill(8), mask))
 
 			tt = list()
@@ -6434,14 +6433,16 @@ class Plugin(indigo.PluginBase):
 
 			min_range = network
 			min_range[-1] += 1
-			max_range = broadcast
+			max_range = copy.copy(broadcast) # copy.copy is needed, otherwise boradcast itself is changed
 			max_range[-1] -= 1
 
-			return {"netMask":"{}".format(".".join(map(str, mask))),
+			netinfo= {"netMask":"{}".format(".".join(map(str, mask))),
 					"netWorkId":"{}".format(".".join(map(str, network))),
 					"broadcast":"{}".format(".".join(map(str, broadcast))),
 					"hostRange":"{}".format("{} - {}".format(".".join(map(str, min_range)), ".".join(map(str, max_range)))),
 					"maxHosts":(2 ** sum(map(lambda x: sum(c == '1' for c in x), negation_Mask))) - 2}	   
+
+			return netinfo
 		except Exception as e:
 			self.exceptionHandler(40, e)
 
