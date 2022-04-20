@@ -1,10 +1,17 @@
-Added features / changes in v7.32.70 @ 2021-04-15
+Added features / changes in v7.32.70 @ 2022-04-15
+===================================================
+
+1. some cleanup for migration py2 --> py3 
+2. faster down --> up state change (up to 60 secs faster ), read from fing.log file did not work, only fing.data was used 
+
+
+Added features / changes in v7.32.70 @ 2022-04-15
 ===================================================
 
 1. ip broadcast calculatiuon was messed up
    was x.x.x.254 instead of x.x.x.255
    error was:
-			max_range = copy.copy(broadcast) # copy.copy is needed, otherwise boradcast itself is changed
+			max_range = copy.copy(broadcast) # copy.copy is needed, otherwise broadcast itself is changed
 			max_range[-1] -= 1
 
 
