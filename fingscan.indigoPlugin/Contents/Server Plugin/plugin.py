@@ -2759,10 +2759,11 @@ class Plugin(indigo.PluginBase):
 
 ########################################
 	def getIgnoredMAC(self):
-		self.ignoredMAC ={}
+		self.ignoredMAC = {}
+		xx = ""
 		try:
 			f = open (self.ignoredMACFile , "r")
-			xx =json.loads(f.read())
+			xx = json.loads(f.read())
 			f.close()
 			# now make it all upper case
 			for mm in xx:
