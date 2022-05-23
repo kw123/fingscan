@@ -48,7 +48,7 @@ emptyAllDeviceInfo={
 	u"ipNumber": u"0.0.0.0",
 	u"timeOfLastChange": u"0",
 	u"status": u"down",
-	u"nickName": u"iphonexyz",
+	u"nickName": u"",
 	u"noOfChanges": 0,
 	u"hardwareVendor": u"",
 	u"deviceInfo": u"",
@@ -3159,7 +3159,7 @@ class Plugin(indigo.PluginBase):
 				self.doubleIPnumbers        = {}
 				removeMAC=[]
 				for kk in range(self.fingNumberOfdevices):
-					theMAC= self.fingMACNumbers[kk]
+					theMAC = self.fingMACNumbers[kk]
 					if theMAC in self.ignoredMAC: 
 						removeMAC.append(kk)
 						continue
@@ -3171,6 +3171,13 @@ class Plugin(indigo.PluginBase):
 						if self.fingStatus[kk] == "up":
 							del self.inbetweenPing[self.fingMACNumbers[kk]]
 					self.fingDate[kk] = self.fingDate[kk].replace(u"/",u"-")
+
+					if theMAC not in self.allDeviceInfo:
+						self.allDeviceInfo[theMAC] = copy.copy(emptyAllDeviceInfo)
+						self.allDeviceInfo[theMAC]["status"] = self.fingStatus[kk]
+						self.allDeviceInfo[theMAC]["ipNumber"] = self.fingIPNumbers[kk]
+						self.allDeviceInfo[theMAC]["hardwareVendor"] = self.fingDeviceInfo[kk]
+							
 					if self.fingStatus[kk] == "up" and self.allDeviceInfo[theMAC][u"status"] != u"up":
 							if self.decideMyLog(u"Logic"): self.indiLOG.log(10,u"fing.data status down --> up MAC#:{}".format(theMAC) )
 
@@ -5593,7 +5600,7 @@ class Plugin(indigo.PluginBase):
 					devI[u"devExists"]	=1
 
 			for theMAC in self.allDeviceInfo:
-				if theMAC =="": continue
+				if theMAC == "": continue
 				devI = self.allDeviceInfo[theMAC]
 				if devI[u"devExists"] == 0 and self.acceptNewDevices and theMAC not in self.ignoredMAC:
 
@@ -6051,7 +6058,7 @@ class Plugin(indigo.PluginBase):
 			try:
 				curr = indigo.variables[u"ipDevice"+devV[u"ipDevice"]].value.split(";")
 			except:
-				self.indiLOG.log(40, u" updating ipDevice "+devV[u"ipDevice"]+" does not exist , (re)creating")
+				self.indiLOG.log(30, u" updating ipDevice "+devV[u"ipDevice"]+" does not exist , (re)creating")
 				
 				curr =[]
 			
