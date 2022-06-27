@@ -38,7 +38,7 @@ Before running make sure that you have installed fing binaries, install FING  64
             <Option value="30" >/30 =  2 bits: 0..3 </Option>
             <Option value="31" >/31 =  1 bits: 0..1 </Option>
             </List>
-<Label>Number of ip numbers (2**(32-x)</Label></Field>
+<Label>Number of ip numbers (2**(32-x))</Label></Field>
 <Field id="infoLabel00" type="label" alignText="right">
         <Label>eg 192.168.1.0/24= ...0..255 or 192.168.1.64/27 =...64..96  </Label>    </Field>
 
