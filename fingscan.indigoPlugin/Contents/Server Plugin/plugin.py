@@ -252,13 +252,10 @@ class Plugin(indigo.PluginBase):
 ####----------------- @ startup set global parameters, create directories etc ---------
 	def startup(self):
 
-
-
 		if not checkIndigoPluginName(self, indigo): 
 			exit() 
 
 		try:
-
 			self.checkcProfile()
 
 			self.debugLevel			= []
@@ -406,6 +403,32 @@ class Plugin(indigo.PluginBase):
 
 			self.initIndigoParms()
 
+############ get network info
+
+			try:
+				self.netwType   = "{}".format(int(self.pluginPrefs.get("netwType", "24")))
+			except:
+				self.netwType = "24"
+			if "{}".format(self.netwType) ==  "8":
+				self.netwType = "24"
+			
+			self.theNetwork         = self.pluginPrefs.get("network", "192.168.1.0")
+			if not self.isValidIP(self.theNetwork):
+				self.theNetwork ="192.168.1.0"
+
+			try: 
+				aa = self.theNetwork+"/"+self.netwType
+				self.netwInfo = self.IPCalculator(self.theNetwork, self.netwType)
+			except Exception as e:
+				self.logger.error("", exc_info=True)
+				self.netwInfo = {'netWorkId': '192.168.1.0', 'broadcast': '192.168.1.255', 'netMask': '255.255.255.0', 'maxHosts': 254, 'hostRange': '192.168.1.1 - 192.168.1.254'}
+			self.indiLOG.log(20, "network info: {}, netwType:{}".format(self.netwInfo, self.netwType))
+			self.broadcastIP = self.netwInfo["broadcast"]
+
+			self.pluginPrefs["network"]  	= self.theNetwork
+			self.pluginPrefs["netwType"] 	= self.netwType
+
+
 			self.acceptNewDevices = self.pluginPrefs.get("acceptNewDevices", "0") == "1"
 			self.getIgnoredMAC()
 
@@ -502,31 +525,6 @@ class Plugin(indigo.PluginBase):
 			self.updateAllIndigoIpVariableFromDeviceData()
 			self.indiLOG.log(20, "loaded indigo data")
 
-############ get network info
-			
-
-			try:
-				self.netwType   = "{}".format(int(self.pluginPrefs.get("netwType", "24")))
-			except:
-				self.netwType = "24"
-			if "{}".format(self.netwType) ==  "8":
-				self.netwType = "24"
-			
-			self.theNetwork         = self.pluginPrefs.get("network", "192.168.1.0")
-			if not self.isValidIP(self.theNetwork):
-				self.theNetwork ="192.168.1.0"
-
-			try: 
-				aa = self.theNetwork+"/"+self.netwType
-				self.netwInfo = self.IPCalculator(self.theNetwork, self.netwType)
-			except Exception as e:
-				self.logger.error("", exc_info=True)
-				self.netwInfo = {'netWorkId': '192.168.1.0', 'broadcast': '192.168.1.255', 'netMask': '255.255.255.0', 'maxHosts': 254, 'hostRange': '192.168.1.1 - 192.168.1.254'}
-			self.indiLOG.log(20, "network info: {}, netwType:{}".format(self.netwInfo, self.netwType))
-			self.broadcastIP = self.netwInfo["broadcast"]
-
-			self.pluginPrefs["network"]  	= self.theNetwork
-			self.pluginPrefs["netwType"] 	= self.netwType
 
 
 

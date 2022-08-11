@@ -1,3 +1,10 @@
+Added features / changes in v2022.34.81 @ 2022-08-12
+===================================================
+
+1.  moved network detection to front, in case config is started immediately, some variables are not initialized
+
+
+
 Added features / changes in v2022.34.80 @ 2022-08-11
 ===================================================
 
