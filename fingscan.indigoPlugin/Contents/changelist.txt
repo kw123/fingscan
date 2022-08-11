@@ -1,3 +1,17 @@
+Added features / changes in v2022.34.80 @ 2022-08-11
+===================================================
+
+1.  fixed wake onlan decode() not ...  error. was left over from py2 --> py3
+
+
+
+Added features / changes in v2022.34.76 @ 2022-06-28
+===================================================
+
+1. removed py2 compatible workarounds
+2. streamlined code, removed ASUS wifi and iFind code
+
+
 Added features / changes in v2022.34.75 @ 2022-06-27
 ===================================================
 
