@@ -346,6 +346,8 @@ class Plugin(indigo.PluginBase):
 			self.signalDelta				= {"5":{"2GHz":0,"5GHz":0},"2":{"2GHz":0,"5GHz":0},"1":{"2GHz":0,"5GHz":0}}
 			self.theNetwork					= "0.0.0.0"
 
+			self.initConfig0()
+
 		except Exception:
 			self.logger.error("", exc_info=True)
 
@@ -353,14 +355,10 @@ class Plugin(indigo.PluginBase):
 		self.startTime = time.time()
 
 
-		return
-
-
 ####----------------- @ startup set global parameters, ---------
-	def initConfig(self):
+	def initConfig0(self):
 
 		try:
-
 ############ startup message
 			 
 			indigo.server.log("FINGSCAN--   initializing     will take ~ 2 minutes..")
@@ -432,7 +430,49 @@ class Plugin(indigo.PluginBase):
 			self.acceptNewDevices = self.pluginPrefs.get("acceptNewDevices", "0") == "1"
 			self.getIgnoredMAC()
 
-############ get password
+############ get WIFI router info if available
+			self.routerType	= self.pluginPrefs.get("routerType","0")
+			self.routerPWD	= ""
+			self.routerUID	= ""
+			self.routerIPn	= ""
+			if self.routerType != "0":
+				self.routerUID	= self.pluginPrefs.get("routerUID", "0")
+				self.routerIPn	= self.pluginPrefs.get("routerIPn", "0")
+				
+				test = self.getPWD("fingrt")
+				if test != "0":
+					self.routerPWD	= test
+				else:
+					self.routerType = "0"
+					self.routerPWD	= ""
+
+				self.checkWIFIinfo()
+
+############ kill old pending PING jobs
+			self.killPing("all")
+
+
+##
+		except Exception as e:
+				self.logger.error("", exc_info=True)
+				self.quitNOW = "restart required; {}".format(e) 
+				self.sleep(20)
+
+
+		return
+
+
+
+
+		return
+
+
+####----------------- @ startup set global parameters, ---------
+	def initConfig(self):
+
+		try:
+
+########## get password
 			self.passwordOK = "0"
 			self.indiLOG.log(20, "getting password")
 			test = self.getPWD("fingscanpy")
@@ -491,29 +531,7 @@ class Plugin(indigo.PluginBase):
 
 			self.indiLOG.log(20, "get password done;  checking if FING is installed ")
 
-############ install FING executables, set rights ... 
-			self.setupFingPgm()
 	
-############ get WIFI router info if available
-			self.routerType	= self.pluginPrefs.get("routerType","0")
-			self.routerPWD	= ""
-			self.routerUID	= ""
-			self.routerIPn	= ""
-			if self.routerType != "0":
-				self.routerUID	= self.pluginPrefs.get("routerUID", "0")
-				self.routerIPn	= self.pluginPrefs.get("routerIPn", "0")
-				
-				test = self.getPWD("fingrt")
-				if test != "0":
-					self.routerPWD	= test
-				else:
-					self.routerType = "0"
-					self.routerPWD	= ""
-
-				self.checkWIFIinfo()
-
-############ kill old pending PING jobs
-			self.killPing("all")
 
 ############ here we get stored setup etc
 			self.refreshVariables()
@@ -2678,7 +2696,7 @@ class Plugin(indigo.PluginBase):
 		nwrite= min( len(self.indigoDevicesNumbers),self.indigoNumberOfdevices )
 		for kk in range(nwrite):
 				writestring = "{}".format(self.indigoDevicesNumbers[kk] )+";"+self.indigoDevicesValues[kk]+"\n"
-				f.write(writestring.encode("utf8"))
+				f.write(writestring)# .encode("utf8"))
 		f.close()
 		self.indiLOG.log(20, " saved")
 		
@@ -3231,15 +3249,13 @@ class Plugin(indigo.PluginBase):
 		try:  ## test if any data and if version 2, if yes, return
 			theTest = indigo.variables["ipDevice01"]
 			theTest = theTest.value
-			if len (theTest) < 5:  # variable exists, but empty or too short  should be 8 or 9
-				self.quitNOW = "Indigo variable error 1"
-				self.indiLOG.log(40, "getting data from indigo: bad variable ipDevice01 \n    please check if it has bad data, in doubt delete and let the program recreate  \n    stopping fingscan " )
-				return 1
+			if len(theTest) < 5:  # variable exists, but empty 
+				return 0
 			theValue = theTest.split(";")
 			if theValue[0].strip().count(":") == 5:
 				test = self.getIndigoIpVariablesIntoData()
 				return 0  ## version 2 nothing to do
-		except Exception as exc:
+		except Exception as e:
 			return ## no data nothing to do
 
 
@@ -3308,10 +3324,11 @@ class Plugin(indigo.PluginBase):
 				skip = 1
 				theTest = theTest.value
 				if len (theTest) < 5:  # that is minimum, should be 8 or 9
-					skip = 1
-					self.quitNOW = "Indigo variable error 6"
-					self.indiLOG.log(40, "getting data from indigo: bad variable ipDevice" + ii00 +";  deleting and letting the program recreate " )
-					indigo.variable.delete("ipDevice"+ii00)
+					if self.indigoCommand == "none":
+						skip = 1
+						self.quitNOW = "Indigo variable error 6"
+						self.indiLOG.log(30, "getting data from indigo: bad variable ipDevice" + ii00 +";  deleting and letting the program recreate " )
+						indigo.variable.delete("ipDevice"+ii00)
 					continue
 				theValue = theTest.split(";")
 
@@ -3324,19 +3341,21 @@ class Plugin(indigo.PluginBase):
 				self.indigoDevicesNumbers.append(ii00)
 				theMAC =theValue[0].strip()
 				if theValue[0].strip().count(":") != 5:
-					skip = 1
-					self.quitNOW = "Indigo variable error 7"
-					self.indiLOG.log(40, "getting data from indigo: bad variable ipDevice" + ii00 +"  MAC number does not seem to be real MAC number>>" + theValue[0].strip() +"<<  deleting and letting the program recreate " )
-					indigo.variable.delete("ipDevice"+ii00)
+					if self.indigoCommand == "none":
+						skip = 1
+						self.quitNOW = "Indigo variable error 7"
+						self.indiLOG.log(30, "getting data from indigo: bad variable ipDevice" + ii00 +"  MAC number does not seem to be real MAC number>>" + theValue[0].strip() +"<<  deleting and letting the program recreate " )
+						indigo.variable.delete("ipDevice"+ii00)
 					continue
 
 
 
 				if theValue[1].strip().count(".") != 3:
-					skip = 1
-					self.quitNOW = "Indigo variable error 8"
-					self.indiLOG.log(40, "getting data from indigo: bad variable ipDevice" + ii00 +"  IP number does not seem to be real IP number>>" + theValue[1].strip() +"<<\  deleting and letting the program recreate  " )
-					indigo.variable.delete("ipDevice"+ii00)
+					if self.indigoCommand == "none":
+						skip = 1
+						self.quitNOW = "Indigo variable error 8"
+						self.indiLOG.log(30, "getting data from indigo: bad variable ipDevice" + ii00 +"  IP number does not seem to be real IP number>>" + theValue[1].strip() +"<<\  deleting and letting the program recreate  " )
+						indigo.variable.delete("ipDevice"+ii00)
 					continue
 
 				self.indigoIpVariableData[theMAC]=copy.deepcopy(emptyindigoIpVariableData)
@@ -5714,6 +5733,7 @@ class Plugin(indigo.PluginBase):
 					self.allDeviceInfo[theMAC]["status"] =justStatus
 					return
 			except:
+				self.indiLOG.log(20, "updateIndigoIpDeviceFromDeviceData: devId {}  does not exist in indigo devices, recreate for mac#:{}".format(devId, theMAC))
 	# create new device
 				name = "MAC-"+theMAC,
 				if "nickName" in devI:
