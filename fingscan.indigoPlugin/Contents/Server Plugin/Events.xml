@@ -3,7 +3,6 @@
 
     <Event id="NewDeviceOnNetwork">	<Name>New IP Device on Network</Name> </Event>
     <Event id="IPNumberChanged"> 	<Name>IP Number of a device has changed</Name> </Event>
-    <Event id="badWiFi"> 	<Name>bad WiFi signal for more than xx devices for more than yy minutes(see configuration parameters)</Name> </Event>
 
     <Event id="EVENT_1_allAway">	<Name>EVENT_1_allAway  .. ALL devices                in the group must be AWAY to trigger</Name> </Event>
     <Event id="EVENT_1_oneAway">	<Name>EVENT_1_oneAway  .. ONE device  of the devices in the group must be AWAY to trigger</Name> </Event>

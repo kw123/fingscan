@@ -5,13 +5,6 @@
         <ConfigUI>			
             <Field id="setHardwareVendor" type="textfield" hidden="false"> <Label>overwrite HardwareVendor State value:</Label></Field>
             <Field id="setDeviceInfo"     type="textfield" hidden="false"> <Label>overwrite DeviceInfo State value:</Label></Field>
-            <Field id="setWiFi" 			  type="menu"     defaultValue="0"> <Label>WiFi/ethernet device:</Label>
-                <List>
-                    <Option value="Ethernet" >set to regular ethernet, ignore WiFi info</Option>
-                    <Option value="WiFi"     >set to Wifi Only </Option>
-                    <Option value="0"        >Wifi or Ethernet, what ever the system chooses </Option>
-                </List>
-            </Field>
             <Field id="setExpirationTime" 			  type="menu"     defaultValue="0"> <Label>Add expiration time to FING up to down status change:</Label>
                 <List>
                     <Option value="0"  >use FING info directly for up to down expired</Option>
@@ -123,16 +116,6 @@
             <ValueType>String</ValueType>
             <TriggerLabel>noOfChanges</TriggerLabel>
             <ControlPageLabel>noOfChanges</ControlPageLabel>
-        </State>
-        <State id="WiFi">
-            <ValueType>String</ValueType>
-            <TriggerLabel>WiFi</TriggerLabel>
-            <ControlPageLabel>WiFi</ControlPageLabel>
-        </State>
-        <State id="WiFiSignal">
-            <ValueType>String</ValueType>
-            <TriggerLabel>WiFiSignal</TriggerLabel>
-            <ControlPageLabel>WiFiSignal</ControlPageLabel>
         </State>
         <State id="usePing-WOL">
             <ValueType>String</ValueType>

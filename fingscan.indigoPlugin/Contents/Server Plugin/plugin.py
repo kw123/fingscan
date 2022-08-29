@@ -30,15 +30,9 @@ import cProfile
 import pstats
 import logging
 
-nOfDevicesInEvent   = 35
-nOfIDevicesInEvent  = 5
-piBeaconStart       = 22
-unifiStart          = 30
-milesMeters         = 1609.34
-kmMeters	        = 1000.
-nEvents		        = 12
+nOfDevicesInEvent   = 12
+nEvents		        = 20
 
-iFindPluginMinText = "com.corporatechameleon.iFind"
 
 emptyAllDeviceInfo={
 	"ipNumber": "0.0.0.0",
@@ -48,9 +42,6 @@ emptyAllDeviceInfo={
 	"noOfChanges": 0,
 	"hardwareVendor": "",
 	"deviceInfo": "",
-	"WiFi": "",
-	"setWiFi": "",
-	"WiFiSignal": "",
 	"usePing": "doNotUsePing",
 	"useWakeOnLanSecs":0,
 	"useWakeOnLanLast":0,
@@ -72,78 +63,52 @@ emptyindigoIpVariableData={
 	"variableName": "",
 	"ipDevice": "00",
 	"index": 0,
-	"WiFi": "",
-	"WiFiSignal": "0",
 	"usePing": "",
 	"suppressChangeMSG": "show"
 	}
-emptyEVENT ={#              -including Idevices option-------------                                                                                                                                            ----------  ------------pi beacons---------------------                   --------------  unifi ---------------------
+emptyEVENT ={#        
 	"IPdeviceMACnumber"    :{"{}".format(i):"0" for i in range(1,nOfDevicesInEvent)},
 	"timeOfLastON"         :{"{}".format(i):"0" for i in range(1,nOfDevicesInEvent)},
 	"timeOfLastOFF"        :{"{}".format(i):"0" for i in range(1,nOfDevicesInEvent)},
 	"secondsOfLastON"      :{"{}".format(i):0   for i in range(1,nOfDevicesInEvent)},
-	"secondsOfLastOFF"    :{"{}".format(i):0   for i in range(1,nOfDevicesInEvent)},
-	"currentStatusHome"   :{"{}".format(i):"0" for i in range(1,nOfDevicesInEvent)},
-	"currentStatusAway"   :{"{}".format(i):"0" for i in range(1,nOfDevicesInEvent)},
-	"iDeviceUseForHome"   :{"{}".format(i):"0" for i in range(1,nOfDevicesInEvent)},
-	"iDeviceUseForAway"   :{"{}".format(i):"0" for i in range(1,nOfDevicesInEvent)},
-	"iDeviceAwayDistance" :{"{}".format(i):"0" for i in range(1,nOfDevicesInEvent)},
-	"iDeviceHomeDistance" :{"{}".format(i):"0" for i in range(1,nOfDevicesInEvent)},
-	"iDeviceName"         :{"{}".format(i):"0" for i in range(1,nOfDevicesInEvent)},
-	"iDistance"           :{"{}".format(i):0   for i in range(1,nOfDevicesInEvent)},
-	"iSpeed"              :{"{}".format(i):0   for i in range(1,nOfDevicesInEvent)},
-	"iUpdateSecs"         :{"{}".format(i):0   for i in range(1,nOfDevicesInEvent)},
-	"iDistanceLast"       :{"{}".format(i):0   for i in range(1,nOfDevicesInEvent)},
-	"iSpeedLast"          :{"{}".format(i):0   for i in range(1,nOfDevicesInEvent)},
-	"iUpdateSecsLast"     :{"{}".format(i):0   for i in range(1,nOfDevicesInEvent)},
-	"itimeNextUpdate"	   :{"{}".format(i):0   for i in range(1,nOfDevicesInEvent)},
-	"iMaxSpeed"	       :{"{}".format(i):1.0 for i in range(1,nOfDevicesInEvent)},
-	"iFindMethod"         :{"{}".format(i):""  for i in range(1,nOfDevicesInEvent)},
+	"secondsOfLastOFF"     :{"{}".format(i):0   for i in range(1,nOfDevicesInEvent)},
+	"currentStatusHome"    :{"{}".format(i):"0" for i in range(1,nOfDevicesInEvent)},
+	"currentStatusAway"    :{"{}".format(i):"0" for i in range(1,nOfDevicesInEvent)},
 	"nextTimeToCheck"	   :{"{}".format(i):1.0 for i in range(1,nOfDevicesInEvent)},
 	"oneAway": "0",
-	 "allAway": "0",
-	 "nAway": 0,
-	 "allHome": "0",
-	 "oneHome": "0",
-	 "nHome": 0,
-	 "distanceAwayLimit": 66666.,
-	 "distanceHomeLimit": -1,
-	 "minimumTimeAway": 300,
-	 "minimumTimeHome": 0,
-	 "enableDisable": "0",
-	 "dataFormat": "3.0",
-	 "maxLastTimeUpdatedDistanceMinutes": 900
+	"allAway": "0",
+	"nAway": 0,
+	"allHome": "0",
+	"oneHome": "0",
+	"nHome": 0,
+	"secsOfLastAllHomeTrigger": 0,
+	"timeofLastAllAwayTrigger": 0,
+	"secsOfLastOneHomeTrigger": 0,
+	"timeofLastOneAwayTrigger": 0,
+	"minimumTimeAway": 300,
+	"minimumTimeHome": 0,
+	"enableDisable": "0",
+	"dataFormat": "3.0"
 	}
-emptyWiFiMacList=["x", "x","", "x", "x","","","","","","",""]
 indigoMaxDevices = 1024
-emptyWifiMacAv={"sumSignal":{"2GHz":0., "5GHz":0.}, "numberOfDevices":{"2GHz":0., "5GHz":0.}, "curAvSignal":{"2GHz":0., "5GHz":0.}, "curDev":{"2GHz":0., "5GHz":0.}, "numberOfCycles":{"2GHz":0., "5GHz":0.}, "noiseLevel":{"2GHz": "0", "5GHz": "0"}}
-_debAreas = ["Logic", "Ping", "Wifi", "Events", "piBeacon", "Unifi", "BC", "Special", "StartFi", "all"]
+
+_debAreas = ["Logic", "Ping", "Events", "BC", "Special", "all"]
+
 
 kDefaultPluginPrefs = {
 				"network":					"192.168.1.0",
 				"netwType":					"24",
 				"ipDevices":				"",
 				"acceptNewDevices":			"1",
-				"enablepiBeaconDevices":	"0",
-				"enablepiUnifiDevices":		"0",
 				"enableBroadCastEvents":	"0",
-				"routerType":				"0",
-				"routerIPn":				"0",
-				"routerUID":				"0",
-				"routerType":				"0",
-				"minWiFiSignal":			"0",
-				"minSignalDrop":			"0",
 				"minNumberOfDevicesBad":	"0",
-				"password":					"your router password here",
+				"password":					"your MAC password here",
 				"sleepTime":				"1",
 				"inbetweenPingType":		"1",
 				"sleepTime":				"1",
 				"debugLogic":				False,
 				"debugPing":				False,
-				"debugWifi":				False,
 				"debugEvents":				False,
-				"debugpiBeacon":			False,
-				"debugUnifi":				False,
 				"debugBC":					False,
 				"debugStartFi":				False,
 				"debugSpecial":				False,
@@ -291,9 +256,10 @@ class Plugin(indigo.PluginBase):
 				indigo.server.log(" moving "+ "cp -R " + self.indigoPluginDirOld+"* '" + self.indigoPreferencesPluginDir+"'" )
 				os.system("cp -R " + self.indigoPluginDirOld+"* '" + self.indigoPreferencesPluginDir+"'" )
 
+			self.checkOpsysVersion()
 
 
-
+			self.indigoCommand				= "none"
 			self.savePrefs 					= 0
 			self.updateStatesList			= {}
 			self.updatePrefs				= False
@@ -324,26 +290,18 @@ class Plugin(indigo.PluginBase):
 			self.indigoInitialized			= False
 			self.stopConcurrentCounter		= 0
 			self.doNOTupdate				= False
-			self.piBeaconUpDateNeeded		= False
-			self.unifiUpDateNeeded			= False
 			self.allDeviceInfo				= {}
-			self.wifiMacList				= {}
-			self.oldwifiMacList				= {}
-			self.wifiMacAv					= copy.deepcopy(emptyWifiMacAv)
 			self.triggerList				= []
 			self.EVENTS						= {}
 			self.indigoVariablesFolderID	= 0
 			self.passwordOK					= "no"
 			self.yourPassword				= ""
 			self.quitNOW					= "no"
-			self.WiFiChanged 				= {}
-			self.wifiErrCounter				= 0
 			self.callingPluginName			= []
 			self.callingPluginCommand		= []
 			self.triggerFromPlugin			= False
 
 			self.executionMode				= "noInterruption"  ## interrupted by plugin/fingscan/configuration
-			self.signalDelta				= {"5":{"2GHz":0,"5GHz":0},"2":{"2GHz":0,"5GHz":0},"1":{"2GHz":0,"5GHz":0}}
 			self.theNetwork					= "0.0.0.0"
 
 			self.initConfig0()
@@ -388,17 +346,6 @@ class Plugin(indigo.PluginBase):
 			self.sleepTime = int(self.pluginPrefs.get("sleepTime", 1))
 			self.newSleepTime = self.sleepTime
 
-
-############ get & setup WiFi parameters
-			self.badWiFiTrigger = {"minSignalDrop":10, "numberOfSecondsBad":0, "minNumberOfDevicesBad":3, "minNumberOfSecondsBad":200, "minWiFiSignal":-90, "trigger":0}
-			try:
-				self.badWiFiTrigger["minSignalDrop"]			= float(self.pluginPrefs.get("minSignalDrop"		 ,self.badWiFiTrigger["minSignalDrop"]))
-				self.badWiFiTrigger["minNumberOfDevicesBad"]	= float(self.pluginPrefs.get("minNumberOfDevicesBad",self.badWiFiTrigger["minNumberOfDevicesBad"]))
-				self.badWiFiTrigger["minNumberOfSecondsBad"]	= float(self.pluginPrefs.get("minNumberOfSecondsBad",self.badWiFiTrigger["minNumberOfSecondsBad"]))
-				self.badWiFiTrigger["minWiFiSignal"]			= float(self.pluginPrefs.get("minWiFiSignal"		 ,self.badWiFiTrigger["minWiFiSignal"]))
-			except:
-				self.indiLOG.log(30, "leaving WiFi parameters at default, not configured in 'fingscan/Configure...'")
-
 			self.initIndigoParms()
 
 ############ get network info
@@ -430,29 +377,9 @@ class Plugin(indigo.PluginBase):
 			self.acceptNewDevices = self.pluginPrefs.get("acceptNewDevices", "0") == "1"
 			self.getIgnoredMAC()
 
-############ get WIFI router info if available
-			self.routerType	= self.pluginPrefs.get("routerType","0")
-			self.routerPWD	= ""
-			self.routerUID	= ""
-			self.routerIPn	= ""
-			if self.routerType != "0":
-				self.routerUID	= self.pluginPrefs.get("routerUID", "0")
-				self.routerIPn	= self.pluginPrefs.get("routerIPn", "0")
-				
-				test = self.getPWD("fingrt")
-				if test != "0":
-					self.routerPWD	= test
-				else:
-					self.routerType = "0"
-					self.routerPWD	= ""
-
-				self.checkWIFIinfo()
-
 ############ kill old pending PING jobs
 			self.killPing("all")
 
-
-##
 		except Exception as e:
 				self.logger.error("", exc_info=True)
 				self.quitNOW = "restart required; {}".format(e) 
@@ -564,8 +491,6 @@ class Plugin(indigo.PluginBase):
 
 ############ check if FMID is enabled
 			self.IDretList=[]
-			self.iFindStuffPlugin = "com.corporatechameleon.iFindplugBeta"
-			self.checkIfiFindisEnabled()
 
 ############ en/ disable mac to vendor lookup
 		
@@ -576,41 +501,6 @@ class Plugin(indigo.PluginBase):
 			if self.enableMACtoVENDORlookup != "0":
 				self.M2V = MAC2Vendor.MAP2Vendor(pathToMACFiles=self.indigoPreferencesPluginDir+"mac2Vendor/", refreshFromIeeAfterDays = self.enableMACtoVENDORlookup, myLogger = self.indiLOG.log)
 				self.waitForMAC2vendor = self.M2V.makeFinalTable(quiet=True)
-
-
-############ check for piBeacon plugin devcies
-			try:
-				self.piBeaconDevices=json.loads(self.pluginPrefs["piBeacon"])
-			except:
-				self.piBeaconDevices = {}
-			self.cleanUppiBeacon()
-
-
-			self.enablepiBeaconDevices = self.pluginPrefs.get("enablepiBeaconDevices","0")
-			self.piBeaconIsAvailable = False
-			self.piBeaconDevicesAvailable = []
-			self.getpiBeaconAvailable()
-			if self.piBeaconIsAvailable:
-				self.pluginPrefs["piBeaconEnabled"] = True
-				self.updatepiBeacons()
-			else:
-				self.pluginPrefs["piBeaconEnabled"] = False
-############ check for UNIFI plugin devcies
-			try:
-				self.unifiDevices=json.loads(self.pluginPrefs["UNIFI"])
-			except:
-				self.unifiDevices = {}
-			self.cleanUpUnifi()
-			self.enableUnifiDevices = self.pluginPrefs.get("enableUnifiDevices","0")
-			self.unifiAvailable = False
-			self.unifiDevicesAvailable = []
-			self.getUnifiAvailable()
-			if self.unifiAvailable:
-				self.pluginPrefs["unifiEnabled"] = True
-				self.updateUnifi()
-			else:
-				self.pluginPrefs["unifiEnabled"] = False
-
 
 
 ############ setup mac / devname /number selection list
@@ -625,17 +515,11 @@ class Plugin(indigo.PluginBase):
 ############ check if version 1 if yes, upgrade to version 2
 			retCode = self.checkIndigoVersion()
 
-			try:
-				indigo.variable.create("averageWiFiSignal_GHz",folder=self.indigoVariablesFolderID)
-				indigo.variable.create("averageWiFiSignal_5GHz",folder=self.indigoVariablesFolderID)
-			except:
-				pass
-
 
 ############ create indigo Event variables  and initialize ..
 				
 			self.cleanUpEvents()
-			self.setupEventVariables(init=True)
+			self.setupEventVariables()
 	 
 
 ############ initialize indigo settings ..
@@ -651,13 +535,6 @@ class Plugin(indigo.PluginBase):
 ############ print info to indigo logfile
 			self.printConfig()
 			self.printEvents()
-			if self.routerType != "0":
-				errorMSG = self.getWifiDevices(self.routerUID, self.routerPWD, self.routerIPn, rType=self.routerType)
-				if errorMSG != "ok":
-					self.indiLOG.log(40, "Router wifi not reachable, userid, password or ipnumber wrong?\n{}".format(errorMSG))
-				self.printWiFi()
-			self.printpiBeaconDevs()
-			self.printUnifiDevs()
 			
 
 ############ try to find hw vendor 
@@ -751,7 +628,7 @@ class Plugin(indigo.PluginBase):
 				if self.decideMyLog("Logic"): self.indiLOG.log(10, "setting attribute for catalina+  result:{}".format(ret))
 				self.indiLOG.log(20, "fing install check done")
 
-				self.opsys, self.fingVersion = self.checkVersion()
+				self.fingVersion = self.checkVersion()
 				if self.opsys >= 10.15 and self.fingVersion < 5 and self.fingVersion >0 :
 					self.indiLOG.log(50, "\nmiss match version of opsys:{} and fing:{} you need to upgrade / install FING to 64 bit version (>=5). Download from\nhttps://www.fing.com/products/development-toolkit  use OSX button"+\
 					 "\nor use\nCLI_macOSX_5.4.0.zip\n included in the plugin download to install\nthen delete fing.log and fing.data in the indigo preference directory and reload the plugin".format(self.opsys, self.fingVersion))
@@ -773,10 +650,8 @@ class Plugin(indigo.PluginBase):
 
 ########################################
 	def checkVersion(self):
-		import platform
+
 		try:
-			opsys		= platform.mac_ver()[0].split(".")
-			opsys		= float(opsys[0]+"."+opsys[1])
 			cmd 		= "echo '"+self.yourPassword+ "' | sudo -S "+self.fingEXEpath+" -v"
 			if self.decideMyLog("Logic"): self.indiLOG.log(10, "testing versiosn w  {}".format(cmd))
 			ret, err = self.readPopen(cmd)
@@ -787,10 +662,22 @@ class Plugin(indigo.PluginBase):
 			else:
 				self.indiLOG.log(40, "error in get fing version#: seems that either {} in not installed or password>>{}<< not correct,\nreturned text from fing probe:{}:  {}-{}".format(self.fingEXEpath, self.yourPassword, cmd, ret, err))
 				fingVersion	= -1.0
-			return opsys, fingVersion
+			return fingVersion
 		except Exception:
 			self.logger.error("", exc_info=True)
-		return 0, -1.0			
+		return  -1.0			
+
+
+########################################
+	def checkOpsysVersion(self):
+		import platform
+		self.opsys = 10.0
+		try:
+			opsys		= platform.mac_ver()[0].split(".")
+			self.opsys		= float(opsys[0]+"."+opsys[1])
+		except Exception:
+			self.logger.error("", exc_info=True)
+		return self.opsys			
 
 
 ########################################
@@ -810,7 +697,7 @@ class Plugin(indigo.PluginBase):
 		return
 		
 ########################################
-	def setupEventVariables(self,init=False):
+	def setupEventVariables(self):
 		try:
 			try:
 				indigo.variables.folder.create("FINGscanEvents")
@@ -818,42 +705,56 @@ class Plugin(indigo.PluginBase):
 			except:
 				pass
 			self.FINGscanFolderID = indigo.variables.folders["FINGscanEvents"].id
-			for i in self.EVENTS:
-				try: 	indigo.variable.create("allHome_{}".format(i), "",folder=self.FINGscanFolderID)
-				except:	pass
-				try: 	indigo.variable.create("oneHome_{}".format(i), "",folder=self.FINGscanFolderID)
-				except:	pass
-				try: 	indigo.variable.create("nHome_{}".format(i), "",folder=self.FINGscanFolderID)
-				except:	pass
-				try: 	indigo.variable.create("allAway_{}".format(i), "",folder=self.FINGscanFolderID)
-				except:	pass
-				try: 	indigo.variable.create("oneAway_{}".format(i), "",folder=self.FINGscanFolderID)
-				except:	pass
-				try: 	indigo.variable.create("nAway_{}".format(i), "",folder=self.FINGscanFolderID)
-				except:	pass
+			for nEvent in self.EVENTS:
+				if self.EVENTS[(nEvent)]["enableDisable"] == "1":
+					try: 	indigo.variable.create("allHome_{}".format(nEvent), "",folder=self.FINGscanFolderID)
+					except:	pass
+					try: 	indigo.variable.create("oneHome_{}".format(nEvent), "",folder=self.FINGscanFolderID)
+					except:	pass
+					try: 	indigo.variable.create("nHome_{}".format(nEvent), "",folder=self.FINGscanFolderID)
+					except:	pass
+					try: 	indigo.variable.create("allAway_{}".format(nEvent), "",folder=self.FINGscanFolderID)
+					except:	pass
+					try: 	indigo.variable.create("oneAway_{}".format(nEvent), "",folder=self.FINGscanFolderID)
+					except:	pass
+					try: 	indigo.variable.create("nAway_{}".format(nEvent), "",folder=self.FINGscanFolderID)
+					except:	pass
+				else:
+					try: 	indigo.variable.delete("allHome_{}".format(nEvent), "",folder=self.FINGscanFolderID)
+					except:	pass
+					try: 	indigo.variable.delete("oneHome_{}".format(nEvent), "",folder=self.FINGscanFolderID)
+					except:	pass
+					try: 	indigo.variable.creadeletete("nHome_{}".format(nEvent), "",folder=self.FINGscanFolderID)
+					except:	pass
+					try: 	indigo.variable.delete("allAway_{}".format(nEvent), "",folder=self.FINGscanFolderID)
+					except:	pass
+					try: 	indigo.variable.delete("oneAway_{}".format(nEvent), "",folder=self.FINGscanFolderID)
+					except:	pass
+					try: 	indigo.variable.delete("nAway_{}".format(nEvent), "",folder=self.FINGscanFolderID)
+					except:	pass
+	
 
 			
 			try:
 				indigo.variable.create("FingEventDevChangedIndigoId",folder=self.FINGscanFolderID)
 			except: pass
 
-
-
 			for nEvent in self.EVENTS:
-				evnt = self.EVENTS[nEvent]
-				if "oneHome" not in evnt: continue
-				xx =  "{}".format(indigo.variables["oneHome_"+nEvent].value)
-				if evnt["oneHome"]  !=  xx:                	indigo.variable.updateValue("oneHome_"+nEvent,evnt["oneHome"])
-				xx =  "{}".format(indigo.variables["allHome_"+nEvent].value)
-				if evnt["allHome"]  !=  xx:               		indigo.variable.updateValue("allHome_"+nEvent,evnt["allHome"])
-				xx =  "{}".format(indigo.variables["allHome_"+nEvent].value)
-				if evnt["nHome"]  !=  xx:                  	indigo.variable.updateValue("nHome_"+nEvent,"{}".format(evnt["nHome"]))
-				xx =  "{}".format(indigo.variables["oneAway_"+nEvent].value)
-				if evnt["oneAway"]  !=  xx:                  	indigo.variable.updateValue("oneAway_"+nEvent,evnt["oneAway"])
-				xx =  "{}".format(indigo.variables["allAway_"+nEvent].value)
-				if evnt["allAway"]  !=  xx:             		indigo.variable.updateValue("allAway_"+nEvent,evnt["allAway"])
-				xx =  "{}".format(indigo.variables["nAway_"+nEvent].value)
-				if evnt["nAway"]  !=  xx:                    	indigo.variable.updateValue("nAway_"+nEvent,"{}".format(evnt["nAway"]))
+				if self.EVENTS[nEvent]["enableDisable"] == "1":
+					evnt = self.EVENTS[nEvent]
+					if "oneHome" not in evnt: continue
+					xx =  "{}".format(indigo.variables["oneHome_"+nEvent].value)
+					if evnt["oneHome"]  !=  xx:                	indigo.variable.updateValue("oneHome_"+nEvent,evnt["oneHome"])
+					xx =  "{}".format(indigo.variables["allHome_"+nEvent].value)
+					if evnt["allHome"]  !=  xx:               		indigo.variable.updateValue("allHome_"+nEvent,evnt["allHome"])
+					xx =  "{}".format(indigo.variables["allHome_"+nEvent].value)
+					if evnt["nHome"]  !=  xx:                  	indigo.variable.updateValue("nHome_"+nEvent,"{}".format(evnt["nHome"]))
+					xx =  "{}".format(indigo.variables["oneAway_"+nEvent].value)
+					if evnt["oneAway"]  !=  xx:                  	indigo.variable.updateValue("oneAway_"+nEvent,evnt["oneAway"])
+					xx =  "{}".format(indigo.variables["allAway_"+nEvent].value)
+					if evnt["allAway"]  !=  xx:             		indigo.variable.updateValue("allAway_"+nEvent,evnt["allAway"])
+					xx =  "{}".format(indigo.variables["nAway_"+nEvent].value)
+					if evnt["nAway"]  !=  xx:                    	indigo.variable.updateValue("nAway_"+nEvent,"{}".format(evnt["nAway"]))
 		except Exception:
 			self.logger.error("", exc_info=True)
 		return
@@ -906,103 +807,9 @@ class Plugin(indigo.PluginBase):
 			self.logger.error("sendWakewOnLan for {};  called from {};  bc ip: {}".format(MAC, calledFrom, self.broadcastIP), exc_info=True)
 
 ########################################
-	def checkIfiFindisEnabled(self):
-		try:
-			self.iDevicesEnabled =False
-			self.getiFindFile()
-			if  indigo.server.getPlugin(self.iFindStuffPlugin).isEnabled():
-				for dev in indigo.devices.iter(self.iFindStuffPlugin):
-					#if  dev.pluginId.find(self.iFindStuffPlugin) == -1 :continue
-					if dev.deviceTypeId!= "iAppleDeviceAuto": continue
-					self.iDevicesEnabled =True
-					self.pluginPrefs["iDevicesEnabled"] =True
-					return
-			self.pluginPrefs["iDevicesEnabled"] =False
-		except Exception:
-			self.logger.error("", exc_info=True)
-		return
-
-########################################
-	def getiFindFile(self):
-		try:
-			line, err = self.readPopen("ls '{}Preferences/Plugins/' | grep  '{}' | grep -v grep".format(self.indigoPath, iFindPluginMinText))
-			if len(line) > 0:
-				self.iFindStuffPlugin = line.split(".indiPref")[0]
-			self.indiLOG.log(20, "ifind plugin: {}".format(self.iFindStuffPlugin))
-
-		except Exception:
-			self.logger.error("", exc_info=True)
-		return
-########################################
-	def getpiBeaconAvailable(self):
-		try:
-			self.piBeaconDevicesAvailable=[]
-			if  indigo.server.getPlugin("com.karlwachs.piBeacon").isEnabled():
-				for dev in indigo.devices.iter("com.karlwachs.piBeacon"):
-						self.piBeaconIsAvailable =True
-						if "Pi_0_Signal" in dev.states and "status" in dev.states: # only interested in iBeacons
-							self.piBeaconDevicesAvailable.append((dev.id, dev.name))
-							if dev.states["status"] == "up" or dev.states["status"] == "1":
-															status= "up"
-							else:                           status= "0"
-							if "{}".format(dev.id) not in self.piBeaconDevices:
-								self.piBeaconDevices["{}".format(dev.id)]={"currentStatus":status,"lastUpdate":time.time(),"name":dev.name,"used": "0"}
-							else:
-								self.piBeaconDevices["{}".format(dev.id)]["name"]=dev.name
-								self.piBeaconDevices["{}".format(dev.id)]["currentStatus"]=status
-							
-			## remove devices that do not exist anymore
-			delList=[]
-			list="{}".format(self.piBeaconDevicesAvailable)
-			for nDev in self.piBeaconDevices:
-				if list.find(nDev)==-1 : delList.append(nDev)
-			for d in delList:
-				del self.piBeaconDevices[d] 
-			self.piBeaconDevicesAvailable= sorted(self.piBeaconDevicesAvailable, key=lambda tup: tup[1])    
-			self.piBeaconDevicesAvailable.append((1, "do not use"))
-		except Exception:
-			self.logger.error("", exc_info=True)
-		return
-########################################
-	def getUnifiAvailable(self):
-		try:
-			self.unifiDevicesAvailable=[]
-			if  indigo.server.getPlugin("com.karlwachs.uniFiAP").isEnabled():
-				for dev in indigo.devices.iter("com.karlwachs.uniFiAP"):
-					#if  dev.pluginId.find("com.karlwachs.uniFiAP") > -1 :
-						self.unifiAvailable =True
-						self.unifiDevicesAvailable.append((dev.id,dev.name))
-						if "status" in dev.states:
-							if dev.states["status"] == "up" or dev.states["status"] == "1":
-															state = "up"
-							else:                           state = "0"
-							if "{}".format(dev.id) not in self.unifiDevices:
-								self.unifiDevices["{}".format(dev.id)] = {"currentStatus": "0", "lastUpdate":time.time(), "name":dev.name, "used": "0"}
-							else:
-								self.unifiDevices["{}".format(dev.id)]["name"] = dev.name
-								self.unifiDevices["{}".format(dev.id)]["currentStatus"] = state
-			## remove devices that do not exist anymore
-			#self.indiLOG.log(30,"{}".format(self.unifiDevicesAvailable))
-			#self.indiLOG.log(30,"{}".format(self.unifiDevices))
-			delList=[]
-			list="{}".format(self.unifiDevicesAvailable)
-			for nDev in self.unifiDevices:
-				if list.find(nDev)==-1 : delList.append(nDev)
-			for d in delList:
-				del self.unifiDevices[d]
-			self.unifiDevicesAvailable= sorted(self.unifiDevicesAvailable, key=lambda tup: tup[1])                
-			self.unifiDevicesAvailable.append((1, "do not use"))
-		except Exception:
-			self.logger.error("", exc_info=True)
-		return
-
-
-########################################
 	def printConfig(self):
 		try:
-			self.indiLOG.log(10, "settings:  iDevicesEnabled              {}".format(self.iDevicesEnabled))
 			self.indiLOG.log(10, "settings:  inbetweenPingType            {}".format(self.inbetweenPingType))
-			self.indiLOG.log(10, "settings:  wifiRouter                   {}".format(self.routerType))
 			self.indiLOG.log(10, "settings:  wait seconds between cycles  {}".format(self.sleepTime))
 			self.indiLOG.log(10, "settings:  password entered             {}".format(self.passwordOK=="2"))
 			self.indiLOG.log(10, "settings:  debugLevel                   {}".format(self.debugLevel))
@@ -1125,79 +932,7 @@ class Plugin(indigo.PluginBase):
 			self.currentEventN="{}".format(valuesDict["selectEvent"])
 			if self.currentEventN == "0":
 				return valuesDict
-			imac= valuesDict["IPdeviceMACnumber"+nDev]
-			if imac == "0" or imac== "1" or imac == "":
-				valuesDict["iDevicesEnabled"+nDev] =False
-				return valuesDict
-				
-			if self.iDevicesEnabled:
-				valuesDict["iDevicesEnabled"+nDev] =True
-			else:
-				valuesDict["iDevicesEnabled"+nDev] =False
-				valuesDict["iDevicesEnabled"+nDev+"a"] =False
-			
-		
-		except Exception:
-			self.logger.error("", exc_info=True)
-		return valuesDict
-
-
-########################################
-	def CALLBACKIdevice1Selected(self, valuesDict,typeId=""):
-		return self.CALLBACKIdeviceSelected(valuesDict, "1")
-	def CALLBACKIdevice2Selected(self, valuesDict,typeId=""):
-		return self.CALLBACKIdeviceSelected(valuesDict, "2")
-	def CALLBACKIdevice3Selected(self, valuesDict,typeId=""):
-		return self.CALLBACKIdeviceSelected(valuesDict,"3")
-	def CALLBACKIdevice4Selected(self, valuesDict,typeId=""):
-		return self.CALLBACKIdeviceSelected(valuesDict,"4")
-	def CALLBACKIdevice5Selected(self, valuesDict,typeId=""):
-		return self.CALLBACKIdeviceSelected(valuesDict,"5")
-	def CALLBACKIdevice6Selected(self, valuesDict,typeId=""):
-		return valuesDict
-	def CALLBACKIdevice7Selected(self, valuesDict,typeId=""):
-		return valuesDict
-	def CALLBACKIdevice8Selected(self, valuesDict,typeId=""):
-		return valuesDict
-	def CALLBACKIdevice9Selected(self, valuesDict,typeId=""):
-		return valuesDict
-	def CALLBACKIdevice10Selected(self, valuesDict,typeId=""):
-		return valuesDict
-	def CALLBACKIdevice11Selected(self, valuesDict,typeId=""):
-		return valuesDict
-	def CALLBACKIdevice12Selected(self, valuesDict,typeId=""):
-		return valuesDict
-	def CALLBACKIdevice13Selected(self, valuesDict,typeId=""):
-		return valuesDict
-	def CALLBACKIdevice14Selected(self, valuesDict,typeId=""):
-		return valuesDict
-	def CALLBACKIdevice15Selected(self, valuesDict,typeId=""):
-		return valuesDict
-	def CALLBACKIdevice16Selected(self, valuesDict,typeId=""):
-		return valuesDict
-	def CALLBACKIdevice17Selected(self, valuesDict,typeId=""):
-		return valuesDict
-	def CALLBACKIdevice18Selected(self, valuesDict,typeId=""):
-		return valuesDict
-	def CALLBACKIdevice19Selected(self, valuesDict,typeId=""):
-		return valuesDict
-	def CALLBACKIdevice20Selected(self, valuesDict,typeId=""):
-		return valuesDict
-	def CALLBACKIdevice21Selected(self, valuesDict,typeId=""):
-		return valuesDict
-
-	def CALLBACKIdeviceSelected(self, valuesDict,nDev):
-###		self.indiLOG.log(20, "currentEventN{}".format(self.currentEventN)+"  ndev{}".format(nDev)+"  iDeviceName"+valuesDict["iDeviceName"+nDev])
-		try:
-			if self.currentEventN == "0":
-				return valuesDict
-			if self.iDevicesEnabled:
-				if 	not ( valuesDict["iDeviceName"+nDev] =="1" or valuesDict["iDeviceName"+nDev] ==""):
-					valuesDict["iDevicesEnabled"+nDev+"a"] =True
-				else:
-					valuesDict["iDevicesEnabled"+nDev+"a"] =False
-			else:
-				valuesDict["iDevicesEnabled"+nDev+"a"] =False
+			imac = valuesDict["IPdeviceMACnumber"+nDev]
 		
 		except Exception:
 			self.logger.error("", exc_info=True)
@@ -1208,8 +943,6 @@ class Plugin(indigo.PluginBase):
 	def CALLBACKevent(self, valuesDict,typeId=""):
 
 		try:
-			self.getUnifiAvailable()
-			self.getpiBeaconAvailable()
 			
 			self.currentEventN="{}".format(valuesDict["selectEvent"])
 			#self.indiLOG.log(20, "CALLBACKevent currentEventN = " +self.currentEventN)
@@ -1223,50 +956,12 @@ class Plugin(indigo.PluginBase):
 			for nDev in self.EVENTS[self.currentEventN]["IPdeviceMACnumber"]:
 				#self.indiLOG.log(20, "CALLBACKevent checking  nDev:"+nDev+ ";  self.EVENTS[self.currentEventN][IPdeviceMACnumber][nDev]:{}".format(self.EVENTS[self.currentEventN]["IPdeviceMACnumber"][nDev]) )
 				valuesDict["IPdeviceMACnumber"+nDev]	=	self.EVENTS[self.currentEventN]["IPdeviceMACnumber"][nDev]
-				valuesDict["iDeviceName"+nDev]	        =	self.EVENTS[self.currentEventN]["iDeviceName"][nDev]
-				#if nDev== "1": self.indiLOG.log(20, "CALLBACKevent  IPdeviceMACnumber= " +valuesDict["IPdeviceMACnumber"+nDev])
-				#idevD,idevName,idevId = self.getIdandName("{}".format(self.EVENTS[self.currentEventN]["iDeviceName"][nDev]))
-				#if idevName != "0":
-				#    valuesDict["iDeviceName"+nDev]			=	"{}".format(idevId)
-				valuesDict["iDeviceUseForHome"+nDev]	=	self.EVENTS[self.currentEventN]["iDeviceUseForHome"][nDev]
-				valuesDict["iDeviceUseForAway"+nDev]	=	self.EVENTS[self.currentEventN]["iDeviceUseForAway"][nDev]
 				imac= valuesDict["IPdeviceMACnumber"+nDev]
-				if imac == "0" or imac== "1" or imac == "":
-					valuesDict["iDevicesEnabled"+nDev] =False
-				else:
-					if self.iDevicesEnabled and (self.EVENTS[self.currentEventN]["iDeviceUseForHome"][nDev] == "1" or self.EVENTS[self.currentEventN]["iDeviceUseForAway"][nDev] == "1"):
-						valuesDict["iDevicesEnabled"+nDev] =True
-						valuesDict["iDevicesEnabled"+nDev+"a"] = True
-					else:
-						valuesDict["iDevicesEnabled"+nDev] = False
-						valuesDict["iDevicesEnabled"+nDev+"a"] = False
 
 		
 			valuesDict["minimumTimeHome"]				    	=	"{}".format(int(float(self.EVENTS[self.currentEventN]["minimumTimeHome"])))
 			valuesDict["minimumTimeAway"]				    	=	"{}".format(int(float(self.EVENTS[self.currentEventN]["minimumTimeAway"])))
-			valuesDict["distanceAwayLimit"]				    =	"{}".format(int(float(self.EVENTS[self.currentEventN]["distanceAwayLimit"])))
-			valuesDict["distanceHomeLimit"]				    =	"{}".format(int(float(self.EVENTS[self.currentEventN]["distanceHomeLimit"])))
-			valuesDict["maxLastTimeUpdatedDistanceMinutes"]	=   "{}".format(int(float(self.EVENTS[self.currentEventN]["maxLastTimeUpdatedDistanceMinutes"])))
-			valuesDict["enableDisable"]					    =	self.EVENTS[self.currentEventN]["enableDisable"]
-
-			if self.iDevicesEnabled:	valuesDict["iDevicesEnabled"]   = True
-			else:						valuesDict["iDevicesEnabled"]   = False
-				
-				
-			if self.piBeaconIsAvailable:	
-				valuesDict["piBeaconEnabled"]     = True
-				for npiBeacon in ("25", "26", "27", "28", "29"):
-					valuesDict["IPdeviceMACnumber"+npiBeacon]=self.EVENTS[self.currentEventN]["IPdeviceMACnumber"][npiBeacon]
-			else:	
-				valuesDict["piBeaconEnabled"]     = False
-
-			if self.unifiAvailable:	
-				valuesDict["unifiEnabled"]     = True
-				for nUnifi in ("30","31","32","33","34"):
-					valuesDict["IPdeviceMACnumber"+nUnifi]=self.EVENTS[self.currentEventN]["IPdeviceMACnumber"][nUnifi]
-			else:	
-				valuesDict["unifiEnabled"]     = False
-
+			valuesDict["enableDisable"]					    	=	self.EVENTS[self.currentEventN]["enableDisable"]
 		
 		except Exception:
 			self.logger.error("", exc_info=True)
@@ -1297,181 +992,6 @@ class Plugin(indigo.PluginBase):
 		
 ########################################
 	def actionFromCALLBACKaction(self, action):
-		#if self.decideMyLog("iFind"): self.indiLOG.log(10, " actionFromCALLBACK --{}".format(action))
-		try:
-			self.callingPluginName.append(action.props["from"])
-			self.callingPluginCommand.append(action.props["msg"])
-		except:
-			pass
-			self.indiLOG.log(40,  "actionFrom no plugin call back given" )
-			return
-		self.triggerFromPlugin=True
-		return
-
-########################################
-	def piBeaconUpdateCALLBACKaction(self, action):
-		#if self.decideMyLog("piBeacon"): self.indiLOG.log(10, " self.piBeaconDevices {}".format(self.piBeaconDevices))
-		try:
-			if "deviceId" in  action.props:
-				for devId in action.props["deviceId"]:
-					devS="{}".format(devId)
-					if devS not in self.piBeaconDevices:
-						if self.decideMyLog("piBeacon"): self.indiLOG.log(10, "piBeacon deviceId not used in fingscan: "+devS)
-						continue
-					dev=indigo.devices[int(devId)]
-					mdevName=dev.name
-					try:
-						try:
-							status= dev.states["status"].lower()
-							if status == "1": status= "up"
-						except:
-							status = "notAvail"
-						
-						if self.decideMyLog("piBeacon"): self.indiLOG.log(10, " devName "+mdevName+"  Status "+status )
-						if self.piBeaconDevices[devS]["currentStatus"] !=status:
-							if self.piBeaconDevices[devS]["used"] == "1":
-								self.newSleepTime=0.
-								self.piBeaconUpDateNeeded = True
-							self.piBeaconDevices[devS]["lastUpdate"] = time.time()
-						self.piBeaconDevices[devS]["currentStatus"] = status
-						self.piBeaconDevices[devS]["name"] = mdevName
-					except:
-						if self.decideMyLog("piBeacon"): self.indiLOG.log(10, "status data not ready:{}".format(status))
-		
-			else:
-				if self.decideMyLog("piBeacon"): self.indiLOG.log(10, " error from piBeacon, deviceId not in action: {}".format(action))
-				return
-		except Exception:
-			self.logger.error("", exc_info=True)
-			self.indiLOG.log(40, "{}".format(action))
-			return
-		self.pluginPrefs["piBeacon"]	=	json.dumps(self.piBeaconDevices)
-		return
-		
-
-########################################
-	def UnifiUpdateCALLBACKaction(self, action):
-		if self.decideMyLog("Unifi"): self.indiLOG.log(10, "self.unifiDevices {}".format(self.unifiDevices))
-		try:
-			if "deviceId" in  action.props:
-				for devId in action.props["deviceId"]:
-					devS="{}".format(devId)
-					if devS not in self.unifiDevices:
-						if self.decideMyLog("Unifi"): self.indiLOG.log(10, "unifi deviceId not used in fingscan: "+devS)
-						continue
-					dev=indigo.devices[int(devId)]
-					mdevName=dev.name
-					try:
-						try:
-							status= dev.states["status"]
-						except:
-							status = "notAvail"
-						
-						if self.decideMyLog("Unifi"): self.indiLOG.log(10, " devName "+mdevName+"  status "+status )
-						if self.unifiDevices[devS]["currentStatus"] !=status:
-							if self.unifiDevices[devS]["used"] == "1":
-								self.newSleepTime=0.
-								self.unifiUpDateNeeded=True
-							self.unifiDevices[devS]["lastUpdate"] = time.time()
-						self.unifiDevices[devS]["currentStatus"] = status
-						self.unifiDevices[devS]["name"] = mdevName
-					except:
-						if self.decideMyLog("Unifi"): self.indiLOG.log(10, "status data not ready:"+status)
-		
-			else:
-				if self.decideMyLog("Unifi"): self.indiLOG.log(10, " error from unifi, deviceId not in action: {}".format(action))
-				return
-		except Exception:
-			self.logger.error("", exc_info=True)
-			self.indiLOG.log(40, "{}".format(action))
-			return
-		self.pluginPrefs["UNIFI"]	=	json.dumps(self.unifiDevices)
-		return
-
-
-########################################
-	def updatepiBeacons(self):
-		try:
-			status = "not initialized"
-			for deviceId in  self.piBeaconDevices:
-				currentState= self.piBeaconDevices[deviceId]["currentStatus"]
-				lastUpdate= self.piBeaconDevices[deviceId]["lastUpdate"]
-				try:
-					devId= int(deviceId)
-				except:
-					self.getpiBeaconAvailable()
-					try:
-						devId= int(deviceId)
-					except:
-						del self.piBeaconDevices[deviceId]
-						continue
-						
-				dev=indigo.devices[devId]
-				mdevName=dev.name
-				try:
-					try:
-						status= dev.states["status"]
-						if status == "1": status = "up"
-					except:
-						status = "notAvail"
-
-					if currentState !=status:
-						if self.decideMyLog("piBeacon"): self.indiLOG.log(10, "updating piBeacon:  devName "+mdevName+"  status "+status)
-						self.piBeaconUpDateNeeded=True
-						self.piBeaconDevices[deviceId]["currentStatus"]= status
-						self.piBeaconDevices[deviceId]["lastUpdate"] 	= time.time()
-						self.piBeaconDevices[deviceId]["name"] 		= mdevName
-						if self.piBeaconDevices[devS]["used"] == "1":
-							self.newSleepTime=0.
-				except:
-						if self.decideMyLog("piBeacon"): self.indiLOG.log(10, "updating piBeacon:  devName {}".format(mdevName)+"  status {}".format(status) +" not ready"  )
-	
-		
-		except Exception:
-			self.logger.error("", exc_info=True)
-			self.piBeaconDevices={}
-		return
-
-########################################
-	def updateUnifi(self):
-		try:
-			Presence = "not initialized"
-			for deviceId in  self.unifiDevices:
-				currentState  = self.unifiDevices[deviceId]["currentStatus"]
-				lastUpdate    = self.unifiDevices[deviceId]["lastUpdate"]
-				try:
-					devId= int(deviceId)
-				except:
-					self.getUnifiAvailable()
-					try:
-						devId= int(deviceId)
-					except:
-						del self.unifiDevices[deviceId]
-						continue
-						
-				dev=indigo.devices[devId]
-				mdevName=dev.name
-				try:
-					try:
-						Status= dev.states["status"]
-					except:
-						Status = "notAvail"
-
-					if currentState !=Presence:
-						if self.decideMyLog("Unifi"): self.indiLOG.log(10, "updating unifi:  devName "+mdevName+"  Status "+Status)
-						self.unifiUpDateNeeded=True
-						self.unifiDevices[deviceId]["currentStatus"] = Status
-						self.unifiDevices[deviceId]["lastUpdate"] 	= time.time()
-						self.unifiDevices[deviceId]["name"] 		= mdevName
-						if self.unifiDevices[devS]["used"] == "1":
-							self.newSleepTime=0.
-				except:
-						if self.decideMyLog("Unifi"): self.indiLOG.log(10, "updating unifi:  devName {}".format(mdevName)+"  Status {}".format(Status) +" not ready"  )
-	
-		
-		except Exception:
-			self.logger.error("", exc_info=True)
-			self.unifiDevices={}
 		return
 
 ##
@@ -1523,26 +1043,6 @@ class Plugin(indigo.PluginBase):
 		return retList
 
 
-########################################
-	def selectiDeviceFilter(self, filter= "self", valuesDict=None,typeId=""):
-		try:
-			self.IDretList=[]
-			if  indigo.server.getPlugin(self.iFindStuffPlugin).isEnabled():
-				self.iDevicesEnabled = True
-				for dev in indigo.devices.iter(self.iFindStuffPlugin):
-					if dev.deviceTypeId != "iAppleDeviceAuto": continue
-					self.IDretList.append((dev.id,dev.name))
-				self.IDretList	= sorted(self.IDretList, key=lambda tup: tup[1]) #sort string, keep mac number with the text
-				self.IDretList.append((1, "do not use iDevice"))
-			else:
-				self.iDevicesEnabled = False
-			#self.indiLOG.log(20, "selectiDeviceFilter called" )
-			
-			return self.IDretList
-		except Exception as e:
-			self.indiLOG.log(40,  "in Line '%s' has error='%s'" % (sys.exc_info()[2].tb_lineno, e) )
-
-	   
 
 ########################################
 	def IPdeviceMACnumberFilter(self, filter= "self", valuesDict=None,typeId=""):
@@ -1561,27 +1061,6 @@ class Plugin(indigo.PluginBase):
 
 
 ########################################
-	def piBeaconFilter(self, filter= "self", valuesDict=None,typeId=""):
-		#self.indiLOG.log(20, "piBeaconFilter called" )
-		try:
-			retList =copy.deepcopy(self.piBeaconDevicesAvailable)
-		except Exception:
-			self.logger.error("", exc_info=True)
-			return [(0,0)]
-		return retList
-
-########################################
-	def unifiFilter(self, filter= "self", valuesDict=None,typeId=""):
-		#self.indiLOG.log(20, "unifiFilter called" )
-		try:
-			retList =copy.deepcopy(self.unifiDevicesAvailable)
-		except Exception:
-			self.logger.error("", exc_info=True)
-			return [(0,0)]
-		return retList
-
-
-########################################
 	def buttonConfirmDevicesCALLBACK(self, valuesDict,typeId=""):
 		errorDict=indigo.Dict()
 
@@ -1591,79 +1070,6 @@ class Plugin(indigo.PluginBase):
 	#			errorDict = valuesDict
 				return valuesDict
 
-
-	########  do piBeacon stuff needed later in EVENTS
-			for npiBeacon in ("22", "23", "24", "25", "26", "27", "28", "29"):
-				mId="{}".format(valuesDict["IPdeviceMACnumber"+npiBeacon])
-				if mId == "0":
-					mId = self.EVENTS[self.currentEventN]["IPdeviceMACnumber"][npiBeacon]
-				elif mId == "1":
-					mId = ""
-
-				self.EVENTS[self.currentEventN]["IPdeviceMACnumber"][npiBeacon]	= mId
-				if mId != "" and mId != "0"and mId != "1":
-					try:
-						mdevName=indigo.devices[int(mId)].name
-						if mId not in self.piBeaconDevices:
-							if self.decideMyLog("piBeacon"): self.indiLOG.log(10, "piBeacon mId 3 {}".format(mId) + "  {}".format(npiBeacon))
-					except:
-						pass
-
-
-			## clean up piBeacon list
-			keep=[]
-			for nEvent in self.EVENTS:
-				for npiBeacon in ("25", "26", "27", "28", "29"):
-					mId=self.EVENTS[self.currentEventN]["IPdeviceMACnumber"][npiBeacon]
-					if  mId !="" and mId != "0":
-						keep.append(mId)
-
-			deleteM=[]
-			for piBeaconId in self.piBeaconDevices:
-				if piBeaconId not in keep: deleteM.append(piBeaconId)
-			for piBeaconId in deleteM:
-				del self.piBeaconDevices[piBeaconId]
-
-
-
-	########  do unifi stuff needed later in EVENTS
-			for nUnifi in ("30", "31", "32", "33", "34"):
-				mId="{}".format(valuesDict["IPdeviceMACnumber"+nUnifi])
-				if mId == "0":
-					mId = self.EVENTS[self.currentEventN]["IPdeviceMACnumber"][nUnifi]
-				elif mId == "1":
-					mId = ""
-
-				self.EVENTS[self.currentEventN]["IPdeviceMACnumber"][nUnifi]	= mId
-				if mId !="" and mId !="0"and mId != "1":
-					try:
-						mdevName=indigo.devices[int(mId)].name
-						if mId not in self.piBeaconDevices:
-							if self.decideMyLog("piBeacon"): self.indiLOG.log(10, "unifi mId 3 {}".format(mId) + "  {}".format(nUnifi))
-					except:
-						pass
-
-
-			## clean up unifi list
-			keep=[]
-			for nEvent in self.EVENTS:
-				for nUnifi in ("30", "31", "32", "33", "34"):
-					mId=self.EVENTS[self.currentEventN]["IPdeviceMACnumber"][nUnifi]
-					if  mId !="" and mId !="0":
-						keep.append(mId)
-
-			deleteM=[]
-			for unifiId in self.unifiDevices:
-				if unifiId not in keep: deleteM.append(unifiId)
-			for unifiId in deleteM:
-				del self.unifiDevices[unifiId]
-
-
-
-
-
-
-
 			if not self.currentEventN in self.EVENTS:
 				self.EVENTS[self.currentEventN]= copy.deepcopy(emptyEVENT)
 
@@ -1671,14 +1077,7 @@ class Plugin(indigo.PluginBase):
 				for nDev in self.EVENTS[self.currentEventN]["IPdeviceMACnumber"]:
 					iDev= int(nDev)
 					valuesDict["IPdeviceMACnumber"+nDev]	= "0"
-					if iDev <= nOfIDevicesInEvent:
-						valuesDict["iDeviceName"+nDev]			= ""
-						valuesDict["iDeviceUseForHome"+nDev]	= "0"
-						valuesDict["iDeviceUseForAway"+nDev]	= "0"
 				valuesDict["DeleteEvent"] 		= False
-				valuesDict["distanceAwayLimit"]	= "{}".format(copy.deepcopy(emptyEVENT["distanceAwayLimit"]))
-				valuesDict["distanceHomeLimit"]	= "{}".format(copy.deepcopy(emptyEVENT["distanceHomeLimit"]))
-				valuesDict["minimumTimeAway"]	= "{}".format(copy.deepcopy(emptyEVENT["minimumTimeAway"]))
 				valuesDict["enableDisable"] 	= False
 				self.EVENTS[self.currentEventN] = copy.deepcopy(emptyEVENT)
 				self.currentEventN = "0"
@@ -1696,79 +1095,28 @@ class Plugin(indigo.PluginBase):
 			if valuesDict["minimumTimeAway"]    != "": self.EVENTS[self.currentEventN]["minimumTimeAway"]	= float(valuesDict["minimumTimeAway"])
 			else: self.EVENTS[self.currentEventN]["minimumTimeAway"] = emptyEVENT["minimumTimeAway"]; valuesDict["minimumTimeAway"] =  emptyEVENT["minimumTimeAway"];errorDict["minimumTimeAway"]=emptyEVENT["minimumTimeAway"]
 
-			if self.iDevicesEnabled:
-				if valuesDict["distanceAwayLimit"]  != "": 
-						self.EVENTS[self.currentEventN]["distanceAwayLimit"] = int(float(valuesDict["distanceAwayLimit"]))
-				else:   self.EVENTS[self.currentEventN]["distanceAwayLimit"] = emptyEVENT["distanceAwayLimit"]; valuesDict["distanceAwayLimit"] =  emptyEVENT["distanceAwayLimit"];errorDict["distanceAwayLimit"]=emptyEVENT["distanceAwayLimit"]
-
-				if valuesDict["distanceHomeLimit"]  != "": 
-						self.EVENTS[self.currentEventN]["distanceHomeLimit"] = int(float(valuesDict["distanceHomeLimit"]))
-				else:   self.EVENTS[self.currentEventN]["distanceHomeLimit"] = emptyEVENT["distanceHomeLimit"]; valuesDict["distanceHomeLimit"] =  emptyEVENT["distanceHomeLimit"];errorDict["distanceHomeLimit"]=emptyEVENT["distanceHomeLimit"]
-
-				if valuesDict["maxLastTimeUpdatedDistanceMinutes"]!="":	
-						self.EVENTS[self.currentEventN]["maxLastTimeUpdatedDistanceMinutes"] =float(valuesDict["maxLastTimeUpdatedDistanceMinutes"])
-				else:   self.EVENTS[self.currentEventN]["maxLastTimeUpdatedDistanceMinutes"] =float(emptyEVENT["maxLastTimeUpdatedDistanceMinutes"]);errorDict["maxLastTimeUpdatedDistanceMinutes"]="{}".format(emptyEVENT["maxLastTimeUpdatedDistanceMinutes"])
 
 			for lDev in range(1,nOfDevicesInEvent+1):
 				nDev= "{}".format(lDev)
 				if "IPdeviceMACnumber"+nDev not in valuesDict: continue
 				selectedMAC = valuesDict["IPdeviceMACnumber"+nDev]
 				if selectedMAC == "1" or selectedMAC == "":
-					self.EVENTS[self.currentEventN]["iDeviceName"][nDev]		= ""
-					self.EVENTS[self.currentEventN]["iDeviceUseForHome"][nDev]	= "0"
-					self.EVENTS[self.currentEventN]["iDeviceUseForAway"][nDev]	= "0"
 					self.EVENTS[self.currentEventN]["IPdeviceMACnumber"][nDev]	= "0"
 					self.EVENTS[self.currentEventN]["currentStatusAway"][nDev]	= "0"
 					self.EVENTS[self.currentEventN]["currentStatusHome"][nDev]	= "0"
 					continue
 				else:
-					self.EVENTS[self.currentEventN]["secondsOfLastON"][nDev]			= int(time.time()+20.)
-					self.EVENTS[self.currentEventN]["secondsOfLastOFF"][nDev]			= int(time.time()+20.)
-					idevName = "0" # default, dont change..
+					self.EVENTS[self.currentEventN]["secondsOfLastON"][nDev]	= int(time.time()+20.)
+					self.EVENTS[self.currentEventN]["secondsOfLastOFF"][nDev]	= int(time.time()+20.)
+
+					self.EVENTS[self.currentEventN]["IPdeviceMACnumber"][nDev] = selectedMAC
 
 
-					if  self.EVENTS[self.currentEventN]["IPdeviceMACnumber"][nDev]!= selectedMAC:
-						self.EVENTS[self.currentEventN]["IPdeviceMACnumber"][nDev] = selectedMAC
+	
+			valuesDict["EVENTS"] = json.dumps(self.EVENTS)
 
-
-					if self.iDevicesEnabled:
-						if not ("{}".format(valuesDict["iDeviceName"+nDev]) =="1" or "{}".format(valuesDict["iDeviceName"+nDev]) == "0" or "{}".format(valuesDict["iDeviceName"+nDev]) == "-1"):
-							idevD,idevName,idevId = self.getIdandName(valuesDict["iDeviceName"+nDev])
-							self.EVENTS[self.currentEventN]["iDeviceName"][nDev]= "{}".format(idevId)
-
-							if valuesDict["iDeviceUseForHome"+nDev]=="":self.EVENTS[self.currentEventN]["iDeviceUseForHome"][nDev]	= "0";errorDict["iDeviceUseForHome"]=emptyEVENT["iDeviceUseForHome"]
-							else:										self.EVENTS[self.currentEventN]["iDeviceUseForHome"][nDev]	=valuesDict["iDeviceUseForHome"+nDev]
-
-							if valuesDict["iDeviceUseForAway"+nDev]=="":self.EVENTS[self.currentEventN]["iDeviceUseForAway"][nDev]	= "0";errorDict["iDeviceUseForAway"]=emptyEVENT["iDeviceUseForAway"]
-							else:										self.EVENTS[self.currentEventN]["iDeviceUseForAway"][nDev]	=valuesDict["iDeviceUseForAway"+nDev]
-
-						elif "{}".format(valuesDict["iDeviceName"+nDev]) =="1" or "{}".format(valuesDict["iDeviceName"+nDev]) =="-1":
-							idevName = ""
-						else:
-							if valuesDict["iDeviceUseForHome"+nDev]=="":self.EVENTS[self.currentEventN]["iDeviceUseForHome"][nDev]	= "0";errorDict["iDeviceUseForHome"]=emptyEVENT["iDeviceUseForHome"]
-							else:										self.EVENTS[self.currentEventN]["iDeviceUseForHome"][nDev]	=valuesDict["iDeviceUseForHome"+nDev]
-
-							if valuesDict["iDeviceUseForAway"+nDev]=="":self.EVENTS[self.currentEventN]["iDeviceUseForAway"][nDev]	= "0";errorDict["iDeviceUseForAway"]=emptyEVENT["iDeviceUseForAway"]
-							else:										self.EVENTS[self.currentEventN]["iDeviceUseForAway"][nDev]	=valuesDict["iDeviceUseForAway"+nDev]
-						if  idevName == "" :
-							self.EVENTS[self.currentEventN]["iDeviceName"][nDev]	    = ""
-							self.EVENTS[self.currentEventN]["iDeviceUseForHome"][nDev]	=  "0"
-							self.EVENTS[self.currentEventN]["iDeviceUseForAway"][nDev]	=  "0"
-
-
-
-
-
-			valuesDict["EVENTS"]	=	json.dumps(self.EVENTS)
-
-
-			valuesDict["piBeacon"]	=	json.dumps(self.piBeaconDevices)
-			if self.decideMyLog("piBeacon"): self.indiLOG.log(10, "self.piBeaconDevices  {}".format(self.piBeaconDevices))
-			if valuesDict["piBeaconEnabled"]: self.updatepiBeacons()
-
-			valuesDict["UNIFI"]	=	    json.dumps(self.unifiDevices)
-			if self.decideMyLog("Unifi"): self.indiLOG.log(10, "self.unifiDevices  {}".format(self.unifiDevices))
-			if valuesDict["unifiEnabled"]: self.updateUnifi()
+			indigo.server.log("{}".format(self.EVENTS[self.currentEventN]))
+			self.setupEventVariables()
 
 			self.savePrefs = 1
 		except Exception:
@@ -1851,38 +1199,6 @@ class Plugin(indigo.PluginBase):
 			self.yourPassword = valuesDict["password"]
 			self.passwordOK = "2"
 
-			self.routerType = valuesDict["routerType"]
-			if self.routerType != "0":
-				try:
-					rtPW = valuesDict["routerPWD"]
-					if rtPW == "your router password here":
-						self.routerPWD	= ""
-						self.routerType = "0"
-					elif rtPW == "password is already stored":
-						self.routerPWD = self.getPWD("fingrt")
-					else:
-						self.routerPWD	= rtPW
-						self.storePWD(rtPW, "fingrt")
-						valuesDict["routerPWD"] = "password is already stored"
-					self.routerUID	= valuesDict["routerUID"]
-					self.routerIPn	= valuesDict["routerIPn"]
-					self.badWiFiTrigger["minSignalDrop"]			= float(valuesDict["minSignalDrop"])
-					self.badWiFiTrigger["minNumberOfDevicesBad"]	= float(valuesDict["minNumberOfDevicesBad"])
-					self.badWiFiTrigger["minNumberOfSecondsBad"]	= float(valuesDict["minNumberOfSecondsBad"])
-					self.badWiFiTrigger["minWiFiSignal"]			= float(valuesDict["minWiFiSignal"])
-				except:
-					self.routerType =0
-					if self.decideMyLog("WiFi"): self.indiLOG.log(10, " router variables not initialized, bad data entered ")
-		
-				self.checkWIFIinfo()
-				self.checkIfBadWiFi()
-				self.checkDEVICES()
-			else:
-				self.wifiMacList={}
-				self.oldwifiMacList={}
-				valuesDict["wifiMacList"] = ""
-
-
 
 			if self.enableMACtoVENDORlookup != valuesDict["enableMACtoVENDORlookup"] and self.enableMACtoVENDORlookup == "0":
 				rebootRequired                         = True
@@ -1894,10 +1210,6 @@ class Plugin(indigo.PluginBase):
 			self.cleanUpEvents()
 	# save to indigo
 			valuesDict["EVENTS"]	=	json.dumps(self.EVENTS)
-			valuesDict["UNIFI"]	=	json.dumps(self.unifiDevices)
-			valuesDict["piBeacon"]	=	json.dumps(self.piBeaconDevices)
-
-			self.printWiFi()
 			self.printConfig()
 
 		except Exception:
@@ -1915,30 +1227,13 @@ class Plugin(indigo.PluginBase):
 				self.allDeviceInfo[theMAC]["useWakeOnLanSecs"]	= int(valuesDict["setuseWakeOnLan"])
 				if "useWakeOnLanLast" not in self.allDeviceInfo[theMAC]:
 					self.allDeviceInfo[theMAC]["useWakeOnLanLast"]		= 0
-				self.allDeviceInfo[theMAC]["setWiFi"]			= valuesDict["setWiFi"]
 				self.allDeviceInfo[theMAC]["usePing"]			= valuesDict["setUsePing"]
 				self.allDeviceInfo[theMAC]["exprirationTime"]	= float(valuesDict["setExpirationTime"])
 				self.allDeviceInfo[theMAC]["suppressChangeMSG"]	= valuesDict["setSuppressChangeMSG"]
-				self.updateIndigoIpDeviceFromDeviceData(theMAC,["hardwareVendor", "deviceInfo", "WiFi", "usePing", "suppressChangeMSG"])
+				self.updateIndigoIpDeviceFromDeviceData(theMAC,["hardwareVendor", "deviceInfo", "usePing", "suppressChangeMSG"])
 				self.updateIndigoIpVariableFromDeviceData(theMAC)
 		return (True, valuesDict)
 
-
-
-
-########################################
-	def	cleanUppiBeacon(self):
-	
-		for nDev in self.piBeaconDevices:
-			if "used" not in self.piBeaconDevices[nDev]:
-				self.piBeaconDevices[nDev]["used"] = "0"
-
-########################################
-	def	cleanUpUnifi(self):
-	
-		for nDev in self.unifiDevices:
-			if "used" not in self.unifiDevices[nDev]:
-				self.unifiDevices[nDev]["used"] = "0"
 
 
 ########################################
@@ -1973,30 +1268,7 @@ class Plugin(indigo.PluginBase):
 								self.EVENTS[n][prop][nDev]		= copy.deepcopy(emptyEVENT[prop]["1"])
 							except: 
 								pass                               
-												
-					if int(nDev) >= piBeaconStart:#  here the mac number is the indigo device # , remove it if the indigo device is gone
-						if self.EVENTS[n]["IPdeviceMACnumber"][nDev] != "" and self.EVENTS[n]["IPdeviceMACnumber"][nDev] != "0":
-							try:
-								indigo.devices[int(self.EVENTS[n]["IPdeviceMACnumber"][nDev])]
-							except Exception as e:
-								self.logger.error("cleanupEVENTS:  please remove device from EVENTS as indigo device does not exist: {}".format(self.EVENTS[n]["IPdeviceMACnumber"][nDev]) , exc_info=True)
-								continue
-								# dont auto delete let user remove from event listing
-								self.EVENTS[n]["IPdeviceMACnumber"][nDev] = "0"   
-
 				
-					if  int(nDev) <= piBeaconStart and int(nDev) < unifiStart:
-						if self.EVENTS[n]["IPdeviceMACnumber"][nDev] !="" and  self.EVENTS[n]["IPdeviceMACnumber"][nDev] !="0":
-							if self.EVENTS[n]["IPdeviceMACnumber"][nDev] in self.piBeaconDevices:
-								self.piBeaconDevices[self.EVENTS[n]["IPdeviceMACnumber"][nDev]]["used"]="1"
-				
-					elif int(nDev) >= unifiStart:
-						if self.EVENTS[n]["IPdeviceMACnumber"][nDev] !="" and  self.EVENTS[n]["IPdeviceMACnumber"][nDev] !="0":
-							if self.EVENTS[n]["IPdeviceMACnumber"][nDev] in self.unifiDevices:
-								self.unifiDevices[self.EVENTS[n]["IPdeviceMACnumber"][nDev]]["used"]="1"
-				
-				if self.EVENTS[n]["distanceHomeLimit"]=="": self.EVENTS[n]["distanceHomeLimit"]	= copy.deepcopy(emptyEVENT["distanceHomeLimit"])
-				if self.EVENTS[n]["distanceAwayLimit"]=="": self.EVENTS[n]["distanceAwayLimit"]	= copy.deepcopy(emptyEVENT["distanceAwayLimit"])
 				if self.EVENTS[n]["minimumTimeHome"]=="":   self.EVENTS[n]["minimumTimeHome"]	= copy.deepcopy(emptyEVENT["minimumTimeHome"])
 
 			try:
@@ -2011,10 +1283,6 @@ class Plugin(indigo.PluginBase):
 			for nev in self.EVENTS:
 				if "0" in self.EVENTS[nev]["IPdeviceMACnumber"]:
 					del  self.EVENTS[nev]["IPdeviceMACnumber"]["0"]
-				for lll in range(1,nOfIDevicesInEvent+1):
-					lDev="{}".format(lll)
-					idevD,idevName,idevId = self.getIdandName(self.EVENTS[nev]["iDeviceName"][lDev])
-					self.EVENTS[nev]["iDeviceName"][lDev]= "{}".format(idevId)
 					
 		except Exception:
 			self.logger.error("", exc_info=True)
@@ -2049,21 +1317,19 @@ class Plugin(indigo.PluginBase):
 				
 			self.doLoadDevices()
 
-
-			if self.decideMyLog("WiFi"): self.indiLOG.log(30, "ResetDEVICES done")
 		except Exception:
 			self.logger.error("", exc_info=True)
 		return
 
 ########################################
-	def printEvents(self,printEvents="all"):
+	def printEvents(self, printEvents="all"):
 		try:
 			if len(self.EVENTS) == 0:
 				self.indiLOG.log(20, "printEvents: no EVENT defined \n")
 				return
 
 
-			out ="\nEVENT defs:::::::::::::::::: Start :::::::::::::::::\n"
+			out ="\nEVENT defs:::::::::::::::::: Start ::::::::::::::::: -- {}\n".format(printEvents)
 			eventsToPrint=[]
 			if printEvents == "all":
 				for i in range(1,nEvents+1):
@@ -2077,18 +1343,18 @@ class Plugin(indigo.PluginBase):
 			
 			for nEvent in eventsToPrint:
 				if nEvent not in self.EVENTS: continue
-				listOfDevs=[]
-				evnt=self.EVENTS[nEvent]
-				prntDist=False
+				listOfDevs = []
+				evnt = self.EVENTS[nEvent]
+				prntDist = False
 				for nDev in evnt["IPdeviceMACnumber"]:
 					try:
-						if evnt["IPdeviceMACnumber"][nDev] =="": continue
-						if evnt["IPdeviceMACnumber"][nDev] =="0": continue
-						if evnt["iDeviceUseForHome"][nDev] =="1":prntDist=True
+						if evnt["IPdeviceMACnumber"][nDev] == "": continue
+						if evnt["IPdeviceMACnumber"][nDev] == "0": continue
 						listOfDevs.append(int(nDev))
 					except:
 						continue
-				if len(listOfDevs) ==0: continue
+
+				if len(listOfDevs) == 0: continue
 				out+= "EVENT:------------- "+nEvent.rjust(2)+"  --------------------------------------------------------------------------------------------------"+"\n"
 				for iDev in range(1,nOfDevicesInEvent+1):
 					if iDev not in listOfDevs: continue
@@ -2099,52 +1365,17 @@ class Plugin(indigo.PluginBase):
 					except:
 						continue
 					
-					if int(nDev) < piBeaconStart:
-						try:
-							devI = self.allDeviceInfo[theMAC]
-						except: 
-							out = "{}  is not defined, please remove from event# {}".format(theMAC, nEvent)
-							continue
-						out+= "dev#: {}".format(nDev).rjust(2)+" -- devNam:"+devI["deviceName"].ljust(25)[:25] +" -- MAC#:"+theMAC+" -- ip#:"+devI["ipNumber"].ljust(15)+" -- status:"+devI["status"].ljust(8)+" -- WiFi:"+devI["WiFi"]+"\n"
-					elif int(nDev) < piBeaconStart:
-						pass
-					elif int(nDev) < unifiStart:  # next section is pibeacon 
-						try:
-							name= 	self.piBeaconDevices[theMAC]["name"]
-						except:
-							self.getpiBeaconAvailable()
-							self.updatepiBeacons()
-							try:
-								name= 	self.piBeaconDevices[theMAC]["name"]
-							except:
-								out+= " piBeacon device IndigoID# "+theMAC+ " does not exist, check you piBeacon plugin" +"\n"
-								continue
-						status= self.piBeaconDevices[theMAC]["currentStatus"]
-						out+= "dev#: {}".format(nDev)+" -- devNam:"+name.ljust(25)[:25] +" -- IND#:"+theMAC.ljust(17)+" --     "+" ".ljust(15)+" -- status:"+status.ljust(8)+"\n"
-					else:
-						try:
-							name= 	self.unifiDevices[theMAC]["name"]
-						except:
-							self.getUnifiAvailable()
-							self.updateUnifi()
-							try:
-								name= 	self.unifiDevices[theMAC]["name"]
-							except:
-								self.indiLOG.log(40, " unifi device IndigoID# {} does not exist, check your unifi plugin".format(theMAC) )
-								continue
-						status= self.unifiDevices[theMAC]["currentStatus"]
-						out+= "dev#: {}".format(nDev)+" -- devNam:{:25} -- IND#:{:17} --     {:15} -- status:{:8}\n".format(name[:25], theMAC, " ",status)
+					try:
+						devI = self.allDeviceInfo[theMAC]
+					except: 
+						out = "{}  is not defined, please remove from event# {}".format(theMAC, nEvent)
+						continue
+					out+= "dev#: {}".format(nDev).rjust(2)+" -- devNam:"+devI["deviceName"].ljust(25)[:25] +" -- MAC#:"+theMAC+" -- ip#:"+devI["ipNumber"].ljust(15)+" -- status:"+devI["status"].ljust(8)+"\n"
 					
 
 
 				out+= self.printEventLine("currentStatusHome"	 		, "currentStatusHome"		,nEvent,listOfDevs)
 				out+= self.printEventLine("currentStatusAway"	 		, "currentStatusAway"		,nEvent,listOfDevs)
-				if prntDist:
-					out+= self.printEventLine("iDeviceName"				, "iDevice Name"				,nEvent,listOfDevs)
-					out+= self.printEventLine("iDeviceUseForHome"		, "iDeviceUseForHome"		,nEvent,listOfDevs)
-					out+= self.printEventLine("iDeviceUseForAway"		, "iDeviceUseForAway"		,nEvent,listOfDevs)
-					out+= self.printEventLine("iDeviceAwayDistance"		, "iDeviceCurrntAwayDist"	,nEvent,listOfDevs)
-					out+= self.printEventLine("iDeviceHomeDistance"		, "iDeviceCurrntHomeDist"	,nEvent,listOfDevs)
 				out+= self.printEventLine("timeOfLastOFF"				, "time WhenLast DOWN"		,nEvent,listOfDevs)
 				out+= self.printEventLine("timeOfLastON"				, "time WhenLast UP"			,nEvent,listOfDevs)
 				out+= self.printEventLine("secondsOfLastON"				, "seconds WhenLast UP"		,nEvent,listOfDevs)
@@ -2159,10 +1390,6 @@ class Plugin(indigo.PluginBase):
 				out+=   	"ALL Devices         Away :{}".format(evnt["allAway"]).rjust(12)+"  -- reacts minTimeAway bf Trig"+"\n"
 				out+=   	"AtLeast ONE Device  Away :{}".format(evnt["oneAway"]).rjust(12)+"  -- reacts minTimeAway bf Trig"+"\n"
 				out+=   	"n Devices           Away :{}".format(evnt["nAway"]).rjust(12)  +"  -- reacts minTimeAway bf Trig"+"\n"
-				if prntDist:
-					out+=	"minDist.toBeAway         :{}".format("%5.2f"%float(evnt["distanceAwayLimit"])).rjust(12)+"\n"
-					out+=	"minDist.toBeNotHome      :{}".format("%5.2f"%float(evnt["distanceHomeLimit"])).rjust(12)+"\n"
-					out+=	"max age of dist info     :{}".format(evnt["maxLastTimeUpdatedDistanceMinutes"]).rjust(12)+"\n"
 				out+=		"minTimeAway bf Trig      :{}".format("%5.0f"%float(evnt["minimumTimeAway"])).rjust(12)+"\n"
 				out+= 		"minTimeNotHome bf re-Trig:{}".format("%5.0f"%float(evnt["minimumTimeHome"])).rjust(12)+"\n"
 				out+= 		"Event enabled            :{}".format(evnt["enableDisable"]).rjust(12)+"\n"
@@ -2192,155 +1419,6 @@ class Plugin(indigo.PluginBase):
 			self.logger.error("{}".format(self.EVENTS[nEvent]), exc_info=True)
 		return out+"\n"
 
-#		self.indiLOG.log(10, "<<-- entering triggerStartProcessing: %s (%d)" % (trigger.name, trigger.id) )
-########################################
-	def	printWiFi(self,printWiFi= "all"):
-		return 
-		out ="\n"
-		try:
-			if len(self.wifiMacList) ==0:
-				self.indiLOG.log(20, "printWiFi: no WiFi devices defined")
-				return
-			if self.routerType !=0:
-				self.updateDeviceWiFiSignal()
-				out+= "WiFi info router type:{}-- IP#/page: {}   .....ACTIVE Wifi device list:\n".format(self.routerType, self.routerIPn)
-				out+= "---- MAC # ------ ---- device Name ----- ------ ip# ----- -WiFi- -Signal- -aveSign -Associated Authorized\n"
-				self.printWiFiDevs("5GHz",Header=True)
-				self.printWiFiDevs("2GHz")
-				self.printWiFiDevs("")
-				out+= "\n"
-				#out+= self.printWiFiAve("2GHz",Header=True)
-				#out+= self.printWiFiAve("5GHz")
-				out+= "\n"
-				out+= "settings for badWiFiSignalTrigger "+ "\n"
-				out+= " minNumberOfSecondsBad: {5.1f}\n".format(self.badWiFiTrigger["minNumberOfSecondsBad"])
-				out+= " minNumberOfDevicesBad: {5.1f}\n".format(self.badWiFiTrigger["minNumberOfDevicesBad"])
-				out+= " minSignalDrop:         {5.1f}\n".format(self.badWiFiTrigger["minSignalDrop"])
-				out+= " minWiFiSignal:         {5.1f}\n".format(self.badWiFiTrigger["minWiFiSignal"])
-				out+= "-------------------------------------------------------------------------------------------------------- "+ "\n"
-				self.indiLOG.log(10,out)
-		except Exception:
-			self.logger.error("", exc_info=True)
-
-		return
-########################################
-	def printpiBeaconDevs(self):
-		try:
-			## refresh piBeacon cokkies
-			self.getpiBeaconAvailable()
-			if len(self.piBeaconDevices) ==0: return
-			out = "\n"
-			
-			out+= "===      piBeacon devices  available  to fingscan    ===        START"+"\n"
-			#				 123456789012345678901234567890123412345678123456789012
-			out+= "--Device Name------        indigoID--    --Status  lastUpdate  used"+"\n"
-			list=[]
-			for theMAC in self.piBeaconDevices:
-				list.append((theMAC,self.piBeaconDevices[theMAC]["name"]))
-			list = sorted(list, key=lambda tup: tup[1])
-			for ii in range(len(list)):
-				theMAC = list[ii][0]
-				if theMAC in self.piBeaconDevices:
-					try:
-						theString = self.piBeaconDevices[theMAC]["name"].ljust(27)
-						theString+= theMAC.ljust(14)
-						theString+= self.piBeaconDevices[theMAC]["currentStatus"].rjust(8)
-						lastUpdate= datetime.datetime.fromtimestamp(self.piBeaconDevices[theMAC]["lastUpdate"]).strftime('%H:%M:%S')
-						theString+= "{}".format(lastUpdate).rjust(12)
-						theString+= self.piBeaconDevices[theMAC]["used"].rjust(6)
-					
-						out+= theString + "\n"
-					except:
-						self.indiLOG.log(40, " data wrong for {}".format(theMAC) +"    {}".format(self.piBeaconDevices))
-			out+= "===      piBeacon devices  available  to fingscan    ===        END"+"\n"
-			self.indiLOG.log(10,out)
-	
-		except Exception:
-			self.logger.error("", exc_info=True)
-
-########################################
-	def printUnifiDevs(self):
-		try:
-			## refresh piBeacon cokkies
-			self.getUnifiAvailable()
-			if len(self.unifiDevices) ==0: return
-			out = "\n"
-			out+= "===      Unifi   devices  available  to fingscan    ===        START"+"\n"
-			#				 123456789012345678901234567890123412345678123456789012
-			out+= "--Device Name------        indigoID--    --Status  lastUpdate  used"+"\n"
-			list=[]
-			for theMAC in self.unifiDevices:
-				list.append((theMAC,self.unifiDevices[theMAC]["name"]))
-			list = sorted(list, key=lambda tup: tup[1])
-			for ii in range(len(list)):
-				theMAC = list[ii][0]
-				if theMAC in self.unifiDevices:
-					try:
-						theString = self.unifiDevices[theMAC]["name"].ljust(27)
-						theString+= theMAC.ljust(14)
-						theString+= self.unifiDevices[theMAC]["currentStatus"].rjust(8)
-						lastUpdate= datetime.datetime.fromtimestamp(self.unifiDevices[theMAC]["lastUpdate"]).strftime('%H:%M:%S')
-						theString+= "{}".format(lastUpdate).rjust(12)
-						theString+= self.unifiDevices[theMAC]["used"].rjust(6)
-						out+= theString + "\n"
-						
-					except Exception as e:
-						self.logger.error(" data wrong for {}".format(theMAC) +"    {}".format(self.unifiDevices[theMAC]), exc_info=True)
-			out+= "===      unifi devices  available  to fingscan    ===        END"
-			self.indiLOG.log(10,out)
-	
-		except Exception:
-			self.logger.error("", exc_info=True)
-
-
-########################################
-	def printWiFiDevs(self, ghz,Header=False):
-		out =""
-		try:
-			for theMAC in self.wifiMacList:
-				if theMAC in self.allDeviceInfo:
-					devI=self.allDeviceInfo[theMAC]
-					if devI["WiFi"] != ghz: continue
-					theString = theMAC
-					theString+= " "		+devI["deviceName"].ljust(22)
-					theString+= " "		+devI["ipNumber"].ljust(17)
-					theString+= " "		+devI["WiFi"].ljust(4)
-					try:
-						theString+= "  %7.0f"%(self.wifiMacList[theMAC][2])
-					except:
-						theString+= "  {}".format(self.wifiMacList[theMAC][2]).ljust(7)
-					try:
-						theString+= "   %7.0f"%(self.wifiMacList[theMAC][10]/max(self.wifiMacList[theMAC][11],1))
-					except:
-						theString+= "   0      "
-					theString+= "  "	+self.wifiMacList[theMAC][0].rjust(7)
-					theString+= "    "	+self.wifiMacList[theMAC][1].rjust(7)
-					if devI["deviceName"].find("unidentifiedWiFiDevice") > -1:
-						theString += " some times devices with wifi AND ethernet show this behaviour"
-					out+= theString+"\n"
-				else:
-					out+= theMAC+" -device is expired, not in dev list any more- {}".format(self.wifiMacList[theMAC]) +" some times devices with wifi AND ethernet show this behaviour"+"\n"
-		except Exception:
-			self.logger.error("", exc_info=True)
-		return out
-########################################
-	def printWiFiAve(self, ghz,Header=False):
-		out=""
-		try:
-			if Header: out+= "overall WiFi stats:"+"\n"
-			out+= " "+ghz+": ave.Signal[dBm]%4.0f,  curr.Signal:%4.0f,  NumberOfMeasurements:%6.0f,  NumberOfCycles:%6.0f, ave.NumberofDevices:%2.0f, curr.NumberOfDevicesConnected:%2.0f,  noiseLevel: %s"\
-				%( (self.wifiMacAv["sumSignal"][ghz]/max(1.0,self.wifiMacAv["numberOfDevices"][ghz]))
-				 , self.wifiMacAv["curAvSignal"][ghz]
-				 , self.wifiMacAv["numberOfDevices"][ghz]
-				 , self.wifiMacAv["numberOfCycles"][ghz]
-				 , self.wifiMacAv["numberOfDevices"][ghz]/max(1.0,self.wifiMacAv["numberOfCycles"][ghz])
-				 , self.wifiMacAv["curDev"][ghz]
-				 , self.wifiMacAv["noiseLevel"][ghz])
-				 
-		except Exception:
-			self.logger.error("", exc_info=True)
-		return out+"\n"
-		
 
 ##### execute triggers:
 
@@ -2349,16 +1427,11 @@ class Plugin(indigo.PluginBase):
 ######################################################################################
 
 	def triggerStartProcessing(self, trigger):
-#		if self.decideMyLog("WiFi"): self.indiLOG.log(10, "<<-- entering triggerStartProcessing: %s (%d)" % (trigger.name, trigger.id) )iDeviceHomeDistance
 		self.triggerList.append(trigger.id)
-#		if self.decideMyLog("WiFi"): self.indiLOG.log(10, "exiting triggerStartProcessing -->>")
 
 	def triggerStopProcessing(self, trigger):
-#		if self.decideMyLog("WiFi"): self.indiLOG.log(10, "<<-- entering triggerStopProcessing: %s (%d)" % (trigger.name, trigger.id))
 		if trigger.id in self.triggerList:
-#			if self.decideMyLog("WiFi"): self.indiLOG.log(10, "TRIGGER FOUND")
 			self.triggerList.remove(trigger.id)
-#		if self.decideMyLog("WiFi"): self.indiLOG.log(10, "exiting triggerStopProcessing -->>")
 
 	#def triggerUpdated(self, origDev, newDev):
 	#	self.logger.log(4, "<<-- entering triggerUpdated: %s" % origDev.name)
@@ -2372,23 +1445,18 @@ class Plugin(indigo.PluginBase):
 
 	def triggerEvent(self, eventId):
 		try:
-			if self.decideMyLog("Events"): self.indiLOG.log(10, "triggerEvent: %s " % eventId)
+			if self.decideMyLog("Events"): self.indiLOG.log(10, "triggerEvent:{};".format(eventId))
 			for trigId in self.triggerList:
 				trigger = indigo.triggers[trigId]
-				if self.decideMyLog("Events"): self.indiLOG.log(10, "testing trigger id: {}".format(trigId).rjust(12)+"; eventId:{}".format(eventId).rjust(12)+";  {}".format(trigger.pluginTypeId))
+				if self.decideMyLog("Events"): self.indiLOG.log(10, "testing trigger id:{}; eventId:{};  typeId:{}, fire:{}".format(trigId, eventId, trigger.pluginTypeId, trigger.pluginTypeId == eventId))
 				if trigger.pluginTypeId == eventId:
-					if self.decideMyLog("Events"): self.indiLOG.log(10, "firing trigger id : {}".format(trigId))
+					if self.decideMyLog("Events"): self.indiLOG.log(10, "firing trigger id:{}".format(trigId))
 					indigo.trigger.execute(trigger)
+					break
 		except Exception:
 			self.logger.error("", exc_info=True)
 		return
 
-
-
-
-
-
-####################
 
 
 	####################  startup / config methods  #######################
@@ -2429,18 +1497,12 @@ class Plugin(indigo.PluginBase):
 		if devId >0:
 			dev =indigo.devices[devId]
 			devName= dev.name
-			if self.decideMyLog("WiFi"): self.indiLOG.log(10, " device selected:{}".format(devId)+"/"+devName)
-		else:
-			if self.decideMyLog("WiFi"): self.indiLOG.log(10, " device selected:"+ " all")
 			
 		return True
 ########################################
 	def pickDeviceFilter(self,filter=None,valuesDict=None,typeId=0):
 		retList =[]
 		for dev in indigo.devices.iter("com.karlwachs.fingscan"):
-#			if self.decideMyLog("WiFi"): self.indiLOG.log(10,dev.pluginId+" "+dev.name)
-			#if dev.pluginId.upper().find("FINGSCAN")>-1:  # put your plugin name here
-#				if self.decideMyLog("WiFi"): self.indiLOG.log(10, " adding "+dev.name)
 				retList.append((dev.id,dev.name))
 		retList.append((0, "all devices"))
 		return retList
@@ -2465,22 +1527,6 @@ class Plugin(indigo.PluginBase):
 	def inpPrintEVENTS(self):
 		self.indigoCommand = "PrintEVENTS"
 		self.indiLOG.log(20, "command: Print EVENTS and configuration")
-		return
-
-########################################
-	def inpPrintWiFi(self):
-		self.indigoCommand = "PrintWiFi"
-		self.indiLOG.log(20, "command: Print WiFi information and configuration")
-		return
-########################################
-	def inpPrintpiBeacon(self):
-		self.indigoCommand = "PrintpiBeacon"
-		self.indiLOG.log(20, "command: Print piBeacon information")
-		return
-########################################
-	def inpPrintUnifi(self):
-		self.indigoCommand = "PrintUnifi"
-		self.indiLOG.log(20, "command: Print unifi information")
 		return
 
 
@@ -2575,7 +1621,7 @@ class Plugin(indigo.PluginBase):
 ########################################
 	def doDetails(self):
 
-		self.indiLOG.log(10, "starting log IP-Services of your network, might take several minutes, it will test each port on each ip-device, output to plugin.log and:{}".format(self.fingServicesOutputFileName))
+		self.indiLOG.log(20, "starting log IP-Services of your network, might take several minutes, it will test each port on each ip-device, output to plugin.log and:{}".format(self.fingServicesOutputFileName))
 		## ask fing to produce details list of services per ip number
 		ret=""
 ## cd '/Library/Application Support/Perceptive Automation/Indigo 7.4/Preferences/Plugins/com.karlwachs.fingscan/';echo 'your osx password here.. no quotes' | sudo -S /usr/local/bin/fing  -s 192.168.1.0/24 -o json,fingservices.json > fingservices.log
@@ -2683,7 +1729,7 @@ class Plugin(indigo.PluginBase):
 		out+= "IP-Device Number, Name, Vendor,..."+"------------------------------------------------------------------------ "
 		self.indiLOG.log(20,out+"         log IP-Services of your network, .......  done")
 		fout=open(self.fingServicesOutputFileName,"w")
-		fout.write(out.encode("utf8"))
+		fout.write(out)
 		fout.close()
 		return
 	
@@ -2804,9 +1850,9 @@ class Plugin(indigo.PluginBase):
 			   
 				
 		try:
-			test = indigo.variable.create("ipDevice00", "MAC-Number                ;     IP-Number       ;   Time-Of-Last-Change   ;Status;     N.of-Ch.    ;   Nick-Name                 ;   Hardware-Vendor        ;   DeviceInfo               ; WiFi  ;   usePing",self.indigoVariablesFolderID)
+			test = indigo.variable.create("ipDevice00", "MAC-Number                ;     IP-Number       ;   Time-Of-Last-Change   ;Status;     N.of-Ch.    ;   Nick-Name                 ;   Hardware-Vendor        ;   DeviceInfo               ;   usePing",self.indigoVariablesFolderID)
 		except:
-			test = indigo.variable.updateValue("ipDevice00", "MAC-Number                ;     IP-Number       ;   Time-Of-Last-Change   ;Status;     N.of-Ch.    ;   Nick-Name                 ;   Hardware-Vendor        ;   DeviceInfo               ;  WiFi  ;   usePing")
+			test = indigo.variable.updateValue("ipDevice00", "MAC-Number                ;     IP-Number       ;   Time-Of-Last-Change   ;Status;     N.of-Ch.    ;   Nick-Name                 ;   Hardware-Vendor        ;   DeviceInfo              ;   usePing")
 		try:
 			test = indigo.variable.create("ipDevsLastUpdate", "1",self.indigoVariablesFolderID)	;
 		except:
@@ -3252,7 +2298,7 @@ class Plugin(indigo.PluginBase):
 			if len(theTest) < 5:  # variable exists, but empty 
 				return 0
 			theValue = theTest.split(";")
-			if theValue[0].strip().count(":") == 5:
+			if self.isValidMAC(theValue[0].strip()):
 				test = self.getIndigoIpVariablesIntoData()
 				return 0  ## version 2 nothing to do
 		except Exception as e:
@@ -3271,18 +2317,18 @@ class Plugin(indigo.PluginBase):
 				if len (theTest) < 5:  # that is minimum, should be 8 or 9
 					skip = 1
 					self.quitNOW = "Indigo variable error 2"
-					self.indiLOG.log(40, "getting data from indigo: bad variable ipDevice" + ii00 +"\n   please check if it has bad data, in doubt delete and let the program recreate  \n   stopping fingscan  " )
+					self.indiLOG.log(30, "getting data from indigo: bad variable ipDevice" + ii00 +"\n   please check if it has bad data, in doubt delete and let the program recreate  \n   stopping fingscan  " )
 					break
 				theValue = theTest.split(";")
 				macNO = theValue[1].strip()
-				if macNO.count(":") != 5:
+				if not self.isValidMAC(macNO):
 					self.quitNOW = "Indigo variable error 3"
-					self.indiLOG.log(40, "getting data from indigo: bad variable ipDevice" + ii00  +"\n  MAC number does not seem to be real MAC number" + theValue[0].strip() +"\n   please check if it has bad data, in doubt delete and let the program recreate  \n   stopping fingscan  " )
+					self.indiLOG.log(30, "getting data from indigo: bad variable ipDevice" + ii00  +"\n  does not have a valid MAC number:" + theValue[0].strip() +"\n   please check if it has bad data, in doubt delete and let the program recreate  \n   stopping fingscan  " )
 					break
 				ipNO =theValue[2].strip()
-				if ipNO.count(".") != 3:
+				if not self.isValidIP(ipNO):
 					self.quitNOW = "Indigo variable error 4"
-					self.indiLOG.log(40, "getting data from indigo: bad variable ipDevice" + ii00 +"\n  IP number does not seem to be real IP number" + theValue[1].strip() +"\n   please check if it has bad data, in doubt delete and let the program recreate  \n   stopping fingscan  " )
+					self.indiLOG.log(30, "getting data from indigo: bad variable ipDevice" + ii00 +"\n  does not have a valid  IP number:" + theValue[1].strip() +"\n   please check if it has bad data, in doubt delete and let the program recreate  \n   stopping fingscan  " )
 					break
 				nick  = self.padNickName(theValue[0].strip())
 				macNO = self.padMAC(macNO)
@@ -3331,8 +2377,11 @@ class Plugin(indigo.PluginBase):
 						indigo.variable.delete("ipDevice"+ii00)
 					continue
 				theValue = theTest.split(";")
+				if len(theValue) == 10:
+					theValue[8] = copy.copy(theValue[9])
+					del theValue[9]
 
-				while len(theValue) < 10:
+				while len(theValue) < 9:
 					theValue.append("")
 
 				skip = "no"
@@ -3340,25 +2389,25 @@ class Plugin(indigo.PluginBase):
 				self.indigoDevicesValues.append(theTest)
 				self.indigoDevicesNumbers.append(ii00)
 				theMAC =theValue[0].strip()
-				if theValue[0].strip().count(":") != 5:
+				if not self.isValidMAC(theValue[0].strip()):
 					if self.indigoCommand == "none":
 						skip = 1
 						self.quitNOW = "Indigo variable error 7"
-						self.indiLOG.log(30, "getting data from indigo: bad variable ipDevice" + ii00 +"  MAC number does not seem to be real MAC number>>" + theValue[0].strip() +"<<  deleting and letting the program recreate " )
+						self.indiLOG.log(30, "getting data from indigo: bad variable ipDevice" + ii00 +" does not have a valid MAC number>>" + theValue[0].strip() +"<<  deleting and letting the program recreate it " )
 						indigo.variable.delete("ipDevice"+ii00)
 					continue
 
 
 
-				if theValue[1].strip().count(".") != 3:
+				if not self.isValidIP(theValue[1].strip()):
 					if self.indigoCommand == "none":
 						skip = 1
 						self.quitNOW = "Indigo variable error 8"
-						self.indiLOG.log(30, "getting data from indigo: bad variable ipDevice" + ii00 +"  IP number does not seem to be real IP number>>" + theValue[1].strip() +"<<\  deleting and letting the program recreate  " )
+						self.indiLOG.log(30, "getting data from indigo: bad variable ipDevice" + ii00 +" does not have a valid  IP number>>" + theValue[1].strip() +"<<\  deleting and letting the program recreate  it " )
 						indigo.variable.delete("ipDevice"+ii00)
 					continue
 
-				self.indigoIpVariableData[theMAC]=copy.deepcopy(emptyindigoIpVariableData)
+				self.indigoIpVariableData[theMAC] = copy.deepcopy(emptyindigoIpVariableData)
 				devV = self.indigoIpVariableData[theMAC]
 				devV["ipNumber"]			= theValue[1].strip()
 				devV["timeOfLastChange"]	= theValue[2].strip()
@@ -3371,11 +2420,7 @@ class Plugin(indigo.PluginBase):
 				devV["hardwareVendor"]		= theValue[6].strip()
 				devV["deviceInfo"]			= theValue[7].strip()
 				try:
-					devV["WiFi"]			= theValue[8].strip()
-				except:
-					devV["WiFi"]			= ""
-				try:
-					devV["usePing"]		= theValue[9].strip()
+					devV["usePing"]		= theValue[8].strip()
 				except:
 					devV["usePing"]		= "noPing-0"
 				
@@ -3411,7 +2456,6 @@ class Plugin(indigo.PluginBase):
 			msg=True
 			maxPingTime=0
 			for theMAC in self.allDeviceInfo:
-				if theMAC in self.wifiMacList: continue
 				if theMAC in self.excludeMacFromPing:
 					if force : self.excludeMacFromPing[theMAC]=0
 					if self.excludeMacFromPing[theMAC] >2:continue
@@ -3572,82 +2616,6 @@ class Plugin(indigo.PluginBase):
 
 ########################################
 	def pluginCalled(self):
-		try:
-	
-			for ii in range(len(self.callingPluginName)):
-				if self.decideMyLog("iFind"): self.indiLOG.log(10, "trigger actionFrom  :  {}".format(self.callingPluginName[ii])+ " {}".format(self.callingPluginCommand[ii]))
-				plug = indigo.server.getPlugin(self.callingPluginName[ii])
-				if not plug.isEnabled():
-					if self.decideMyLog("iFind"): self.indiLOG.log(10, "trigger actionFrom Plugin  not enabled:  {}".format(plug)+ " {}".format(self.callingPluginCommand))
-					continue
-				try:
-					idevId= self.callingPluginCommand[ii]
-				except:
-					if self.decideMyLog("iFind"): self.indiLOG.log(10, "triggerFromPlugin  no msg:  {}".format(plug)+ " {}".format(self.idevId))
-					continue
-
-				idevD,idevName,idevId = self.getIdandName(idevId)
-				
-				if idevName =="":
-					if self.decideMyLog("iFind"): self.indiLOG.log(10, "params for iFind  idevName empty" )
-					continue
-				try:
-					distance					= float(idevD.states["distanceHome"])			# distance from home
-					distanceUnits				= idevD.states["distanceUnits"]					# convert to meters if needed, find ft or m and if display different from number
-					deviceTimeChecked			= time.mktime(time.strptime(idevD.states["deviceTimeChecked"], "%a %b %d %H:%M:%S %Y")) # format:  Thu Mar  3 07:32:49 2016  deviceTimeChecked of "iphone " in seconds
-					timeNextUpdate				= float(idevD.states["timeNextUpdate"])			#  time in secs of next check
-					iFindMethod					= idevD.states["calculateMethod"]				#  using avriable input or iFind nternal method
-				except:
-					if self.decideMyLog("iFind"): self.indiLOG.log(10, "get params from iFind   not working:")
-					continue
-				if distanceUnits.find("kilometres")>-1:	distance *=  kmMeters
-				elif distanceUnits.find("miles")>-1:	distance *= milesMeters
-
-				found = False
-				#if self.decideMyLog("iFind"): self.indiLOG.log(10, "testing: iDeviceName  " +"{}".format(idevName) +" {}".format(idevId) )
-				for n in self.EVENTS:
-					evnt= self.EVENTS[n]
-					found =0
-					for nDev in evnt["iDeviceName"]:
-						if evnt["iDeviceName"][nDev]=="": continue
-						if "{}".format(evnt["iDeviceName"][nDev])== "-1": continue
-						found +=1
-						#if self.decideMyLog("iFind"): self.indiLOG.log(10, "trying iDeviceName  " +"{}".format(evnt["iDeviceName"][nDev]) +";  nDev{}".format(nDev) +";  nEvent{}".format(n) )
-					
-						if  "{}".format(evnt["iDeviceName"][nDev]) == "{}".format(idevId) or "{}".format(evnt["iDeviceName"][nDev]) == "{}".format(idevName):
-							found =10000
-							break
-					if  found > 0 and  found < 10000:
-						#if self.decideMyLog("iFind"): self.indiLOG.log(10, "iDeviceName not found:  " +"{}".format(idevName) +" {}".format(idevId) )
-						continue
-					if  found  == 0: continue
-					#if self.decideMyLog("iFind"): self.indiLOG.log(10, "iDeviceName  found:  " +"{}".format(idevName) +" {}".format(idevId) +";  nDev{}".format(nDev) +";  nEvent{}".format(n)+";  iDeviceName"+  "{}".format(evnt["iDeviceName"][nDev]))
-					
-					if deviceTimeChecked > float(evnt["iUpdateSecs"][nDev]) +1 :  # new info
-						
-						evnt["iSpeedLast"][nDev]		= evnt["iSpeed"][nDev]
-						evnt["iDistanceLast"][nDev]	= evnt["iDistance"][nDev]
-						evnt["iUpdateSecsLast"][nDev]	= evnt["iUpdateSecs"][nDev]
-						evnt["iDistance"][nDev]		= distance
-						evnt["iUpdateSecs"][nDev]		= deviceTimeChecked
-						evnt["itimeNextUpdate"][nDev]	= timeNextUpdate
-						dTime 							= evnt["iUpdateSecs"][nDev]  - evnt["iUpdateSecsLast"][nDev]
-						dDist							= evnt["iDistance"][nDev]    - evnt["iDistanceLast"][nDev]  
-						speed							= dDist  /   max(dTime,1.)
-						evnt["iSpeed"][nDev]			= speed
-						if self.decideMyLog("iFind"): self.indiLOG.log(10, "iFind old:  distance " +"%6.1f"%(evnt["iDistanceLast"][nDev])+ "; deviceTimeChecked " +"%6.1f"%(time.time()-evnt["iUpdateSecsLast"][nDev])+ ";  speed " +"%6.2f"%(evnt["iSpeedLast"][nDev])+";  ndev# {}".format(nDev))
-						if self.decideMyLog("iFind"): self.indiLOG.log(10, "      new:  distance " +"%6.1f"%(evnt["iDistance"][nDev])    + "; deviceTimeChecked " +"%6.1f"%(time.time()-evnt["iUpdateSecs"][nDev])    + ";  speed " +"%6.2f"%(evnt["iSpeed"][nDev])    +";  dDist " +"%6.2f"%(dDist)+";  dTime " +"%6.0f"%(dTime))
-					else:
-						if self.decideMyLog("iFind"): self.indiLOG.log(10, "iFind trigger delivered no new data")
-					evnt["iFindMethod"][nDev]			= iFindMethod
-					
-						
-		except Exception:
-			self.logger.error("", exc_info=True)
-
-		self.triggerFromPlugin		= False
-		self.callingPluginName=[]
-		self.callingPluginCommand=[]
 		return
 
 ########################################
@@ -3656,7 +2624,7 @@ class Plugin(indigo.PluginBase):
 	#		if self.decideMyLog("Events"): self.indiLOG.log(10, "<<<--- entering checkTriggers")
 			for nEvent in self.EVENTS:
 				timeNowNumberSecs = time.time()
-				timeNowm2 = int(timeNowNumberSecs-2.) ## drop the 10th of seconds
+				timeNowm2 = int(timeNowNumberSecs-.2) ## drop the 10th of seconds
 				timeNowHMS = datetime.datetime.now().strftime("%H:%M:%S")
 				ticks = time.time()
 				evnt=self.EVENTS[nEvent]
@@ -3680,365 +2648,178 @@ class Plugin(indigo.PluginBase):
 				AwayStat={}
 				HomeStat={}
 				AwayDist={}
-				HomeDist={}
-				minHomeTime =999999
-				minAwayTime =999999
-				maxHomeTime =0
-				maxAwayTime =0
+				minHomeTime = 999999
+				minAwayTime = 999999
+				maxHomeTime = 0
+				maxAwayTime = 0
 
 				evnt["nHome"]  = 0		
 				evnt["nAway"]  = 0		
 
-				for nDev in evnt["IPdeviceMACnumber"]:
-					if evnt["IPdeviceMACnumber"][nDev] == "0": continue
-					if evnt["IPdeviceMACnumber"][nDev] == "": continue
-					self.metersAway[nDev]	= -99999999999.
-					self.metersHome[nDev]	= -99999999999.
-					AwayTime[nDev]			=  999999999123
-					HomeTime[nDev]			=  999999999123
-					AwayStat[nDev]			=  False
-					HomeStat[nDev]			=  False
-					AwayDist[nDev]			=  True
-					HomeDist[nDev]			=  False
+				if True:
+					for nDev in evnt["IPdeviceMACnumber"]:
+						if evnt["IPdeviceMACnumber"][nDev] == "0": continue
+						if evnt["IPdeviceMACnumber"][nDev] == "": continue
+						AwayTime[nDev]			=  999999999123
+						HomeTime[nDev]			=  999999999123
+						AwayStat[nDev]			=  False
+						HomeStat[nDev]			=  False
 
 
 				for nDev in evnt["IPdeviceMACnumber"]:
-					AwayTime[nDev] = timeNowm2-float(evnt["secondsOfLastOFF"][nDev])
-					#self.indiLOG.log(10, "nDev {}".format(nDev) +" AwayTime[nDev]{}".format(AwayTime[nDev]) )
-					minAwayTime = min(minAwayTime,AwayTime[nDev])  #################### need to check
-					maxAwayTime = max(maxAwayTime,AwayTime[nDev])
-					HomeTime[nDev] = timeNowm2-float(evnt["secondsOfLastON"][nDev])
-					minHomeTime = min(minHomeTime,HomeTime[nDev])
-					maxHomeTime = max(maxHomeTime,HomeTime[nDev])
+					AwayTime[nDev] 	= timeNowm2-float(evnt["secondsOfLastOFF"][nDev])
+					minAwayTime 	= min(minAwayTime,AwayTime[nDev])  #################### need to check
+					maxAwayTime 	= max(maxAwayTime,AwayTime[nDev])
+
+					HomeTime[nDev] 	= timeNowm2-float(evnt["secondsOfLastON"][nDev])
+					minHomeTime 	= min(minHomeTime,HomeTime[nDev])
+					maxHomeTime 	= max(maxHomeTime,HomeTime[nDev])
 
 				for nDev in evnt["IPdeviceMACnumber"]:
 					status = "0"
 					if evnt["IPdeviceMACnumber"][nDev] == "0": continue
 					if evnt["IPdeviceMACnumber"][nDev] == "": continue
 					iDev = int(nDev)
-					theMAC =evnt["IPdeviceMACnumber"][nDev]
+					theMAC = evnt["IPdeviceMACnumber"][nDev]
 					##self.indiLOG.log(10, " in trigger idev"+ nDev+"  "+ theMAC)
-					if iDev< piBeaconStart:
-						if len(theMAC) < 16:
-							if self.decideMyLog("Events"): self.indiLOG.log(10, "theMAC=0")
-							continue
-						if not theMAC in self.allDeviceInfo:
-							if self.decideMyLog("Ping"): self.indiLOG.log(10, "mac number "+theMAC+"\n   not present in data, deleting EVENT/device source for trigger" )
-							evnt["IPdeviceMACnumber"][nDev] = "0"
-							break
-						devI= self.allDeviceInfo[theMAC]
-						status		= devI["status"]
-					elif iDev< piBeaconStart:
-						status = "0"
+					if len(theMAC) < 16:
+						if self.decideMyLog("Events"): self.indiLOG.log(10, "theMAC=0")
+						continue
+					if not theMAC in self.allDeviceInfo:
+						if self.decideMyLog("Ping"): self.indiLOG.log(10, "mac number {}\n   not present in data, deleting EVENT/device source for trigger".format(theMAC) )
+						evnt["IPdeviceMACnumber"][nDev] = "0"
+						break
+					devI = self.allDeviceInfo[theMAC]
+					status		= devI["status"]
 
-					elif iDev< unifiStart:  ## check piBeacon devices
-						try:
-							status		= self.piBeaconDevices[theMAC]["currentStatus"]
-						except:
-							self.getpiBeaconAvailable()
-							self.updatepiBeacons()
-							if len(self.piBeaconDevices) ==0:
-								status = "0"
-							else:
-								try:
-									status = self.piBeaconDevices[theMAC]["currentStatus"]
-								except:
-									self.logger.error("error in checkTriggers, indigoID# "+theMAC+" not in piBeacondevices  :  " + "{}".format(self.piBeaconDevices)[0:100]+" ..  is  piBeacon plugin active? ", exc_info=True)
-									status = "0"
-									del self.piBeaconDevices[theMAC]
-					elif iDev >= unifiStart:  ## check unifi devices
-						try:
-							status		= self.unifiDevices[theMAC]["currentStatus"]
-						except:
-							self.getUnifiAvailable()
-							self.updateUnifi()
-							if len(self.unifiDevices) ==0:
-								status = "0"
-							else:
-								try:
-									status = self.unifiDevices[theMAC]["currentStatus"]
-								except Exception as e:
-									self.logger.error("error in checkTriggers, indigoID# "+theMAC+" not in unifidevices  :  " + "{}".format(self.unifiDevices)[0:100]+" ..  is  unifi plugin active? ", exc_info=True)
-									del self.unifiDevices[theMAC]
-									status =  "0"
+					if status == "up":	HomeStat[nDev] = True
+					else:				AwayStat[nDev] = True
+
+					AwayTime[nDev] 	= timeNowm2-float(evnt["secondsOfLastOFF"][nDev])
+					minAwayTime 	= min(minAwayTime,AwayTime[nDev])
+					maxAwayTime 	= max(maxAwayTime,AwayTime[nDev])
+
+					HomeTime[nDev] 	= timeNowm2-float(evnt["secondsOfLastON"][nDev])
+					minHomeTime 	= min(minHomeTime,HomeTime[nDev])
+					maxHomeTime 	= max(maxHomeTime,HomeTime[nDev])
 
 
-
-					## check iFind devcies
-					metersH = -8888888888
-					metersA = -1.
-					if len(evnt["iDeviceName"][nDev]) > 1 and (
-						evnt["iDeviceUseForAway"][nDev] == "1" or
-						evnt["iDeviceUseForHome"][nDev] == "1"): 
-						plug = indigo.server.getPlugin(self.iFindStuffPlugin)  #  get i distance info and may be force a manual update of the distance..
-						if plug.isEnabled():
-							idevD,idevName,idevId = self.getIdandName(evnt["iDeviceName"][nDev])
-							speed				= float(evnt["iSpeed"][nDev])
-							distance			= float(evnt["iDistance"][nDev])
-							pluginUpdateSecs	= float(evnt["iUpdateSecs"][nDev])
-							timeNextUpdate		= float(evnt["itimeNextUpdate"][nDev])
-							distance = max(0.1,distance)
-							metersH = distance  # get the current meters away from home.
-							metersA = distance
-							try:
-								varname=  idevD.name.replace(" ","").replace("'","").encode('ascii', 'ignore').upper()+'FREQ'
-								xx= indigo.variables[varname].value 
-							except:
-								try:
-									indigo.variable.create(varname, "99")
-								except Exception as e:    
-									self.logger.error("could not read or create variable  "+varname+" for iFind communication, ignoring iFind communication", exc_info=True)
-									continue
-							
-							
-							nextTimeToCheck= evnt["nextTimeToCheck"][nDev] # set to some default
-							if status != "up":  # if not in IP range use iFind
-								evnt["iMaxSpeed"][nDev]=min(50.,max(abs(speed),evnt["iMaxSpeed"][nDev],1.001) ) 
-								if (distance-float(evnt["distanceHomeLimit"])) > 0:  # not home
-									if speed < -0.5:	# m / sec moving towards home , not standing, but faster than 0.5m/sec
-										nextTimeToCheck=  (distance-float(evnt["distanceHomeLimit"]))  / evnt["iMaxSpeed"][nDev]
-									elif speed < 0.5:	#slow moving
-										nextTimeToCheck=  (distance-float(evnt["distanceHomeLimit"])) / max(2., min(evnt["iMaxSpeed"][nDev]/2.,5))  # assuming max speed towards/away home is slow ~ 2m/sec
-									elif speed  <2 : # moving away slowly
-										nextTimeToCheck=  (distance-float(evnt["distanceHomeLimit"])) / max(1., min(evnt["iMaxSpeed"][nDev]/4.,10))       # assuming max speed away home is < 2m/sec = 7km/h = fast walking speed
-									
-									else : # moving away fast > 7 km/h
-										nextTimeToCheck=  (distance-float(evnt["distanceHomeLimit"])) *2.  # assuming max speed away from home is > 7km/h
-									if self.decideMyLog("iFind"): self.indiLOG.log(10, "ifind after speed calc  nextTimeToCheck: {}".format(nextTimeToCheck)+" speed: {}".format(speed)+" iMaxSpeed: {}".format(evnt["iMaxSpeed"][nDev])  )
-										 
-									nextTimeToCheck = min(813.,nextTimeToCheck) 
-									nextTimeToCheck = max( 10.,nextTimeToCheck*0.9 ) # between 10 and 720 seconds
-									evnt["nextTimeToCheck"][nDev]=  nextTimeToCheck
-
-								else:  # home
-									pass
-								
-							else:  # in IP range take it slow
-								evnt["iMaxSpeed"][nDev]=1.002
-								if evnt["iFindMethod"][nDev] !="Calculated":
-									plug.executeAction("refreshFrequencyOff", idevId)
-								evnt["iMaxSpeed"][nDev]=1.004 # reset to walking speed as we are home
-						   
-								
-							if distance > 20000.:  # we are far away (> 20km) leave it to the default timing
-								if evnt["iFindMethod"][nDev] != "Calculated":
-									if self.decideMyLog("iFind"): self.indiLOG.log(10, "ifind time : switching method to OFF")
-									if evnt["iFindMethod"][nDev] !="Calculated":
-										if self.decideMyLog("iFind"): self.indiLOG.log(10, "ifind time : switching method to OFF (2)")
-										plug.executeAction("refreshFrequencyOff", idevId)
-										evnt["iFindMethod"][nDev] = "Calculated"
-							
-											
-							elif distance > float(evnt["distanceHomeLimit"]): ## not FAR AWAY, but not home 
-									if indigo.variables[varname].value != "{}".format(int(nextTimeToCheck)):
-										indigo.variable.updateValue(varname,"{}".format(int(nextTimeToCheck)))
-									if   nextTimeToCheck < timeNextUpdate -time.time() :
-										if self.decideMyLog("iFind"): self.indiLOG.log(10, "ifind time : switching method to Variable (On)")
-										plug.executeAction("refreshFrequencyOn", idevId)
-										evnt["iFindMethod"][nDev] = "Variable"
-									else:
-										if self.decideMyLog("iFind"): self.indiLOG.log(10, "ifind time : no need to refresh")
-
-							else:  # we are at home do things slowly ..
-									if status != "up" :# if the other indicators believe it is away do an iFind update
-										if time.time() - float(evnt["secondsOfLastOFF"][nDev]) > 600: #after 15 minutes switch back to calculated
-											if evnt["iFindMethod"][nDev] == "Variable":
-												evnt["iFindMethod"][nDev] = "Calculated"
-												if self.decideMyLog("iFind"): self.indiLOG.log(10, "ifind time : switching method to OFF (1)")
-												plug.executeAction("refreshFrequencyOff", idevId)
-												if self.decideMyLog("iFind"): self.indiLOG.log(10, "ifind time : at home, do it slowly (1)")
-										else:  # check ifind, then set nextTime to 60 secs, see how it works
-											if evnt["iFindMethod"][nDev] != "Variable":  
-												evnt["iFindMethod"][nDev] = "Variable"
-												if self.decideMyLog("iFind"): self.indiLOG.log(10, "ifind time : at home, but do a refresh iFind as wifi just turned off  secondsOfLastOFF: " + "{}".format(evnt["secondsOfLastOFF"][nDev])+ ";  iUpdateSecs: {}".format(evnt["iUpdateSecs"][nDev]) )
-												nextTimeToCheck =60 #set to 1 minutes
-												evnt["nextTimeToCheck"][nDev]=  nextTimeToCheck
-												if indigo.variables[varname].value != "{}".format(int(nextTimeToCheck)): indigo.variable.updateValue(varname,"{}".format(int(nextTimeToCheck)))
-												plug.executeAction("refreshFrequencyOn", idevId)
-									else:
-											evnt["iMaxSpeed"][nDev]=1.003
-											if evnt["iFindMethod"][nDev] != "Calculated":
-												if self.decideMyLog("iFind"): self.indiLOG.log(10, "ifind time : switching method to OFF (2)")
-												evnt["iFindMethod"][nDev] = "Calculated"
-												plug.executeAction("refreshFrequencyOff", idevId)
-											if self.decideMyLog("iFind"): self.indiLOG.log(10, "ifind time : at home, do it slowly (2)")
-
-
-							if self.decideMyLog("iFind"): self.indiLOG.log(10,
-									 "ifind time UpdSec: "		+ "{}".format(int( time.time() - float(pluginUpdateSecs) ))
-									+";  lastUpdLast: "		+ "{}".format(int( time.time() - float(evnt["iUpdateSecs"][nDev]) ))
-									+";  speed: "				+ "%7.3f"%speed
-									+";  iMaxSpeed: "			+ "%7.3f"%evnt["iMaxSpeed"][nDev]
-									+";  nextTimeToCheck: "	+ "{}".format(int(nextTimeToCheck))
-									+";  timeNextUpdate: "		+ "{}".format(int(timeNextUpdate -time.time()))
-									+";  secondsOfLastOFF: "	+ "{}".format(int(time.time()- float(evnt["secondsOfLastOFF"][nDev])))
-									+";  newDistance: "		+ "{}".format(int(distance))
-									+";  status: "				+ "{}".format(status	)
-									+";  iFindMethod: "		+ "{}".format(evnt["iFindMethod"][nDev]	)
-									)
-
-						else:
-							if self.decideMyLog("iFind"): self.indiLOG.log(10, "iFind is not enabled, please enable plugin or disable use of iFind in FINGSCAN")
-							metersH=-7777777777
-							metersA=-2.
-					else:
-						metersH=-6666666666
-						metersA=-3.
-					if evnt["iDeviceUseForAway"][nDev] == "1": self.metersAway[nDev]	= metersA
-					else:										 self.metersAway[nDev]	= -4.
-					if evnt["iDeviceUseForHome"][nDev] == "1": self.metersHome[nDev]	= metersH
-					else:										 self.metersHome[nDev]	= -555555555.
-
-					if float(self.metersHome[nDev]) >0. and float(self.metersHome[nDev]) <= float(evnt["distanceHomeLimit"]):
-						HomeDist[nDev] = True
-					#if self.decideMyLog("iFind"): self.indiLOG.log(10, "ifind  metersHome: {}".format(self.metersHome[nDev]) + ";  distanceHomeLimit: {}".format(evnt["distanceHomeLimit"])+ ";  HomeDist[nDev]: {}".format(HomeDist[nDev]))
-					
-					if (float(self.metersAway[nDev]) >0  and float(self.metersAway[nDev])  <= float(evnt["distanceAwayLimit"])):
-						evnt["secondsOfLastOFF"][nDev] = timeNowm2
-						evnt["timeOfLastOFF"][nDev]= timeNowHMS
-						AwayDist[nDev] = False
-					#if self.decideMyLog("iFind"): self.indiLOG.log(10, "ifind  metersAway: {}".format(self.metersAway[nDev]) + ";  distanceAwayLimit: {}".format(evnt["distanceAwayLimit"])+ ";  AwayDist[nDev]: {}".format(AwayDist[nDev]))
-
-					if status == "up":
-						HomeStat[nDev] = True
-						#evnt["secondsOfLastOFF"][nDev] = timeNowm2
-						#evnt["timeOfLastOFF"][nDev]= timeNowHMS
-					else:
-						AwayStat[nDev] = True
-					AwayTime[nDev] = timeNowm2-float(evnt["secondsOfLastOFF"][nDev])
-					minAwayTime = min(minAwayTime,AwayTime[nDev])
-					maxAwayTime = max(maxAwayTime,AwayTime[nDev])
-					HomeTime[nDev] = timeNowm2-float(evnt["secondsOfLastON"][nDev])
-					minHomeTime = min(minHomeTime,HomeTime[nDev])
-					maxHomeTime = max(maxHomeTime,HomeTime[nDev])
-
-
-
-				#if self.decideMyLog("Events"): self.indiLOG.log(10, "minHomeTime {}".format(minHomeTime)+ " " + "{}".format(HomeTime))
-				#if self.decideMyLog("Events"): self.indiLOG.log(10, "minAwayTime {}".format(minAwayTime)+ " " + "{}".format(AwayTime))
-				#if self.decideMyLog("Events"): self.indiLOG.log(10, "Dist: AWAY-{}".format(AwayDist)+"-- HOME-{}".format(HomeDist))
-				#if self.decideMyLog("Events"): self.indiLOG.log(10, "Stat: AWAY-{}".format(AwayStat)+"-- HOME-{}".format(HomeStat))
 	## all info set, now set final outcome
-				oneAway				= False
-				allAway				= True
-				allHome				= True
-				oneHome				= False
-				oneHomeTrigger		= False
-				oneAwayTrigger		= False
-				allHomeTrigger		= False
-				allAwayTrigger		= False
-				metersAwayForEvent	= 0
-				metersHomeForEvent	= 0
+				oneAway				= 0
+				allAway				= 0
+				allHome				= 0
+				oneHome				= 0
+				oneHomeTrigger		= 0
+				oneAwayTrigger		= 0
+				allHomeTrigger		= 0
+				allAwayTrigger		= 0
 
 				out = "checkTrigger\n"
-				if self.decideMyLog("Events"): out+="EVENT# {}".format(nEvent).ljust(2)+"  Dev#  HomeStat".ljust(15)                         +"HomeTime".ljust(12)           +"HomeDist".ljust(13)          +"AwayStat".ljust(12)         +"AwayTime".ljust(12)           +"AwayDist".ljust(11)           +" oneHome"            +" allHome"             +"  oneAway"           +" allAWay"+"\n"
+				if self.decideMyLog("Events"): out+="EVENT# {}".format(nEvent).ljust(2)+"  Dev# HomeStat ".ljust(16)                         +"HomeTime".ljust(12)          +"AwayStat".ljust(12)         +"AwayTime".ljust(12)            +" oneHome"            +" allHome"             +"  oneAway"           +" allAWay"+"  Hometime"+"\n"
 				for nDev in evnt["IPdeviceMACnumber"]:
 					if evnt["IPdeviceMACnumber"][nDev] == "0": continue
 					if evnt["IPdeviceMACnumber"][nDev] ==  "": continue
-					evnt["iDeviceAwayDistance"][nDev]= "%5.3f"%self.metersAway[nDev]
-					evnt["iDeviceHomeDistance"][nDev]= "%5.3f"%self.metersHome[nDev]
 					if AwayStat[nDev] and evnt["currentStatusAway"][nDev] == "0" and (minAwayTime < 30 and False):  ### need to fix 
-						out+="          "+  "nDev{}".format(nDev)+" AwayStat[nDev]{}".format(AwayStat[nDev])+" evnt[currentStatusAway][nDev]" + "{}".format(evnt["currentStatusAway"][nDev])+" minAwayTime" + "{}".format(minAwayTime)+"\n"
+						if self.decideMyLog("Events"): out += "          "+  "nDev{}".format(nDev)+" AwayStat[nDev]{}".format(AwayStat[nDev])+" evnt[currentStatusAway][nDev]" + "{}".format(evnt["currentStatusAway"][nDev])+" minAwayTime" + "{}".format(minAwayTime)+"\n"
 						self.redoAWAY= 10  # increase frequency of up/down test to 1 per second for 10 seconds
 	#### away status
 					if evnt["currentStatusAway"][nDev] == "0":
-						if (AwayStat[nDev] and AwayDist[nDev]) :
-							if float(evnt["minimumTimeAway"]) >0.:
+						if AwayStat[nDev]:
+							if float(evnt["minimumTimeAway"]) > 0.:
 								evnt["currentStatusAway"][nDev]	= "startedTimer"
-								allAway = False  # added , was missing 
+								allAway = -1 
 							else:
 								evnt["currentStatusAway"][nDev]	= "AWAY"
-								oneAway = True
-								self.redoAWAY= 0
+								oneAway = 1
+								if allAway == 0: allAway = 1
+								self.redoAWAY = 0
 							evnt["secondsOfLastOFF"][nDev]= timeNowm2
 							evnt["timeOfLastOFF"][nDev]= timeNowHMS
 						else:
-							allAway = False
+							allAway = -1
+
 					elif evnt["currentStatusAway"][nDev] == "startedTimer":
-							if (AwayStat[nDev] and AwayDist[nDev]):
+							if AwayStat[nDev]:
 								if AwayTime[nDev] >= float(evnt["minimumTimeAway"]):
 									evnt["currentStatusAway"][nDev] = "AWAY"
+									if allAway == 0: allAway = 1
 								else:    
-									allAway = False
+									allAway = -1
 							else:    
 								evnt["currentStatusAway"][nDev] = "0"
-								allAway = False
+								allAway = -1
 					 
 					if evnt["currentStatusAway"][nDev] == "AWAY":
-						if (AwayStat[nDev] and AwayDist[nDev]):
-							oneAway = True
+						if AwayStat[nDev]:
+							oneAway = 1
 							if AwayTime[nDev] >= float(evnt["minimumTimeAway"]):
-								oneAwayTrigger =True
+								oneAwayTrigger = True
 							if minAwayTime >= float(evnt["minimumTimeAway"]):
-								allAwayTrigger =True
-					
+								allAwayTrigger = True
 						else:
-							allAway = False
+							allAway = -1
 							evnt["currentStatusAway"][nDev]	= "0"
 							evnt["secondsOfLastOFF"][nDev]= timeNowm2
 					if evnt["currentStatusAway"][nDev] == "AWAY":
 						evnt["nAway"] += 1
 
-
 	#### home status
 					if evnt["currentStatusHome"][nDev] == "0": # was not home
-						if (HomeStat[nDev] or HomeDist[nDev]):
+						if HomeStat[nDev]:
 							evnt["currentStatusHome"][nDev]	= "HOME"
 							evnt["secondsOfLastON"][nDev]= timeNowm2
 							evnt["timeOfLastON"][nDev]= timeNowHMS
-							oneHome = True
-							if minHomeTime >= float(evnt["minimumTimeHome"]):
-								oneHomeTrigger =True
-							if maxHomeTime >= float(evnt["minimumTimeHome"]):
-								allHomeTrigger =True
+							oneHome = 1
+							oneHomeTrigger = 1
+							allHomeTrigger = 1
+							if allHome == 0: allHome = 1
 						else:
-							allHome = False
+							allHome = -1
 					else:  # it is or was  home
-						if (HomeStat[nDev] or HomeDist[nDev]): # still home: restart timer
+						if HomeStat[nDev]: # still home: restart timer
 							evnt["timeOfLastON"][nDev]= timeNowHMS
 							evnt["secondsOfLastON"][nDev]= timeNowm2
 							evnt["currentStatusHome"][nDev]	= "HOME"
-							oneHome = True
-							# this is wrong:
-							#if minHomeTime >= float(evnt["minimumTimeHome"]):
-							#    oneHomeTrigger =True
-							#if maxHomeTime >= float(evnt["minimumTimeHome"]):
-							#    allHomeTrigger =True
+							if allHome == 0: allHome = 1
+							oneHome = 1
 						else:
 							evnt["currentStatusHome"][nDev]	= "0"
-							allHome = False
+							allHome = -1
 					if evnt["currentStatusHome"][nDev]	== "HOME":
 						evnt["nHome"] += 1
-					if self.decideMyLog("Events"): out+="EVENT# {}".format(nEvent).ljust(2)+"  {}".format(nDev).rjust(3)+"   " +"{}".format(HomeStat[nDev]).ljust(12)+ "{}".format(HomeTime[nDev]).ljust(12) + "{}".format(HomeDist[nDev]).ljust(12)+ "{}".format(AwayStat[nDev]).ljust(12)+ "{}".format(AwayTime[nDev]).ljust(12)+ "{}".format(AwayDist[nDev]).ljust(12) + "{}".format(oneHome).ljust(8)+ "{}".format(allHome).ljust(8)+ "{}".format(oneAway).ljust(8)+ "{}".format(allAway).ljust(8) +"\n"
+					#if self.decideMyLog("Events"): out+="EVENT# {}".format(nEvent).ljust(2)+"  {}".format(nDev).rjust(3)+"   " +"{}".format(HomeStat[nDev]).ljust(12)+ "{}".format(HomeTime[nDev]).ljust(12)+ "{}".format(AwayStat[nDev]).ljust(12)+ "{}".format(AwayTime[nDev]).ljust(12)+ "{}".format(oneHome).ljust(8)+ "{}".format(allHome).ljust(8)+ "{}".format(oneAway).ljust(8)+ "{}".format(allAway).ljust(8)+"{}".format(HomeTime[nDev]) +"\n"
 
-
-				if self.decideMyLog("Events"): out+="EVENT# {}".format(nEvent).ljust(2)+"  "+"oneHome:" + evnt["oneHome"]+"; allHome:" + evnt["allHome"]+"; oneAway:" + evnt["oneAway"]+"; allAway:" + evnt["allAway"] +"\n"
+				#if self.decideMyLog("Events"): out += "EVENT# {}".format(nEvent).ljust(2)+"  "+"oneHome:" + evnt["oneHome"]+"; allHome:" + evnt["allHome"]+"; oneAway:" + evnt["oneAway"]+"; allAway:" + evnt["allAway"]+" minHomeTime:{}, minimumTimeHome:{} \n".format(minHomeTime, evnt["minimumTimeHome"])
 				if time.time() - self.timeOfStart > 100:
-					if oneHome:
+					if oneHome > 0:
 						if evnt["oneHome"] != "1" :
+							evnt["oneHome"] = "1"
 							if oneHomeTrigger:
-								evnt["oneHome"] = "1"
-								self.updatePrefs = True
-								indigo.variable.updateValue("oneHome_"+nEvent, "1")
-								if self.checkTriggerInitialized:
-									try:indigo.variable.updateValue("FingEventDevChangedIndigoId","{}".format(self.allDeviceInfo[evnt["IPdeviceMACnumber"][oneHomeTrigger]]["deviceId"]))
-									except: pass
-									self.triggerEvent("EVENT_"+nEvent+"_oneHome")
+								if timeNowm2 - evnt["secsOfLastOneHomeTrigger"]  >= float(evnt["minimumTimeHome"]):
+									evnt["secsOfLastOneHomeTrigger"] = timeNowm2
+									self.updatePrefs = True
+									indigo.variable.updateValue("oneHome_"+nEvent, "1")
+									if self.checkTriggerInitialized:
+										try:indigo.variable.updateValue("FingEventDevChangedIndigoId","{}".format(self.allDeviceInfo[evnt["IPdeviceMACnumber"][oneHomeTrigger]]["deviceId"]))
+										except: pass
+										self.triggerEvent("EVENT_"+nEvent+"_oneHome")
 					else:
 						if evnt["oneHome"] != "0":
 							evnt["oneHome"] = "0"
 							indigo.variable.updateValue("oneHome_"+nEvent, "0")
 							self.updatePrefs = True
-					if allHome:
+					if allHome > 0:
 						if evnt["allHome"] != "1":
 							if allHomeTrigger:
 								evnt["allHome"] = "1"
-								self.updatePrefs = True
-								indigo.variable.updateValue("allHome_"+nEvent, "1")
-								if self.checkTriggerInitialized:
-									try: indigo.variable.updateValue("FingEventDevChangedIndigoId","{}".format(self.allDeviceInfo[evnt["IPdeviceMACnumber"][allHomeTrigger]]["deviceId"]))
-									except: pass
-									self.triggerEvent("EVENT_"+nEvent+"_allHome")
+								if timeNowm2 - evnt["secsOfLastAllHomeTrigger"]  >= float(evnt["minimumTimeHome"]):
+									evnt["secsOfLastAllHomeTrigger"] = timeNowm2
+									self.updatePrefs = True
+									indigo.variable.updateValue("allHome_"+nEvent, "1")
+									if self.checkTriggerInitialized:
+										try: indigo.variable.updateValue("FingEventDevChangedIndigoId","{}".format(self.allDeviceInfo[evnt["IPdeviceMACnumber"][allHomeTrigger]]["deviceId"]))
+										except: pass
+										self.triggerEvent("EVENT_"+nEvent+"_allHome")
 					else:
 						if evnt["allHome"] != "0":
 							evnt["allHome"] = "0"
@@ -4047,7 +2828,7 @@ class Plugin(indigo.PluginBase):
 
 
 
-					if allAway:
+					if allAway >0:
 						if evnt["allAway"] != "1":
 							if allAwayTrigger:
 								self.updatePrefs = True
@@ -4063,7 +2844,7 @@ class Plugin(indigo.PluginBase):
 							indigo.variable.updateValue("allAway_"+nEvent, "0")
 							self.updatePrefs = True
 
-					if oneAway:
+					if oneAway > 0:
 						if evnt["oneAway"] != "1":
 							if oneAwayTrigger:
 								self.updatePrefs = True
@@ -4086,8 +2867,8 @@ class Plugin(indigo.PluginBase):
 
 
 
+				if self.decideMyLog("Events"): self.indiLOG.log(10, out)
 				if self.decideMyLog("Events"): self.printEvents(printEvents=nEvent)
-	#		if self.decideMyLog("Events"): self.indiLOG.log(10, " leaving checkTriggers   ---->")
 
 			self.checkTriggerInitialized =True
 			
@@ -4153,83 +2934,24 @@ class Plugin(indigo.PluginBase):
 
 				try:  ## try to find this indigo mac number in  fingdata
 					xxx = self.fingMACNumbers.index(theMAC)
-				except:  ## this one is in indigo, but not in the fingdata file, set to exipred if not already done or ignore if better data from wifirouter
-					if self.routerType != "0" and theMAC in self.wifiMacList and self.routerErrorCount==0:
-						if devI["setWiFi"] != "Ethernet":
-							if theMAC in self.WiFiChanged:
-								if   devI[0] == "Yes":
-									if devI["status"] != "up":
-											devI["status"] = "up"
-											update = True
-								elif devI["status"] == "up":
-									devI["status"] = "down"
-									update = True
-								elif devI["status"] == "down":
-									devI["status"] =  "expired"
-									update = True
-				
-					else:
-							try:
-								if (time.time() - devI["lastFingUp"] >  2*devI["expirationTime"] ): 
-									if devI["status"] != "expired":
-										update = True
-										devI["status"] = "expired"
-								elif (time.time() - devI["lastFingUp"] >  devI["expirationTime"] ): 
-									if devI["status"] != "down":
-										update = True
-										devI["status"] = "down"
-							except:
-								pass
+				except:  
+					try:
+						if (time.time() - devI["lastFingUp"] >  2*devI["expirationTime"] ): 
+							if devI["status"] != "expired":
+								update = True
+								devI["status"] = "expired"
+						elif (time.time() - devI["lastFingUp"] >  devI["expirationTime"] ): 
+							if devI["status"] != "down":
+								update = True
+								devI["status"] = "down"
+					except:
+						pass
 					if update:
 						devI["timeOfLastChange"] = dateTimeNow
 						self.updateIndigoIpDeviceFromDeviceData(theMAC,["status", "timeOfLastChange"])
 						self.updateIndigoIpVariableFromDeviceData(theMAC)
-				if self.decideMyLog("WiFi"): self.indiLOG.log(10, " fing end..theMAC/wifi/status/: "+theMAC+" -"  + devI["status"] )
 				
 				
-			if self.routerType != "0":
-				for theMAC in self.wifiMacList:
-					if theMAC not in self.allDeviceInfo:
-						if not self.acceptNewDevices or theMAC in self.ignoredMAC: continue
-						self.allDeviceInfo[theMAC] = copy.deepcopy(emptyAllDeviceInfo)
-						devI= self.allDeviceInfo[theMAC]
-						devI["ipNumber"]			= "256.256.256.256"
-						devI["timeOfLastChange"]	= "{}".format(dateTimeNow)
-						devI["status"]				= "up"
-						devI["nickName"]			= "unidentifiedWiFiDevice"
-						devI["noOfChanges"]		= 1
-						devI["deviceInfo"]			= "unidentified"
-						if devI["setWiFi"] != "Ethernet":
-							devI["WiFi"]			= self.wifiMacList[theMAC][9]
-						devI["usePing"]			= "usePingUP"
-						devI["useWakeOnLanSecs "]	= 0
-						devI["suppressChangeMSG"]	= "show"
-						devI["hardwareVendor"]      = self.getVendortName(theMAC)
-
-						newIPDevNumber = "{}".format(self.indigoEmpty[0])
-						if self.decideMyLog("Logic"): self.indiLOG.log(10, "new device added ipDevice" +  newIPDevNumber)
-						
-						self.updateIndigoIpDeviceFromDeviceData(theMAC,["all"])
-						self.updateIndigoIpVariableFromDeviceData(theMAC)
-
-
-						## count down empty space
-						self.indigoIndexEmpty -= 1  # one less empty slot
-						if len(self.indigoEmpty) > 0: self.indigoEmpty.pop(0) ##  remove first empty from list
-
-						## start any triggers if setup
-						try:
-							indigo.variable.updateValue("ipDevsNewDeviceNo", "ipDevice{}".format(newIPDevNumber)+";"+devI["deviceName"])
-						except:
-							indigo.variable.create("ipDevsNewDeviceNo", "ipDevice{}".format(newIPDevNumber)+";"+devI["deviceName"],self.indigoVariablesFolderID)
-						self.triggerEvent("NewDeviceOnNetwork")
-
-						try:
-							if self.indigoStoredNoOfDevices != "{}".format(self.indigoNumberOfdevices):
-								indigo.variable.updateValue("ipDevsNoOfDevices", "{}".format(self.indigoNumberOfdevices))
-						except:
-							indigo.variable.create("ipDevsNoOfDevices", "{}".format(indigoNumberOfdevices))
-
 		except Exception:
 			self.logger.error("", exc_info=True)
 
@@ -4276,18 +2998,12 @@ class Plugin(indigo.PluginBase):
 
 				
 				if theAction == "exist" :
-					if "setWiFi" not in self.allDeviceInfo[theMAC]:
-						self.allDeviceInfo[theMAC]["setWiFi"] = copy.deepcopy(emptyAllDeviceInfo["setWiFi"])
 					devI= self.allDeviceInfo[theMAC]
 					
 					useFing = True
-					if self.allDeviceInfo[theMAC]["setWiFi"] == "Wifi":
-						useFing = False
-						theStatus = "down"
-					else:
-						theStatus = self.fingStatus[kk]
-						if self.inbetweenPingType!= "0" and theMAC in self.inbetweenPing:
-							if  self.inbetweenPing[theMAC] == "down": theStatus = "down"
+					theStatus = self.fingStatus[kk]
+					if self.inbetweenPingType!= "0" and theMAC in self.inbetweenPing:
+						if  self.inbetweenPing[theMAC] == "down": theStatus = "down"
 
 					#if theMAC =="1C:36:BB:97:C0:85": 
 					#    indigo.server.log("exists "+ theStatus+"  {}".format(devI["lastFingUp"]))
@@ -4302,37 +3018,6 @@ class Plugin(indigo.PluginBase):
 					else:
 						if devI["expirationTime"] != 0 and (time.time() - devI["lastFingUp"] < devI["expirationTime"]): 
 							theStatus = "up"
-
-					if self.routerType !="0" and self.routerErrorCount ==0:					# check wifi router info if available
-						if devI["setWiFi"] != "Ethernet":									# ignore if set to ethernet
-							if theMAC in self.wifiMacList:
-								associated =self.wifiMacList[theMAC][0]
-								if self.decideMyLog("WiFi"): self.indiLOG.log(10, "before theMAC:"+theMAC+" status:"+theStatus+" wifi:-" +associated +"- IPN:" +devI["ipNumber"]+" LastUpdateby:"+lastUpdateSource)
-								if associated == "Yes":
-									if theStatus != "up":
-										self.fingDate[kk] = "{}".format(dateTimeNow)
-										doIndigoUpdate = 9
-									if theStatus != "changed": theStatus = "up"
-								else:
-									if theStatus == "up" and lastUpdateSource == "WiFi":
-										self.fingDate[kk] = "{}".format(dateTimeNow)
-										theStatus = "down"
-										doIndigoUpdate = 9
-		#								if self.decideMyLog("WiFi"): self.indiLOG.log(10, "wifi theMAC:"+theMAC+" status:"+theStatus+" wifi:-" +associated +"- IPN:" +devI["ipNumber"]+" LastUpdateby:"+lastUpdateSource)
-	
-									#### important !!!!
-									#fix : add time component > 3 minutes	if theStatus == "up" and lastUpdateSource.find("fing") > -1:
-									#	devI["WiFi"]=""
-									#	doIndigoUpdate = 9
-									#	del self.wifiMacList[theMAC]
-								if theMAC in self.wifiMacList:
-									if devI["WiFi"] !=self.wifiMacList[theMAC][9]:
-										devI["WiFi"] =self.wifiMacList[theMAC][9]
-										doIndigoUpdate = 9
-								if doIndigoUpdate ==9:
-									updateStates.append("WiFi")
-								if self.decideMyLog("WiFi"): self.indiLOG.log(10, "after WiFiF checks theMAC:"+theMAC+" status:"+theStatus+" wifi:-" +associated +"- IPN:" +devI["ipNumber"]+" LastUpdateby:"+lastUpdateSource)
-
 
 					## found device, check if anything has changed: ip & status, if changed increment # of changes
 					if devI["status"] != theStatus:
@@ -4378,8 +3063,6 @@ class Plugin(indigo.PluginBase):
 						dd = self.fingDate[kk]
 						if len(dd) < 5 : dd = "{}".format(dateTimeNow)
 						devI["timeOfLastChange"]	= dd
-						self.updateDeviceWiFiSignal(theMAC)
-						#updateStates.append("deviceInfo")
 						if  self.decideMyLog("Logic"): self.indiLOG.log(10, "compareToIndigoDeviceData update  MAC#:{}, changes:{}".format(theMAC, updateStates) )
 						self.updateIndigoIpDeviceFromDeviceData(theMAC, updateStates)
 						self.updateIndigoIpVariableFromDeviceData(theMAC)
@@ -4416,15 +3099,14 @@ class Plugin(indigo.PluginBase):
 					devI["timeOfLastChange"]	= dd
 					devI["status"]				= "up"
 					devI["nickName"]			= "new-{}".format(sqNumber)+"-"+theMAC
-					devI["noOfChanges"]			=1
+					devI["noOfChanges"]			= 1
 					if len(self.fingVendor[kk]) < 4:
-						devI["hardwareVendor"]      = self.getVendortName(theMAC)
+						devI["hardwareVendor"]	= self.getVendortName(theMAC)
 					else:
-						devI["hardwareVendor"]		=self.fingVendor[kk]
+						devI["hardwareVendor"]	= self.fingVendor[kk]
 
 					devI["deviceInfo"]			= self.fingDeviceInfo[kk]
-					devI["WiFi"]				= ""
-					devI["usePing"]			= "usePingUP"
+					devI["usePing"]				= "usePingUP"
 					devI["useWakeOnLanSecs"]	= 0
 					devI["suppressChangeMSG"]	= "show"
 					#if theMAC =="1C:36:BB:97:C0:85": 
@@ -4444,44 +3126,6 @@ class Plugin(indigo.PluginBase):
 
 					anyUpdate +=1
 					## start any triggers if setup
-					try:
-						indigo.variable.updateValue("ipDevsNewDeviceNo", "ipDevice{}".format(newIPDevNumber)+";"+devI["deviceName"])
-					except:
-						indigo.variable.create("ipDevsNewDeviceNo", "ipDevice{}".format(newIPDevNumber)+";"+devI["deviceName"],self.indigoVariablesFolderID)
-					self.triggerEvent("NewDeviceOnNetwork")
-
-
-
-			if self.routerType != "0" and lastUpdateSource == "WiFi":
-				for theMAC in self.wifiMacList:
-					if theMAC in self.allDeviceInfo: continue
-					if not self.acceptNewDevices or theMAC in self.ignoredMAC: continue
-					self.allDeviceInfo[theMAC]= copy.deepcopy(emptyAllDeviceInfo)
-					devI= self.allDeviceInfo[theMAC]
-					devI["ipNumber"]			= "254.254.254.254"
-					devI["timeOfLastChange"]	= "{}".format(dateTimeNow)
-					devI["status"]				= "up"
-					devI["nickName"]			= "unidentified_WiFi_Device"
-					devI["noOfChanges"]		= 1
-					devI["hardwareVendor"]     = self.getVendortName(theMAC)
-					devI["deviceInfo"]			= "unidentified"
-					devI["WiFi"]				= self.wifiMacList[theMAC][9]
-					devI["usePing"]			= ""
-					devI["useWakeOnLanSecs "]	= 0
-					devI["suppressChangeMSG"]	= "show"
-					try:
-						newIPDevNumber = "{}".format(self.indigoEmpty[0])
-					except:
-						newIPDevNumber = "1"
-						self.indiLOG.log(20, "new device added indigoEmpty not initialized" +  "{}".format(self.indigoEmpty))
-					if self.decideMyLog("Logic"): self.indiLOG.log(10, "new device added ipDevice#" +  newIPDevNumber)
-					
-					self.updateIndigoIpDeviceFromDeviceData(theMAC,["all"])
-					self.updateIndigoIpVariableFromDeviceData(theMAC)
-					## count down empty space
-					self.indigoIndexEmpty -= 1  # one less empty slot
-					if len(self.indigoEmpty) > 0: self.indigoEmpty.pop(0) ##  remove first empty from list
-
 					try:
 						indigo.variable.updateValue("ipDevsNewDeviceNo", "ipDevice{}".format(newIPDevNumber)+";"+devI["deviceName"])
 					except:
@@ -4646,17 +3290,17 @@ class Plugin(indigo.PluginBase):
 					if False: # check if it was written
 						var = indigo.variables[v]
 						sp = var.sharedProps
-						self.indiLOG.log(20, "switching off SQL logging for variable :{}: sp:{}".format(var.name.encode("utf8"), sp) )
+						self.indiLOG.log(10, "switching off SQL logging for variable :{}: sp:{}".format(var.name.encode("utf8"), sp) )
 					
 
 			if len(outOffV) > 0: 
-				self.indiLOG.log(20, " \n")
-				self.indiLOG.log(20, "switching off SQL logging for variables\n :{}".format(outOffV.encode("utf8")) )
-				self.indiLOG.log(20, "switching off SQL logging for variables END\n")
+				self.indiLOG.log(10, " \n")
+				self.indiLOG.log(10, "switching off SQL logging for variables\n :{}".format(outOffV.encode("utf8")) )
+				self.indiLOG.log(10, "switching off SQL logging for variables END\n")
 			if len(outOffD) > 0: 
-				self.indiLOG.log(20, " \n")
-				self.indiLOG.log(20, "switching off SQL logging for devices/state[lastfingup]\n :{}".format(outOffD.encode("utf8")) )
-				self.indiLOG.log(20, "switching off SQL logging for devices END\n")
+				self.indiLOG.log(10, " \n")
+				self.indiLOG.log(10, "switching off SQL logging for devices/state[lastfingup]\n :{}".format(outOffD.encode("utf8")) )
+				self.indiLOG.log(10, "switching off SQL logging for devices END\n")
 		except Exception:
 			self.logger.error("", exc_info=True)
 
@@ -4737,11 +3381,6 @@ class Plugin(indigo.PluginBase):
 						if time.time()-tt > self.newSleepTime: break
 						self.sleep( xsleep )
 					self.newSleepTime = self.sleepTime
-				#self.indiLOG.log(10, "after sleeploop self.redoAWAY {}".format(self.redoAWAY) +"  nsleep{}".format(nsleep)+"  self.newSleepTime{}".format(self.newSleepTime))    
-				#self.printEvents(printEvents="2")              
-				if self.triggerFromPlugin:
-					self.pluginCalled()
-					self.checkTriggers()
 
 				if self.indigoCommand != "none" and self.indigoCommand != "":
 					if self.indigoCommand == "loadDevices": self.doLoadDevices()
@@ -4753,9 +3392,6 @@ class Plugin(indigo.PluginBase):
 						self.resetDevices()
 						break
 					if self.indigoCommand == "PrintEVENTS":   self.printEvents()
-					if self.indigoCommand == "PrintWiFi":     self.printWiFi()
-					if self.indigoCommand == "PrintpiBeacon": self.printpiBeaconDevs()
-					if self.indigoCommand == "PrintUnifi":    self.printUnifiDevs()
 				self.indigoCommand = "none"
 
 				checkTime=datetime.datetime.now().strftime("%H:%M:%S").split(":")
@@ -4765,7 +3401,6 @@ class Plugin(indigo.PluginBase):
 				if lastmin !=checkTime[1] and checkTime[2]>10 :
 					self.checkcProfile()
 					lastmin =checkTime[1]
-					self.updateDeviceWiFiSignal()
 					self.checkIfDevicesChanged() # check for changed device parameters once a minute .
 					self.checkDEVICES() # complete sync every minutes
 					self.setupEventVariables()
@@ -4773,28 +3408,12 @@ class Plugin(indigo.PluginBase):
 					lastmin5 =checkTime[1]
 					self.updateAllIndigoIpDeviceFromDeviceData(["deviceInfo"])
 					self.setupEventVariables()
-					self.getpiBeaconAvailable()
-					self.updatepiBeacons()
-					self.getUnifiAvailable()
-					self.updateUnifi()
 					
 				if lastmin29 !=checkTime[1] and checkTime[1]%29 ==0 and checkTime[1] >0 and checkTime[2]>25 :
 					lastmin29 =checkTime[1]
 					self.updateAllIndigoIpVariableFromDeviceData() # copy any new / changed devices to variables
 					self.cleanUpEvents()
 					self.IDretList=[]
-					self.iDevicesEnabled =False
-					if  indigo.server.getPlugin(self.iFindStuffPlugin).isEnabled():
-						for dev in indigo.devices.iter(self.iFindStuffPlugin):
-							if dev.deviceTypeId != "iAppleDeviceAuto": continue
-							self.IDretList.append((dev.id,dev.name))
-							self.iDevicesEnabled = True
-					if self.iDevicesEnabled:
-						self.pluginPrefs["iDevicesEnabled"] = True
-					else:
-						self.pluginPrefs["iDevicesEnabled"] = False
-
-
 
 			
 				if lastmin53 !=checkTime[1] and checkTime[1]%53 ==0 and checkTime[1] >0 and checkTime[2]>35 :
@@ -4849,44 +3468,6 @@ class Plugin(indigo.PluginBase):
 								devI["useWakeOnLanLast"] = time.time()
 								self.sendWakewOnLanAndPing(theMAC, nBC= 1, waitForPing=10, countPings=1, waitBeforePing = 0.01, waitAfterPing = 0.0, calledFrom="loop")
 
-
-				if self.routerType != "0":
-					self.WiFiChanged = {}
-					errorMsg = self.getWifiDevices(self.routerUID, self.routerPWD, self.routerIPn, rType=self.routerType)
-					if errorMsg != "ok":
-						self.routerErrorCount+=1
-						if self.routerErrorCount%100 < 3 and self.badWiFiTrigger["trigger"]<1:
-							if self.decideMyLog("Ping"): self.indiLOG.log(10, "WiFi Router does not return valid MAC numbers: "+errorMsg[:200])
-							if self.routerErrorCount > 3600:  # about 1 hour
-								self.indiLOG.log(30, "WiFi Router: turning off WiFi Router query, you need to re-enable in configuration after router is back online")
-								self.routerType = "0"
-
-					else:
-						if self.routerErrorCount >0:
-							if self.decideMyLog("WiFi"): self.indiLOG.log(10, "WiFi Router back up again")
-						self.routerErrorCount = 0
-						if 	self.checkIfBadWiFi():
-							self.badWiFiTrigger["trigger"]=10
-							if self.decideMyLog("WiFi"): self.indiLOG.log(10, "WiFi signal is weak ")#, triggering external python command "+self.indigoPreferencesPluginDir+"pings/doThisWhenWiFiIsBad.py")
-							self.printWiFi()
-							self.triggerEvent("badWiFi")
-							self.resetbadWifiTrigger()
-							
-						if len(self.WiFiChanged)>0 or self.redoAWAY >0:
-							if self.indigoNeedsUpdate:
-								self.getIndigoIpDevicesIntoData()
-								self.indigoNeedsUpdate=False
-							self.compareToIndigoDeviceData(lastUpdateSource= "WiFi")
-							self.compareToFingIfExpired(1)
-							self.checkTriggers()
-						self.oldwifiMacList = copy.deepcopy(self.wifiMacList)
-					self.WiFiChanged = {}
-				if self.piBeaconUpDateNeeded:
-					self.checkTriggers()
-					self.piBeaconUpDateNeeded=False
-				if self.unifiUpDateNeeded:
-					self.checkTriggers()
-					self.unifiUpDateNeeded=False
 				
 				retCode = self.getfingLog() ## test log file if new data
 				if retCode == 1:
@@ -4974,8 +3555,6 @@ class Plugin(indigo.PluginBase):
 			# do any cleanup here
 			self.killPing("all")
 			self.pluginPrefs["EVENTS"]	    =	json.dumps(self.EVENTS)
-			self.pluginPrefs["piBeacon"]	=	json.dumps(self.piBeaconDevices)
-			self.pluginPrefs["UNIFI"]	    =	json.dumps(self.unifiDevices)
 			indigo.server.savePluginPrefs() 
 			try:
 				quitNowX = self.quitNOW
@@ -4986,499 +3565,9 @@ class Plugin(indigo.PluginBase):
 			############ if there are PING jobs left  kill them
 		return
 
-
-
-
-
-
-
-
-	############# main program  -- end ###########
-	def	updateDeviceWiFiSignal(self,theMACin= "all"):
-		try:
-			if theMACin == "all":
-				for theMAC in self.wifiMacList:
-					if theMAC in self.ignoredMAC: continue
-					if theMAC in self.allDeviceInfo:
-						self.allDeviceInfo[theMAC]["WiFi"] =  self.wifiMacList[theMAC][9]
-						if self.wifiMacList[theMAC][0] == "Yes" and self.wifiMacList[theMAC][1] == "Yes" :
-							self.allDeviceInfo[theMAC]["WiFiSignal"] =  ("Sig[dBm]:"+("%4.0f"%self.wifiMacList[theMAC][2]  ).strip()
-														+",ave:"+("%4.0f"%(self.wifiMacList[theMAC][10]/max(self.wifiMacList[theMAC][11],1))).strip()
-														#+",cnt:"+("%8.0f"%self.wifiMacList[theMAC][11]).strip()
-														)
-					if self.wifiMacList[theMAC][11] > 9999999: self.resetbadWifiTrigger() # reset counter if tooo big
-			else:
-				theMAC=theMACin
-				if theMAC not in self.ignoredMAC:
-					if theMAC in self.wifiMacList:
-						if theMAC in self.allDeviceInfo:
-							self.allDeviceInfo[theMAC]["WiFi"] =  self.wifiMacList[theMAC][9]
-							if self.wifiMacList[theMAC][0] == "Yes" and self.wifiMacList[theMAC][1] == "Yes" :
-								self.allDeviceInfo[theMAC]["WiFiSignal"] =  (("Sig[dBm]:%4.0f"%self.wifiMacList[theMAC][2]  ).strip()
-															+ ","+("ave:%4.0f"%(self.wifiMacList[theMAC][10]/max(self.wifiMacList[theMAC][11],1))).strip()
-															#+","+("cnt:%8.0f"%self.wifiMacList[theMAC][11]).strip()
-															)
-						if self.wifiMacList[theMAC][11] > 9999999: self.resetbadWifiTrigger() # reset counter if tooo big
-		except Exception:
-			self.logger.error("", exc_info=True)
-
-		return
-
-
-	
-##############################################
-	def getWifiDevices(self, uid, pwd, ipN, rType="ASUS" ):
-		resp =""
-		try:
-			if uid =="": return "error no userid given"
-			if pwd =="": return "error no password given"
-			if ipN =="": return "error no ipNumber given"
-			for theMAC in self.wifiMacList:
-				self.wifiMacList[theMAC][0]=""
-				self.wifiMacList[theMAC][1]=""
-				self.wifiMacList[theMAC][2]=""
-				self.wifiMacList[theMAC][3]=""
-				self.wifiMacList[theMAC][4]=""
-				self.wifiMacList[theMAC][5]=""
-				self.wifiMacList[theMAC][6]=""
-
-
-			#                         full path to curl  timout=3secs   userid  passw           ipnumber  page  changed to 3 secs for mini 
-			#ticks= time.time()
-			response, err = self.readPopen("/usr/bin/curl  --max-time 3 -u "+uid+":"+pwd+" 'http://"+ipN+"/Main_WStatus_Content.asp'")
-			if len(response) < 2 :
-				self.wifiErrCounter+=1
-				if self.wifiErrCounter > 2:
-					self.indiLOG.log(20, " wifi data received not complete(len=0): {}".format(response))
-				return "error bad return from  curl {}".format(response)
-			self.wifiErrCounter =0
-			if rType== "MERLIN378_54":
-				response2 = response.split("wificlients") # this where the information starts:
-				if len(response2) <2:
-						self.indiLOG.log(20, " wifi data received not complete(wificlients): {}".format(response2))
-						return "error bad return from  curl {}".format(response2)
-				noiseSplit =response.upper().split("\nDATAARRAY")
-				if len(noiseSplit) <2:
-						self.indiLOG.log(20, " wifi data received not complete(no nDATAARRAY) {}".format(response2))
-						return "error bad return from  curl {}".format(response2)
-					
-			else:
-				response2 = response.split("\n----------------------------------------\n") # this where the information starts:
-				if len(response2) < 3: 				return "error bad return from  curl {}".format(response2) # no valid data return, or bad password...
-				noiseSplit =response.upper().split("NOISE:")
-				if len(noiseSplit) < 2: 			return "error bad return from  curl {}".format(response2) # no valid data return, or bad password...
-
-			fo2 =["", "2GHz", "5GHz"]
-			for i in range(1,3):
-				fiveORtwo =fo2[i]
-				if rType== "MERLIN378_54":
-					nsplit=  noiseSplit[i].split(";")[0].split("= ")
-					if len(nsplit) < 2:
-						if self.decideMyLog("WiFi"): self.indiLOG.log(10, " wifi data received not complete (nsplit <2): {}".format(noiseSplit))
-						continue
-					self.wifiMacAv["noiseLevel"][fiveORtwo] = json.loads(nsplit[1])[3]
-	#				if self.decideMyLog("WiFi"): self.indiLOG.log(10, " wifi noiseLevel {}".format(fiveORtwo)+" {}".format(noiseSplit[i]))
-				else:
-					if len(noiseSplit) > 2:
-						self.wifiMacAv["noiseLevel"][fiveORtwo] = noiseSplit[i].strip(" ").split(" ")[0]
-				errorMSG= " "
-				if rType== "ASUS":			errorMSG =self.parseWIFILogA(response2[i].split("\n\n")[0].split("\n"),fiveORtwo)
-				elif rType== "MERLIN":		errorMSG =self.parseWIFILogM(response2[i].split("\n\n")[0].split("\n"),fiveORtwo)
-				elif rType== "MERLIN378_54":	errorMSG =self.parseWIFILogM378(response2[i],fiveORtwo)
-				else: return "bad wifi defnition"
-				if errorMSG != "ok": 			return errorMSG
-				if self.wifiMacAv["numberOfCycles"][fiveORtwo] >3 and self.wifiMacAv["curDev"][fiveORtwo]>0. :
-					if    abs(self.wifiMacAv["curAvSignal"][fiveORtwo] - self.wifiMacAv["sumSignal"][fiveORtwo]/self.wifiMacAv["numberOfDevices"][fiveORtwo]) > 5.:
-						self.signalDelta["5"][fiveORtwo] +=1
-					elif  abs(self.wifiMacAv["curAvSignal"][fiveORtwo] - self.wifiMacAv["sumSignal"][fiveORtwo]/self.wifiMacAv["numberOfDevices"][fiveORtwo]) > 2.:
-						self.signalDelta["2"][fiveORtwo] +=1
-					elif  abs(self.wifiMacAv["curAvSignal"][fiveORtwo] - self.wifiMacAv["sumSignal"][fiveORtwo]/self.wifiMacAv["numberOfDevices"][fiveORtwo]) > 1:
-						self.signalDelta["1"][fiveORtwo] +=1
-					if    self.totalLoopCounter >99999:
-						if self.decideMyLog("WiFi"): self.indiLOG.log(10, " wifi signals "+fiveORtwo+": sumSig:%8.0f sumNdev:%8.0f sumNMeas:%8.0f longAv%6.2f longnDevAv%6.2f thisAV:%6.2f thisnMeas:%3.1f del5:%5.0f del2:%5.0f del1:%5.0f"%
-							(self.wifiMacAv["sumSignal"][fiveORtwo]
-							,self.wifiMacAv["numberOfDevices"][fiveORtwo]
-							,self.wifiMacAv["numberOfCycles"][fiveORtwo]
-							,self.wifiMacAv["sumSignal"][fiveORtwo]/self.wifiMacAv["numberOfDevices"][fiveORtwo]
-							,self.wifiMacAv["numberOfDevices"][fiveORtwo]/self.wifiMacAv["numberOfCycles"][fiveORtwo]
-							,self.wifiMacAv["curAvSignal"][fiveORtwo]
-							,self.wifiMacAv["curDev"][fiveORtwo]
-							,self.signalDelta["5"][fiveORtwo]
-							,self.signalDelta["2"][fiveORtwo]
-							,self.signalDelta["1"][fiveORtwo]))
-			delMACs=[]
-			for theMAC in self.oldwifiMacList:
-				if theMAC not in self.wifiMacList:
-					self.WiFiChanged[theMAC]=self.oldwifiMacList[theMAC][0]
-					delMACs.append(theMAC)
-					continue
-			for theMAC in delMACs:
-				del self.oldwifiMacList[theMAC]
-			for theMAC in self.wifiMacList:
-				if theMAC not in self.oldwifiMacList:
-					self.WiFiChanged[theMAC]=self.wifiMacList[theMAC][0]
-					self.oldwifiMacList[theMAC] = copy.deepcopy(emptyWiFiMacList)
-		
-				if self.wifiMacList[theMAC][0] != self.oldwifiMacList[theMAC][0]: self.WiFiChanged[theMAC]=self.wifiMacList[theMAC][0]
-
-				#if self.wifiMacList[theMAC][1] != self.oldwifiMacList[theMAC][1]: self.WiFiChanged[theMAC]=[0]
-				#if self.wifiMacList[theMAC][3] != self.oldwifiMacList[theMAC][3]: self.WiFiChanged[theMAC]=[0]
-				#if self.wifiMacList[theMAC][4] != self.oldwifiMacList[theMAC][4]: self.WiFiChanged[theMAC]=[0]
-				#if self.wifiMacList[theMAC][5] != self.oldwifiMacList[theMAC][5]: self.WiFiChanged[theMAC]=[0]
-	
-				
-					
-			#if self.decideMyLog("WiFi"): self.indiLOG.log(10, " wifi curl time elapsed: %9.3f " %(time.time()-ticks))
-		except Exception as e:
-			self.indiLOG.log(40, "error in  Line '%s' ;  error='%s'" % (sys.exc_info()[2].tb_lineno, e)+" wifi router reponse:{}".format(resp))
-			return "error {}".format(resp)
-
-		return "ok"  # [MACno][MACno,Associated,Authorized,RSSI,PSM,SGI,STBC,Tx rate,Rx rate,Connect Time]], "ok"
-
-
-##############################################
-	def resetbadWifiTrigger(self):
-		try:
-			for theMAC in self.wifiMacList:
-				self.wifiMacList[theMAC][10] =0
-				self.wifiMacList[theMAC][11] =0
-			self.badWiFiTrigger["numberOfSecondsBad"] =0
-			self.wifiMacAv=copy.deepcopy(emptyWifiMacAv)
-		except Exception:
-			self.logger.error("", exc_info=True)
-		return
-
-##############################################
-	def checkIfBadWiFi(self):
-		try:
-			if self.badWiFiTrigger["minNumberOfSecondsBad"] >998: return False
-	#		if self.badWiFiTrigger["minNumberOfDevicesBad"] >998: return False
-	#		if self.badWiFiTrigger["minSignalDrop"] >998: return False
-			candidates =0
-			for theMAC in self.wifiMacList:
-				if self.wifiMacList[theMAC][0]!= "Yes": continue
-				if self.wifiMacList[theMAC][1]!= "Yes": continue
-				if self.wifiMacList[theMAC][9]!= "2GHz": continue
-				if self.wifiMacList[theMAC][11] < 15: continue
-				if (
-					(	(self.wifiMacList[theMAC][10]/max(self.wifiMacList[theMAC][11],1.)-self.wifiMacList[theMAC][2])  >   self.badWiFiTrigger["minSignalDrop"]	) 	or
-					(	self.wifiMacList[theMAC][2] <  self.badWiFiTrigger["minWiFiSignal"]		)
-				   ): candidates +=1
-
-			if candidates < self.badWiFiTrigger["minNumberOfDevicesBad"]:
-				self.badWiFiTrigger["numberOfSecondsBad"] =0
-				self.badWiFiTrigger["trigger"] -=1
-				return False
-
-			if self.badWiFiTrigger["numberOfSecondsBad"] >0 : # trigger started?
-				nSecBad = time.time() -self.badWiFiTrigger["numberOfSecondsBad"]
-				if nSecBad%10 == 5:
-					if self.decideMyLog("WiFi"): self.indiLOG.log(10, " bad wifi signal for %3.0f seconds"%(nSecBad) )
-				if (nSecBad) > self.badWiFiTrigger["minNumberOfSecondsBad"]:
-					# this is the trigger
-					self.badWiFiTrigger["trigger"] =10
-					return True
-				else:  # not yet, still waiting
-					self.badWiFiTrigger["trigger"] -=1
-					return False
-
-			# start trigger timer
-			self.badWiFiTrigger["numberOfSecondsBad"] = time.time()
-			self.badWiFiTrigger["trigger"] -=1
-		except Exception:
-			self.logger.error("", exc_info=True)
-		return False
-
-
-##############################################
-	def parseWIFILogM378(self,wifiLog,fiveORtwo):
-	# wdataarray24 = ["2","0","0","-92","8","D8:50:E6:CF:B4:E0","AP"];
-	#wificlients24 = [["54:9F:13:3F:95:25", "192.168.1.192","iPhone-20","-62", "13", "72","  0:24:56"," S AU"],["FC:E9:98:49:BB:B9", "192.168.1.155", "Kristins-iPhone","-65", "24", "72","  0:37:11","PS AU"],["6C:AD:F8:26:69:9E", "192.168.1.242","Chromecast","-50","72", "72","  0:38:00"," STAU"],["F0:7D:68:08:5F:D0", "192.168.1.74","<not found>","-68","52", "58","  0:38:02"," STAU"],["28:10:7B:0C:CB:4B", "192.168.1.77","<not found>","-72","52", "72","  0:38:03"," STAU"],["F0:7D:68:06:F6:87", "192.168.1.71","<not found>","-51","72", "72","  0:38:03"," STAU"],"-1"];
-	#dataarray5 = ["5","0","0","-92", "149/80","D8:50:E6:CF:B4:E4","AP"];
-	#wificlients5 = [["F0:F6:1C:D5:51:16", "192.168.1.215","<not found>","-69", "24", "243","  0:36:53","PSTAU"],"-1"];
-
-		try:
-			if self.decideMyLog("WiFi"): self.indiLOG.log(10, "wifiLog:{}".format(wifiLog))
-			wl= wifiLog.split(";")[0].split("= ")
-			if len(wl) < 2:
-				self.indiLOG.log(20, "parseWIFILogM378 wifilog data not complete (wl=0): {}".format(wifiLog))
-				return "error"
-			try:
-				wlist= json.loads(wl[1])
-			except:
-				self.indiLOG.log(20, "parseWIFILogM378: wifilog data not complete( Wl json): {}".format(wifiLog))
-				return "error"
-
-
-			# now parse
-			nDevices = len(wlist)-1
-			if nDevices <1: return "ok"
-			sumSignal =0.
-			nDevConnected=0
-			for thisDevice1 in wlist:
-				if self.decideMyLog("WiFi"): self.indiLOG.log(10, "thisDevice1:{}".format(thisDevice1))
-				thisDevice=[]
-
-				if thisDevice1 =="-1": continue
-				
-				theMAC =thisDevice1[0]
-
-				if self.decideMyLog("WiFi"): self.indiLOG.log(10, "thisDevice1>>"+ theMAC+"<<  {}".format(thisDevice1))
-				thisDevice=[]
-				if thisDevice1[7].find("A")>-1:			thisDevice.append("Yes")	# associated
-				else:									thisDevice.append(" ")
-				
-				if thisDevice1[7].find("U")>-1:			thisDevice.append("Yes")	# authorized
-				else:									thisDevice.append(" ")
-
-				thisDevice.append(thisDevice1[3])									# rssi
-
-				if thisDevice1[7].find("P")>-1:			thisDevice.append("Yes")	# psm
-				else:									thisDevice.append("No")
-
-				if thisDevice1[7].find("S")>-1:			thisDevice.append("Yes")	# sgi
-				else:									thisDevice.append("No")
-
-				if thisDevice1[7].find("T")>-1:			thisDevice.append("Yes")	# STBC
-				else:									thisDevice.append("No")
-
-				thisDevice.append(thisDevice1[4])									# tx rate
-				thisDevice.append(thisDevice1[5])									# rx rate
-				thisDevice.append(thisDevice1[6])									# connect time
-				
-				
-				try:
-					thisDevice[2] = float(thisDevice[2])
-				except:
-					continue
-				thisDevice.append(fiveORtwo)
-				if theMAC in self.wifiMacList:
-					if self.wifiMacList[theMAC][10] !="":
-						thisDevice.append(float(self.wifiMacList[theMAC][10]))
-						thisDevice.append(float(self.wifiMacList[theMAC][11]))
-					else:
-						thisDevice.append(0.)
-						thisDevice.append(0.)
-				else:
-					thisDevice.append(0.)
-					thisDevice.append(0.)
-				self.wifiMacList[theMAC]= copy.deepcopy(thisDevice)
-				self.wifiMacList[theMAC][10]+= self.wifiMacList[theMAC][2]
-				self.wifiMacList[theMAC][11]+= 1
-
-
-
-				
-				
-				if self.wifiMacList[theMAC][0]=="Yes" and self.wifiMacList[theMAC][1]=="Yes" :
-					sumSignal+= self.wifiMacList[theMAC][2]
-					nDevConnected +=1
-
-
-			if nDevConnected > 0:
-				self.wifiMacAv["sumSignal"][fiveORtwo]+= sumSignal
-				self.wifiMacAv["numberOfDevices"][fiveORtwo] += nDevConnected
-				self.wifiMacAv["curAvSignal"][fiveORtwo]= sumSignal/nDevConnected
-				self.wifiMacAv["curDev"][fiveORtwo]= nDevConnected
-				self.wifiMacAv["numberOfCycles"][fiveORtwo] +=1
-
-		except Exception:
-			self.logger.error("", exc_info=True)
-		return  "ok"
-
-##############################################
-	def parseWIFILogM(self,wifiLog,fiveORtwo):
-		# wifiN =:
-		#	tations  (flags: P=Powersave Mode, S=Short GI, T=STBC, A=Associated, U=Authenticated)
-		#MAC               IP Address      Name              RSSI    Rx/Tx Rate   Connected Flags
-		#FC:E9:98:49:BB:B9 192.168.1.155   Kristins-iPhone  -57dBm   72/72 Mbps   05:43:06  PS AU
-					   #FC:E9:98:49:BB:B9 xxx192.168.1.155   xxxKristins-iPhone xxx -57dBmxxx   72xxx/xxx72 xxxMbps   xxx05:43:06  PS AU
-					   #MAC               xxxIP Address      xxxName            xxx  RSSI xxx   Rxxxx/xxxTx xxxRate   xxxConnected xxxFlags
-
-		try:
-			pointerText = ["MAC   ", "IP Address   ", "Name   ", "  RSSI", "   Rx", "/", "Tx Rate   ", "Connected ", "Flags"]
-			thepointers=[]
-	#		if self.decideMyLog("WiFi"): self.indiLOG.log(10, "line:"+ wifiLog[0])
-			for pT in range(len(pointerText)):
-				p= wifiLog[0].find(pointerText[pT])
-				if p ==-1: return "error parsing return string "+pointerText[pT]
-				thepointers.append(p)
-			thepointers.append(len(wifiLog[0]))
-	#		if self.decideMyLog("WiFi"): self.indiLOG.log(10, "line:{}".format(thepointers))
-
-			# records should be ok..
-			
-			
-			# now parse
-			nDevices = len(wifiLog)
-			if nDevices <1: return "ok"
-			sumSignal =0.
-			nDevConnected=0
-			for line in range(1,nDevices):
-	#			if self.decideMyLog("WiFi"): self.indiLOG.log(10, "line:"+ wifiLog[line])
-				if len(wifiLog[line])< 20: continue
-
-				thisDevice1=[]
-				for p in range(1,len(pointerText)):
-					thisDevice1.append( wifiLog[line][thepointers[p]: min(thepointers[p+1],len(wifiLog[line]))].strip() )
-				
-				theMAC = wifiLog[line][:17].strip(" ")
-
-				if self.decideMyLog("WiFi"): self.indiLOG.log(10, "thisDevice1>>"+ theMAC+"<<  {}".format(thisDevice1))
-				thisDevice1[7]+="      "
-				thisDevice=[]
-				if thisDevice1[7].find("A")>-1:			thisDevice.append("Yes")	# associated
-				else:									thisDevice.append(" ")
-				if thisDevice1[7].find("U")>-1:			thisDevice.append("Yes")	# authorized
-				else:									thisDevice.append(" ")
-				thisDevice.append(thisDevice1[2])									# rssi
-				if thisDevice1[7].find("P")>-1:			thisDevice.append("Yes")	# psm
-				else:									thisDevice.append("No")
-				if thisDevice1[7].find("S")>-1:			thisDevice.append("Yes")	# sgi
-				else:									thisDevice.append("No")
-				if thisDevice1[7].find("T")>-1:			thisDevice.append("Yes")	# STBC
-				else:									thisDevice.append("No")
-				thisDevice.append(thisDevice1[3])									# tx rate
-				thisDevice.append(thisDevice1[5].strip(" ").split(" ")[0])			# rx rate  strip the MBps
-				thisDevice.append(thisDevice1[6])									# connect time
-				
-				
-				try:
-					thisDevice[2] = float(thisDevice[2][:-3])
-				except:
-					continue
-				thisDevice.append(fiveORtwo)
-				if theMAC in self.wifiMacList:
-					if self.wifiMacList[theMAC][10] !="":
-						thisDevice.append(float(self.wifiMacList[theMAC][10]))
-						thisDevice.append(float(self.wifiMacList[theMAC][11]))
-					else:
-						thisDevice.append(0.)
-						thisDevice.append(0.)
-				else:
-					thisDevice.append(0.)
-					thisDevice.append(0.)
-				self.wifiMacList[theMAC]= copy.deepcopy(thisDevice)
-				self.wifiMacList[theMAC][10]+= self.wifiMacList[theMAC][2]
-				self.wifiMacList[theMAC][11]+= 1
-
-
-
-				if self.wifiMacList[theMAC][0]=="Yes" and self.wifiMacList[theMAC][1]=="Yes" :
-					sumSignal+= self.wifiMacList[theMAC][2]
-					nDevConnected +=1
-
-
-			if nDevConnected > 0:
-				self.wifiMacAv["sumSignal"][fiveORtwo]+= sumSignal
-				self.wifiMacAv["numberOfDevices"][fiveORtwo] += nDevConnected
-				self.wifiMacAv["curAvSignal"][fiveORtwo]= sumSignal/nDevConnected
-				self.wifiMacAv["curDev"][fiveORtwo]= nDevConnected
-				self.wifiMacAv["numberOfCycles"][fiveORtwo] +=1
-
-		except Exception:
-			self.logger.error("", exc_info=True)
-		return  "ok"
-##############################################
-	def parseWIFILogA(self,wifiLog,fiveORtwo):
-		
-		# wifiN =:
-		#						STBC= space Time broad casts
-		#						SGI= short guard inetrval:  space between symbols
-		#						PSM= Power Save Mode
-		#MAC               Associated Authorized    RSSI PSM SGI STBC Tx rate Rx rate Connect Time
-		#F8:27:93:59:9D:B2 Yes        Yes         -71dBm Yes Yes No       65M     24M 00:00:02
-		#28:10:7B:0C:CB:52 Yes        Yes         -78dBm No  Yes Yes    72.2M   43.3M 06:43:40
-		#28:10:7B:0C:CB:4B Yes        Yes         -73dBm No  Yes Yes    72.2M   72.2M 06:43:47
-		#B8:E8:56:42:69:FE                        -70dBm No  Yes Yes     585M    234M 00:00:00'
-		try:
-			pointerText = ["MAC", "Associated", "Authorized", "   RSSI", "PSM", "SGI", "STBC", "Tx rate", "Rx rate", "Connect Time"]
-			thepointers=[]
-			for pT in range(len(pointerText)):
-				p= wifiLog[0].find(pointerText[pT])
-				if p ==-1: return "error parsing return string "+pointerText[pT]
-				thepointers.append(p)
-			thepointers.append(len(wifiLog[0]))
-
-			# records should be ok..
-			
-			# now parse
-			nDevices = len(wifiLog)
-			if nDevices <1: return "ok"
-			sumSignal =0.
-			nDevConnected=0
-			for line in range(1,nDevices):
-				if len(wifiLog[line])< 5: continue
-				thisDevice=[]
-				for p in range(1,len(pointerText)):
-					thisDevice.append( wifiLog[line][thepointers[p]: min(thepointers[p+1],len(wifiLog[line]))].strip() )
-				theMAC = (wifiLog[line][thepointers[0]: min(thepointers[1],len(wifiLog[line])) ]).strip()
-				
-				try:
-					thisDevice[2] = float(thisDevice[2][:-3])
-				except:
-					continue
-				thisDevice.append(fiveORtwo)
-				if theMAC in self.wifiMacList:
-					if self.wifiMacList[theMAC][10] !="":
-						thisDevice.append(float(self.wifiMacList[theMAC][10]))
-						thisDevice.append(float(self.wifiMacList[theMAC][11]))
-					else:
-						thisDevice.append(0.)
-						thisDevice.append(0.)
-				else:
-					thisDevice.append(0.)
-					thisDevice.append(0.)
-				self.wifiMacList[theMAC]= copy.deepcopy(thisDevice)
-				self.wifiMacList[theMAC][10]+= self.wifiMacList[theMAC][2]
-				self.wifiMacList[theMAC][11]+= 1
-
-				if self.wifiMacList[theMAC][0]=="Yes" and self.wifiMacList[theMAC][1]=="Yes" :
-					sumSignal+= self.wifiMacList[theMAC][2]
-					nDevConnected +=1
-
-
-			if nDevConnected > 0:
-				self.wifiMacAv["sumSignal"][fiveORtwo]+= sumSignal
-				self.wifiMacAv["numberOfDevices"][fiveORtwo] += nDevConnected
-				self.wifiMacAv["curAvSignal"][fiveORtwo]= sumSignal/nDevConnected
-				self.wifiMacAv["curDev"][fiveORtwo]= nDevConnected
-				self.wifiMacAv["numberOfCycles"][fiveORtwo] +=1
-				
-		except Exception:
-			self.logger.error("", exc_info=True)
-
-		return  "ok"
-
-
-##############################################
-	def checkWIFIinfo(self):
-		try:
-			for mac in self.wifiMacList:
-				self.wifiMacList[mac]=copy.deepcopy(emptyWiFiMacList)
-			if self.routerType !="0":
-				errorMSG = self.getWifiDevices(self.routerUID, self.routerPWD, self.routerIPn, rType=self.routerType)
-				if errorMSG !="ok":
-					if self.decideMyLog("WiFi"): self.indiLOG.log(10, "Router wifi not reachable, userid password or ipnumber wrong?\n{}".format(errorMSG))
-					return
-				else:
-					if self.decideMyLog("WiFi"): self.indiLOG.log(10, "Router wifi data ok")
-			else:
-				self.routerUID	= ""
-				self.routerPWD	= ""
-				self.routerIPn	= ""
-
-
-		except Exception:
-			self.logger.error("", exc_info=True)
-		return
-
-
-
 ##############################################
 	def checkDEVICES(self):
 	#		if self.decideMyLog("Logic"): self.indiLOG.log(10, "checking devices")
-	#					emptyAllDeviceInfo={"00:00:00:00:00:00":{"ipNumber":"0.0.0.0","timeOfLastChange":"timeOfLastChange","status":"down","nickName":"iphonexyz":"noOfChanges":"0", "hardwareVendor":"", "deviceInfo":"","WiFi":"","deviceId":0,"deviceName":"","devExists":0}}
 		try:
 			for theMAC in self.allDeviceInfo:
 				self.allDeviceInfo[theMAC]["devExists"]=0
@@ -5501,18 +3590,6 @@ class Plugin(indigo.PluginBase):
 						devI["nickName"] = dev.name
 						devI["deviceName"]	=dev.name
 						
-					if theMAC in self.wifiMacList:
-						self.updateDeviceWiFiSignal(theMAC)
-						dev.description = theMAC+"-"+devI["WiFi"]+"-"+devI["WiFiSignal"]
-						dev.replaceOnServer()
-						self.addToStatesUpdateList("{}".format(dev.id),"WiFi",				devI["WiFi"])
-						try:
-							string ="%5.1f"%self.wifiMacList[theMAC][2]
-						except:
-							string ="{}".format(self.wifiMacList[theMAC][2])
-						
-						self.addToStatesUpdateList("{}".format(dev.id),"WiFiSignal",string)
-					
 					if dev.states["ipNumber"] != devI["ipNumber"]:
 						self.addToStatesUpdateList("{}".format(dev.id),"ipNumber",			devI["ipNumber"])
 						anyUpdate=True
@@ -5531,9 +3608,6 @@ class Plugin(indigo.PluginBase):
 						anyUpdate=True
 					if dev.states["deviceInfo"] !=devI["deviceInfo"]:
 						self.addToStatesUpdateList("{}".format(dev.id),"deviceInfo",		devI["deviceInfo"])
-						anyUpdate=True
-					if dev.states["WiFi"] !=devI["WiFi"]:
-						self.addToStatesUpdateList("{}".format(dev.id),"WiFi",				devI["WiFi"])
 						anyUpdate=True
 					if "created" in dev.states and len(dev.states["created"]) < 10:
 						self.addToStatesUpdateList("{}".format(dev.id),"created",		datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
@@ -5628,34 +3702,20 @@ class Plugin(indigo.PluginBase):
 						self.addToStatesUpdateList("{}".format(dev.id),"suppressChangeMSG", devI["suppressChangeMSG"])
 						self.addToStatesUpdateList("{}".format(dev.id),"lastFingUp",        datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") )
 						self.addToStatesUpdateList("{}".format(dev.id),"created",           datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") )
-						if theMAC in self.wifiMacList:
-							self.addToStatesUpdateList("{}".format(dev.id),"WiFiSignal",		"%5.1f"%self.wifiMacList[theMAC][2])
 
-						self.updateDeviceWiFiSignal(theMAC)
 						usePing = devI["usePing"]
 						if  "{}".format(devI["useWakeOnLanSecs"]) !="0":
 							usePing +="-WOL:{}".format(devI["useWakeOnLanSecs"])
 						if "usePing-WOL" in dev.states: self.addToStatesUpdateList("{}".format(dev.id),"usePing-WOL",			usePing)
-						self.addToStatesUpdateList("{}".format(dev.id),"WiFi",				devI["WiFi"])
 						pad = self.padStatusForDevListing(devI["status"])
 						self.addToStatesUpdateList("{}".format(dev.id),"statusDisplay",	devI["status"].ljust(pad)+devI["timeOfLastChange"])
 						self.addToStatesUpdateList()
 						devI["deviceId"]	=dev.id
 						devI["deviceName"]	=dev.name
 						devI["devExists"]	=1
-						if devI["WiFi"] !="":
-							dev.description = theMAC+"-"+devI["WiFi"]+"-"+devI["WiFiSignal"]
-							dev.replaceOnServer()
 					except:
 						pass
 						
-				try:
-					if self.wifiMacAv["curAvSignal"]["2GHz"] !=0.:
-						indigo.variable.updateValue("averageWiFiSignal_2GHz", "%5.1f"%self.wifiMacAv["curAvSignal"]["2GHz"] )
-					if self.wifiMacAv["curAvSignal"]["5GHz"] !=0.:
-						indigo.variable.updateValue("averageWiFiSignal_5GHz", "%5.1f"%self.wifiMacAv["curAvSignal"]["5GHz"] )
-				except:
-					pass
 			self.executeUpdateStatesList()        
 		except Exception:
 			self.logger.error("", exc_info=True)
@@ -5689,11 +3749,6 @@ class Plugin(indigo.PluginBase):
 						update = 2
 					if dev.states["deviceInfo"] != devI["deviceInfo"]:
 						devI["deviceInfo"]		= dev.states["deviceInfo"]
-					if dev.states["WiFi"] != devI["WiFi"]:
-						test 					=dev.states["WiFi"]
-						if test ==0:devI["WiFi"]=""
-						else:		devI["WiFi"]=dev.states["WiFi"]
-						update = 3
 				if update>0:
 	#				if self.decideMyLog("Logic"): self.indiLOG.log(10, " updating MAC: "+theMAC)
 					self.updateIndigoIpVariableFromDeviceData(theMAC)
@@ -5702,25 +3757,35 @@ class Plugin(indigo.PluginBase):
 		return
 
 ##############################################
-	def updateAllIndigoIpDeviceFromDeviceData(self,statesToUdate=["all"]):
+	def updateAllIndigoIpDeviceFromDeviceData(self, statesToUdate=["all"]):
 		devcopy = copy.deepcopy(self.allDeviceInfo)
 		for theMAC in devcopy:
 			if theMAC in self.ignoredMAC: continue
 			self.updateIndigoIpDeviceFromDeviceData(theMAC,statesToUdate)
+		return 
 ##############################################
-	def updateIndigoIpDeviceFromDeviceData(self,theMAC, statesToUpdate, justStatus=""):
+	def updateIndigoIpDeviceFromDeviceData(self, theMAC, statesToUpdate, justStatus=""):
+		if not self.isValidMAC(theMAC): 
+			self.indiLOG.log(30, "updateIndigoIpDeviceFromDeviceData: MAC Number>>{}<< not valid".format(theMAC))
+			return
 		if theMAC in self.ignoredMAC: return
+
 		try:
 			try:
 				devI = self.allDeviceInfo[theMAC]
 				if self.decideMyLog("Logic"): self.indiLOG.log(10, "updating dev and states: {}/{}, newStatus:{}".format(theMAC, statesToUpdate, devI["status"]))
 			except:
-				self.indiLOG.log(40, "deleteIndigoIpDevicesData: MAC Number: {} information does not exist in allDeviceInfo".format(theMAC))
+				self.indiLOG.log(40, "updateIndigoIpDeviceFromDeviceData: MAC Number: {} information does not exist in allDeviceInfo".format(theMAC))
 				return
+
+			dev = ""
+			devId =devI["deviceId"]
 			try:
-				devId =devI["deviceId"]
 				dev = indigo.devices[devId]
-				if justStatus != "": # update only status for quick turn around
+			except:
+				self.indiLOG.log(20, "updateIndigoIpDeviceFromDeviceData: devId {}  does not exist in indigo devices, recreate for mac#:{}".format(devId, theMAC))
+			if justStatus != "": # update only status for quick turn around
+				if dev != "":
 					#dev.updateStateOnServer("status",justStatus)
 					self.addToStatesUpdateList("{}".format(dev.id), "status", justStatus)
 					pad = self.padStatusForDevListing(justStatus)
@@ -5730,52 +3795,48 @@ class Plugin(indigo.PluginBase):
 						if dev.states["lastFingUp"] != time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(devI["lastFingUp"])):
 							self.addToStatesUpdateList("{}".format(dev.id),"lastFingUp",time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(devI["lastFingUp"])))
 					self.executeUpdateStatesList()
-					self.allDeviceInfo[theMAC]["status"] =justStatus
-					return
-			except:
-				self.indiLOG.log(20, "updateIndigoIpDeviceFromDeviceData: devId {}  does not exist in indigo devices, recreate for mac#:{}".format(devId, theMAC))
-	# create new device
-				name = "MAC-"+theMAC,
-				if "nickName" in devI:
-					if devI["nickName"] != "": 	name = devI["nickName"]
-					if True or self.acceptNewDevices:
-						try:
-							indigo.device.create(
-								protocol=indigo.kProtocol.Plugin,
-								address=self.formatiPforAddress(devI["ipNumber"]),
-								name=name,
-								description=theMAC,
-								pluginId="com.karlwachs.fingscan",
-								deviceTypeId="IP-Device",
-								props = {"setUsePing":"doNotUsePing","setuseWakeOnLan":0,"setExpirationTime":0},
-								folder=self.indigoDeviceFolderID
-								)
-						except:
-							pass
+					self.allDeviceInfo[theMAC]["status"] = justStatus
+				return
 
-						dev = indigo.devices[name]
-						self.addToStatesUpdateList("{}".format(dev.id),"MACNumber",			theMAC)
-						self.addToStatesUpdateList("{}".format(dev.id),"ipNumber",			devI["ipNumber"])
-						self.addToStatesUpdateList("{}".format(dev.id),"timeOfLastChange",	devI["timeOfLastChange"])
-						self.addToStatesUpdateList("{}".format(dev.id),"status",			devI["status"])
-						self.addToStatesUpdateList("{}".format(dev.id),"nickName",			devI["nickName"])
-						self.addToStatesUpdateList("{}".format(dev.id),"noOfChanges",		int(devI["noOfChanges"]) )
-						self.addToStatesUpdateList("{}".format(dev.id),"hardwareVendor",	devI["hardwareVendor"])
-						self.addToStatesUpdateList("{}".format(dev.id),"deviceInfo",		devI["deviceInfo"])
-						self.addToStatesUpdateList("{}".format(dev.id),"WiFi",				devI["WiFi"])
-						self.addToStatesUpdateList("{}".format(dev.id),"usePing-WOL",		devI["usePing"]+"-{}".format(devI["useWakeOnLanSecs"]))
-						self.addToStatesUpdateList("{}".format(dev.id),"suppressChangeMSG", devI["suppressChangeMSG"])
-						self.addToStatesUpdateList("{}".format(dev.id),"lastFingUp",        datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") )
-						self.addToStatesUpdateList("{}".format(dev.id),"created",           datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") )
-						if theMAC in self.wifiMacList:
-							self.addToStatesUpdateList("{}".format(dev.id),"WiFiSignal",		"%5.1f"%self.wifiMacList[theMAC][2])
-				
-						pad = self.padStatusForDevListing(devI["status"])
-						self.addToStatesUpdateList("{}".format(dev.id),"statusDisplay",	(devI["status"]).ljust(pad)+devI["timeOfLastChange"])
-						devI["deviceId"]	=dev.id
-						devI["deviceName"]	=dev.name
-						devI["devExists"]	=1
-						self.executeUpdateStatesList()
+			if dev == "":
+				# create new device
+				name = "MAC-"+theMAC,
+				if self.acceptNewDevices:
+					try:
+						indigo.device.create(
+							protocol=indigo.kProtocol.Plugin,
+							address=self.formatiPforAddress(devI["ipNumber"]),
+							name=name,
+							description=theMAC,
+							pluginId="com.karlwachs.fingscan",
+							deviceTypeId="IP-Device",
+							props = {"setUsePing":"doNotUsePing","setuseWakeOnLan":0,"setExpirationTime":0},
+							folder=self.indigoDeviceFolderID
+							)
+					except:
+						self.indiLOG.log(20, "updateIndigoIpDeviceFromDeviceData: devId {} - name: {}  already exists".format(devId, name))
+						pass
+
+					dev = indigo.devices[name]
+					self.addToStatesUpdateList("{}".format(dev.id),"MACNumber",			theMAC)
+					self.addToStatesUpdateList("{}".format(dev.id),"ipNumber",			devI["ipNumber"])
+					self.addToStatesUpdateList("{}".format(dev.id),"timeOfLastChange",	devI["timeOfLastChange"])
+					self.addToStatesUpdateList("{}".format(dev.id),"status",			devI["status"])
+					self.addToStatesUpdateList("{}".format(dev.id),"nickName",			devI["nickName"])
+					self.addToStatesUpdateList("{}".format(dev.id),"noOfChanges",		int(devI["noOfChanges"]) )
+					self.addToStatesUpdateList("{}".format(dev.id),"hardwareVendor",	devI["hardwareVendor"])
+					self.addToStatesUpdateList("{}".format(dev.id),"deviceInfo",		devI["deviceInfo"])
+					self.addToStatesUpdateList("{}".format(dev.id),"usePing-WOL",		devI["usePing"]+"-{}".format(devI["useWakeOnLanSecs"]))
+					self.addToStatesUpdateList("{}".format(dev.id),"suppressChangeMSG", devI["suppressChangeMSG"])
+					self.addToStatesUpdateList("{}".format(dev.id),"lastFingUp",        datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") )
+					self.addToStatesUpdateList("{}".format(dev.id),"created",           datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") )
+		
+					pad = self.padStatusForDevListing(devI["status"])
+					self.addToStatesUpdateList("{}".format(dev.id),"statusDisplay",	(devI["status"]).ljust(pad)+devI["timeOfLastChange"])
+					devI["deviceId"]	=dev.id
+					devI["deviceName"]	=dev.name
+					devI["devExists"]	=1
+					self.executeUpdateStatesList()
 
 				return
 			
@@ -5807,12 +3868,6 @@ class Plugin(indigo.PluginBase):
 					if dev.states["deviceInfo"] != devI["deviceInfo"]:
 						self.addToStatesUpdateList("{}".format(dev.id),"deviceInfo",		devI["deviceInfo"])
 						anyUpdate=True
-				if "WiFi" in statesToUpdate or statesToUpdate[0]=="all":
-					if dev.states["WiFi"] != devI["WiFi"]:
-						self.addToStatesUpdateList("{}".format(dev.id),"WiFi",				devI["WiFi"])
-						if theMAC in self.wifiMacList:
-							self.addToStatesUpdateList("{}".format(dev.id),"WiFiSignal",		"%5.1f"%self.wifiMacList[theMAC][2])
-						anyUpdate=True
 
 				usePing = devI["usePing"]
 				if  "{}".format(devI["useWakeOnLanSecs"]) !="0":
@@ -5831,7 +3886,7 @@ class Plugin(indigo.PluginBase):
 				if anyUpdate:
 					self.addToStatesUpdateList("{}".format(dev.id),"timeOfLastChange",	devI["timeOfLastChange"])
 
-				if statesToUpdate[0]=="all" or "status" in statesToUpdate or "ipNumber" in statesToUpdate or "WiFi" in statesToUpdate:
+				if statesToUpdate[0]=="all" or "status" in statesToUpdate or "ipNumber" in statesToUpdate:
 					pad = self.padStatusForDevListing(devI["status"])
 					if (devI["status"]).ljust(pad)+devI["timeOfLastChange"] !=dev.states["statusDisplay"]:
 						self.addToStatesUpdateList("{}".format(dev.id),"statusDisplay",	(devI["status"]).ljust(pad)+devI["timeOfLastChange"])
@@ -5851,18 +3906,7 @@ class Plugin(indigo.PluginBase):
 				devI["deviceName"]		=dev.name
 				devI["devExists"]		=1
 
-
 				self.executeUpdateStatesList()
-
-
-				if theMAC in self.wifiMacList or "WiFi" in statesToUpdate:
-					self.updateDeviceWiFiSignal()
-					if devI["WiFi"] =="":
-						dev.description = theMAC
-					else:
-						dev.description = theMAC+"-"+devI["WiFi"]+"-"+devI["WiFiSignal"]
-					dev.replaceOnServer()
-
 
 		except Exception:
 			self.logger.error("", exc_info=True)
@@ -5947,8 +3991,6 @@ class Plugin(indigo.PluginBase):
 					devI["deviceInfo"]			= dev.states["deviceInfo"]
 					try:    devI["lastFingUp"]	= devI["lastFingUp"]	= time.mktime( datetime.datetime.strptime(dev.states["lastFingUp"],"%Y-%m-%d %H:%M:%S").timetuple()  )
 					except: devI["lastFingUp"]	= time.time()
-					if "setWiFi" not in devI:   devI["setWiFi"] =copy.deepcopy(emptyAllDeviceInfo["setWiFi"])
-					devI["WiFi"]				= dev.states["WiFi"]
 					devI["deviceId"]			= dev.id
 					devI["deviceName"]			= dev.name
 					devI["devExists"]			= 1
@@ -6026,8 +4068,6 @@ class Plugin(indigo.PluginBase):
 			updstr += ";"+self.padNickName(devI["nickName"])
 			updstr += ";"+self.padVendor(devI["hardwareVendor"])
 			updstr += ";"+self.padDeviceInfo(devI["deviceInfo"])
-			updstr += ";"+devI["WiFi"].rjust(5)
-			updstr += ";"+devI["WiFiSignal"].rjust(10)
 			updstr += ";"+(devI["usePing"]+"-{}".format(devI["useWakeOnLanSecs"])).rjust(13)+";"
 			theValue = updstr.split(";")
 
@@ -6041,8 +4081,7 @@ class Plugin(indigo.PluginBase):
 			devV["nickName"]			= theValue[5].strip()
 			devV["hardwareVendor"]		= theValue[6].strip()
 			devV["deviceInfo"]			= theValue[7].strip()
-			devV["WiFi"]				= theValue[8].strip()
-			devV["usePing"]			= theValue[9].strip()
+			devV["usePing"]				= theValue[8].strip()
 
 
 			diff = False
@@ -6086,7 +4125,6 @@ class Plugin(indigo.PluginBase):
 ########################################
 	def updateallDeviceInfofromVariable(self):
 
-
 		try:
 			for theMAC in self.indigoIpVariableData:
 				devV = self.indigoIpVariableData[theMAC]
@@ -6106,13 +4144,9 @@ class Plugin(indigo.PluginBase):
 				devI["nickName"]			= devV["nickName"].strip()
 				devI["hardwareVendor"]		= devV["hardwareVendor"].strip()
 				devI["deviceInfo"]			= devV["deviceInfo"].strip()
-				if "WiFi" not in devV:
-					devI["WiFi"]			= ""
-				else:
-					devI["WiFi"]			= devV["WiFi"].strip()
-					
-				devI["usePing"]			= "usePing"
-				devI["usePing"]		    = ""
+				
+				devI["usePing"]				= "usePing"
+				devI["usePing"]		    	= ""
 				devI["useWakeOnLanSecs"]	= 0
 				if "usePing"  in devV:
 					usePing = (devV["usePing"].strip()).split("-")
@@ -6432,6 +4466,30 @@ class Plugin(indigo.PluginBase):
 		except Exception:
 			self.logger.error("", exc_info=True)
 
+
+####-------------------------------------------------------------------------####
+	def isValidIP(self, ip0):
+		ipx = ip0.split(".")
+		if len(ipx) != 4:									return False	# not complete
+		else:
+			for ip in ipx:
+				try:
+					if int(ip) < 0 or  int(ip) > 255: 		return False	# out of range
+				except:										return False	# not integer
+		if True:											return True		# test passed 
+
+
+####-------------------------------------------------------------------------####
+	def isValidMAC(self, mac0):
+		macx = mac0.split(":")
+		if len(macx) != 6:									return False	# len(mac.split("D0:D2:B0:88:7B:76")):
+
+		for xx in macx:
+			if len(xx) !=2:									return False	# not 2 digits
+			try: 	int(xx,16)
+			except: 										return False	# is not a hex number
+
+		if True:											return True		# test passed
 
 
 ##################################################################################################################

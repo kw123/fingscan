@@ -1,3 +1,12 @@
+Added features / changes in v2022.34.83 @ 2022-08-29
+===================================================
+
+1.  removed dead code (findmy , pibeacon, unifi interfaces)
+2.  fixed restore devices
+3.  fixed one py2->py3 i/o issue ( in network scan, write to log)
+
+
+
 Added features / changes in v2022.34.82 @ 2022-08-27
 ===================================================
 

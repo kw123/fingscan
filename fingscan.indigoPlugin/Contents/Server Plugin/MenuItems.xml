@@ -4,39 +4,6 @@
     <MenuItem id="menuEVENTS">
     <Name>Setup Events</Name>
     <ConfigUI>
- 
-        <Field id="iDevicesEnabled1"  type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled1a" type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled2"  type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled2a" type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled3"  type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled3a" type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled4"  type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled4a" type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled5"  type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled5a" type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled6"  type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled6a" type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled7"  type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled7a" type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled8"  type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled8a" type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled9"  type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled9a" type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled10" type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled10a" type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled11"  type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled11a" type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled12"  type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled12a" type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled13"  type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled13a" type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled14"  type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled14a" type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled15"  type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled15a" type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="iDevicesEnabled"    type="checkbox" defaultValue="false" hidden="yes"> </Field>
-
         <Field id="piBeaconEnabled"    type="checkbox" defaultValue="false" hidden="yes"> </Field>
         <Field id="unifiEnabled"       type="checkbox" defaultValue="false" hidden="yes"> </Field>
 
@@ -78,267 +45,51 @@
         <Field  id="IPdeviceMACnumber1" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
             <Label>Pick IP device ............................1.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="true" />
             <CallbackMethod>CALLBACKIPdeviceMACnumber1</CallbackMethod></Field>
-        <Field visibleBindingId="iDevicesEnabled1" visibleBindingValue="true"  enableBindingId="iDevicesEnabled1" enableBindingValue="true" id="iDeviceName1" type="menu" defaultValue="0" tooltip="enable iFind fencing blank = not used  for AWAY or Home status">
-            <Label>..device name in iFind:</Label><List class="self" filter="" method="selectiDeviceFilter" dynamicReload="true"/>
-            <CallbackMethod>CALLBACKIdevice1Selected</CallbackMethod>
-        </Field>
-        <Field visibleBindingId="iDevicesEnabled1a" visibleBindingValue="true"  enableBindingId="iDevicesEnabled1a" enableBindingValue="true" id="iDeviceUseForHome1" type="menu" defaultValue="0" tooltip="HOME =  IP is up   OR   distance less than HOME feet/meter"> <Label> use iFind for Home status</Label>
-                <List>
-                    <Option value="1" >Use iFind distance for Home status</Option>
-                    <Option value="0" >do NOT Use iFind distance for Home status</Option>
-                </List>
-        </Field>
-        <Field visibleBindingId="iDevicesEnabled1a" visibleBindingValue="true" enableBindingId="iDevicesEnabled1a" enableBindingValue="true" id="iDeviceUseForAway1" type="menu" defaultValue="0" tooltip="AWAY =  IP down   AND   distance greater than AWAY feet/meter"> <Label> use iFind for AWAY status</Label>
-                <List>
-                    <Option value="1" >Use iFind distance for AWAY status</Option>
-                    <Option value="0" >do NOT Use iFind distance for AWAY status</Option>
-                </List>
-        </Field>
-
-
-
 
         <Field  id="IPdeviceMACnumber2" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
             <Label>Pick IP device ............................2.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
             <CallbackMethod>CALLBACKIPdeviceMACnumber2</CallbackMethod></Field>
-        <Field visibleBindingId="iDevicesEnabled2" visibleBindingValue="true" enableBindingId="iDevicesEnabled2" enableBindingValue="true" id="iDeviceName2" type="menu" defaultValue="0" tooltip="enable iFind fencing blank = not used  for AWAY or Home status">
-            <Label>..device name in iFind:</Label><List class="self" filter="" method="selectiDeviceFilter" dynamicReload="false"/>
-            <CallbackMethod>CALLBACKIdevice2Selected</CallbackMethod>
-        </Field>
-        <Field visibleBindingId="iDevicesEnabled2a" visibleBindingValue="true" enableBindingId="iDevicesEnabled2a" enableBindingValue="true" id="iDeviceUseForHome2" type="menu" defaultValue="0" tooltip="HOME =  IP is up   OR   distance less than HOME feet/meter"> <Label> use iFind for Home status</Label>
-                <List>
-                    <Option value="1" >Use iFind distance for Home status</Option>
-                    <Option value="0" >do NOT Use iFind distance for Home status</Option>
-                </List>
-        </Field>
-        <Field visibleBindingId="iDevicesEnabled2a" visibleBindingValue="true" enableBindingId="iDevicesEnabled2a" enableBindingValue="true" id="iDeviceUseForAway2" type="menu" defaultValue="0" tooltip="AWAY =  IP down   AND   distance greater than AWAY feet/meter"> <Label> use iFind for AWAY status</Label>
-                <List>
-                    <Option value="1" >Use iFind distance for AWAY status</Option>
-                    <Option value="0" >do NOT Use iFind distance for AWAY status</Option>
-                </List>
-        </Field>
-
-
 
         <Field  id="IPdeviceMACnumber3" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
             <Label>Pick IP device ............................3.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
             <CallbackMethod>CALLBACKIPdeviceMACnumber3</CallbackMethod></Field>
-        <Field visibleBindingId="iDevicesEnabled3" visibleBindingValue="true" enableBindingId="iDevicesEnabled3" enableBindingValue="true" id="iDeviceName3" type="menu" defaultValue="0" tooltip="enable iFind fencing blank = not used  for AWAY or Home status">
-            <Label>..device name in iFind:</Label><List class="self" filter="" method="selectiDeviceFilter" dynamicReload="false"/>
-            <CallbackMethod>CALLBACKIdevice3Selected</CallbackMethod>
-        </Field>
-        <Field visibleBindingId="iDevicesEnabled3a" visibleBindingValue="true" enableBindingId="iDevicesEnabled3a" enableBindingValue="true" id="iDeviceUseForHome3" type="menu" defaultValue="0" tooltip="HOME =  IP is up   OR   distance less than HOME feet/meter"> <Label> use iFind for Home status</Label>
-                <List>
-                    <Option value="1" >Use iFind distance for Home status</Option>
-                    <Option value="0" >do NOT Use iFind distance for Home status</Option>
-                </List>
-        </Field>
-        <Field visibleBindingId="iDevicesEnabled3a" visibleBindingValue="true" enableBindingId="iDevicesEnabled3a" enableBindingValue="true" id="iDeviceUseForAway3" type="menu" defaultValue="0" tooltip="AWAY =  IP down   AND   distance greater than AWAY feet/meter"> <Label> use iFind for AWAY status</Label>
-                <List>
-                    <Option value="1" >Use iFind distance for AWAY status</Option>
-                    <Option value="0" >do NOT Use iFind distance for AWAY status</Option>
-                </List>
-        </Field>
-
-
 
         <Field  id="IPdeviceMACnumber4" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
             <Label>Pick IP device ............................4.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false" />
             <CallbackMethod>CALLBACKIPdeviceMACnumber4</CallbackMethod></Field>
-        <Field visibleBindingId="iDevicesEnabled4" visibleBindingValue="true" enableBindingId="iDevicesEnabled4" enableBindingValue="true" id="iDeviceName4" type="menu" defaultValue="0" tooltip="enable iFind fencing blank = not used  for AWAY or Home status">
-            <Label>..device name in iFind:</Label><List class="self" filter="" method="selectiDeviceFilter" dynamicReload="false"/>
-            <CallbackMethod>CALLBACKIdevice4Selected</CallbackMethod>
-        </Field>
-        <Field visibleBindingId="iDevicesEnabled4a" visibleBindingValue="true" enableBindingId="iDevicesEnabled4a" enableBindingValue="true" id="iDeviceUseForHome4" type="menu" defaultValue="0" tooltip="HOME =  IP is up   OR   distance less than HOME feet/meter"> <Label> use iFind for Home status</Label>
-                <List>
-                    <Option value="1" >Use iFind distance for Home status</Option>
-                    <Option value="0" >do NOT Use iFind distance for Home status</Option>
-                </List>
-        </Field>
-        <Field visibleBindingId="iDevicesEnabled4a" visibleBindingValue="true" enableBindingId="iDevicesEnabled4a" enableBindingValue="true" id="iDeviceUseForAway4" type="menu" defaultValue="0" tooltip="AWAY =  IP down   AND   distance greater than AWAY feet/meter"> <Label> use iFind for AWAY status</Label>
-                <List>
-                    <Option value="1" >Use iFind distance for AWAY status</Option>
-                    <Option value="0" >do NOT Use iFind distance for AWAY status</Option>
-                </List>
-        </Field>
-
-
 
         <Field  id="IPdeviceMACnumber5" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
             <Label>Pick IP device ............................5.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
             <CallbackMethod>CALLBACKIPdeviceMACnumber5</CallbackMethod></Field>
-        <Field visibleBindingId="iDevicesEnabled5" visibleBindingValue="true" enableBindingId="iDevicesEnabled5" enableBindingValue="true" id="iDeviceName5" type="menu" defaultValue="0" tooltip="enable iFind fencing blank = not used  for AWAY or Home status">
-            <Label>..device name in iFind:</Label><List class="self" filter="" method="selectiDeviceFilter" dynamicReload="false"/>
-            <CallbackMethod>CALLBACKIdevice5Selected</CallbackMethod>
-        </Field>
-        <Field visibleBindingId="iDevicesEnabled5a" visibleBindingValue="true" enableBindingId="iDevicesEnabled5a" enableBindingValue="true" id="iDeviceUseForHome5" type="menu" defaultValue="0" tooltip="HOME =  IP is up   OR   distance less than HOME feet/meter"> <Label> use iFind for Home status</Label>
-                <List>
-                    <Option value="1" >Use iFind distance for Home status</Option>
-                    <Option value="0" >do NOT Use iFind distance for Home status</Option>
-                </List>
-        </Field>
-        <Field visibleBindingId="iDevicesEnabled5a" visibleBindingValue="true" enableBindingId="iDevicesEnabled5a" enableBindingValue="true" id="iDeviceUseForAway5" type="menu" defaultValue="0" tooltip="AWAY =  IP down   AND   distance greater than AWAY feet/meter"> <Label> use iFind for AWAY status</Label>
-                <List>
-                    <Option value="1" >Use iFind distance for AWAY status</Option>
-                    <Option value="0" >do NOT Use iFind distance for AWAY status</Option>
-                </List>
-        </Field>
-
-
-
 
         <Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber6" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
             <Label>Pick IP device ............................6.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
             <CallbackMethod>CALLBACKIPdeviceMACnumber6</CallbackMethod></Field>
 
-
-
-
         <Field  visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber7" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
             <Label>Pick IP device ............................7.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
             <CallbackMethod>CALLBACKIPdeviceMACnumber7</CallbackMethod></Field>
-
-
-
 
         <Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber8" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
             <Label>Pick IP device ............................8.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
             <CallbackMethod>CALLBACKIPdeviceMACnumber8</CallbackMethod></Field>
 
-
-
-
         <Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber9" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
             <Label>Pick IP device ............................9.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
             <CallbackMethod>CALLBACKIPdeviceMACnumber9</CallbackMethod></Field>
-
-
-
 
         <Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber10" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
             <Label>Pick IP device ..........................10.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
             <CallbackMethod>CALLBACKIPdeviceMACnumber10</CallbackMethod></Field>
 
-
-
         <Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber11" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
             <Label>Pick IP device ..........................11.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
             <CallbackMethod>CALLBACKIPdeviceMACnumber11</CallbackMethod></Field>
-
 
         <Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber12" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
             <Label>Pick IP device ..........................12.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
             <CallbackMethod>CALLBACKIPdeviceMACnumber12</CallbackMethod></Field>
 
-
-
-        <Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber13" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
-            <Label>Pick IP device ..........................13.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
-            <CallbackMethod>CALLBACKIPdeviceMACnumber13</CallbackMethod></Field>
-
-
-
-        <Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber14" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
-            <Label>Pick IP device ..........................14.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
-            <CallbackMethod>CALLBACKIPdeviceMACnumber14</CallbackMethod></Field>
-
-
-
-        <Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber15" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
-            <Label>Pick IP device ..........................15.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
-            <CallbackMethod>CALLBACKIPdeviceMACnumber15</CallbackMethod></Field>
-
-
-
-        <Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber16" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
-            <Label>Pick IP device ..........................16.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
-            <CallbackMethod>CALLBACKIPdeviceMACnumber16</CallbackMethod></Field>
-
-
-
-        <Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber17" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
-            <Label>Pick IP device ..........................17.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
-            <CallbackMethod>CALLBACKIPdeviceMACnumber17</CallbackMethod></Field>
-
-
-
-        <Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber18" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
-            <Label>Pick IP device ..........................18.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
-            <CallbackMethod>CALLBACKIPdeviceMACnumber18</CallbackMethod></Field>
-
-
-
-        <Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber19" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
-            <Label>Pick IP device ..........................19.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
-            <CallbackMethod>CALLBACKIPdeviceMACnumber19</CallbackMethod></Field>
-
-
-
-        <Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber20" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
-            <Label>Pick IP device ..........................20.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="true"/>
-            <CallbackMethod>CALLBACKIPdeviceMACnumber20</CallbackMethod></Field>
-
-
-
-        <Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber21" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
-            <Label>Pick IP device ..........................21.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
-            <CallbackMethod>CALLBACKIPdeviceMACnumber21</CallbackMethod></Field>
-
-        <Field visibleBindingId="piBeaconEnabled" visibleBindingValue="true" enableBindingId="piBeaconEnabled" id="IPdeviceMACnumber22" type="menu" defaultValue="0" tooltip=" pick next piBeacon device to be member of this EVENT group">
-            <Label>Pick piBeacon device ........1.:</Label>     <List class="self" filter="" method="piBeaconFilter" dynamicReload="false"/>
-        </Field>
-            
-        <Field visibleBindingId="piBeaconEnabled" visibleBindingValue="true" enableBindingId="piBeaconEnabled" id="IPdeviceMACnumber23" type="menu" defaultValue="0" tooltip=" pick next piBeacon device to be member of this EVENT group">
-            <Label>Pick piBeacon device ........2.:</Label>     <List class="self" filter="" method="piBeaconFilter" dynamicReload="false"/>
-        </Field>
-            
-        <Field visibleBindingId="piBeaconEnabled" visibleBindingValue="true" enableBindingId="piBeaconEnabled" id="IPdeviceMACnumber24" type="menu" defaultValue="0" tooltip=" pick next piBeacon device to be member of this EVENT group">
-            <Label>Pick piBeacon device ........3.:</Label>     <List class="self" filter="" method="piBeaconFilter" dynamicReload="false"/>
-        </Field>
-            
-
-        <Field visibleBindingId="piBeaconEnabled" visibleBindingValue="true" enableBindingId="piBeaconEnabled" id="IPdeviceMACnumber25" type="menu" defaultValue="0" tooltip=" pick next piBeacon device to be member of this EVENT group">
-            <Label>Pick piBeacon device ........4.:</Label>     <List class="self" filter="" method="piBeaconFilter" dynamicReload="false"/>
-        </Field>
-            
-        <Field visibleBindingId="piBeaconEnabled" visibleBindingValue="true" enableBindingId="piBeaconEnabled" id="IPdeviceMACnumber26" type="menu" defaultValue="0" tooltip=" pick next piBeacon device to be member of this EVENT group">
-            <Label>Pick piBeacon device ........5.:</Label>     <List class="self" filter="" method="piBeaconFilter" dynamicReload="false"/>
-        </Field>
-            
-        <Field visibleBindingId="piBeaconEnabled" visibleBindingValue="true" enableBindingId="piBeaconEnabled" id="IPdeviceMACnumber27" type="menu" defaultValue="0" tooltip=" pick next piBeacon device to be member of this EVENT group">
-            <Label>Pick piBeacon device ........6.:</Label>     <List class="self" filter="" method="piBeaconFilter" dynamicReload="false"/>
-        </Field>
-            
-        <Field visibleBindingId="piBeaconEnabled" visibleBindingValue="true" enableBindingId="piBeaconEnabled" id="IPdeviceMACnumber28" type="menu" defaultValue="0" tooltip=" pick next piBeacon device to be member of this EVENT group">
-            <Label>Pick piBeacon device ........7.:</Label>     <List class="self" filter="" method="piBeaconFilter" dynamicReload="false"/>
-        </Field>
-            
-        <Field visibleBindingId="piBeaconEnabled" visibleBindingValue="true" enableBindingId="piBeaconEnabled" id="IPdeviceMACnumber29" type="menu" defaultValue="0" tooltip=" pick next piBeacon device to be member of this EVENT group">
-            <Label>Pick piBeacon device ........8.:</Label>     <List class="self" filter="" method="piBeaconFilter" dynamicReload="false"/>
-        </Field>
-            
-
-
-        <Field visibleBindingId="unifiEnabled" visibleBindingValue="true" enableBindingId="unifiEnabled" id="IPdeviceMACnumber30" type="menu" defaultValue="0" tooltip=" pick next unifi device to be member of this EVENT group">
-            <Label>Pick unifi device ........1.:</Label>     <List class="self" filter="" method="unifiFilter" dynamicReload="false"/>
-        </Field>
-            
-        <Field visibleBindingId="unifiEnabled" visibleBindingValue="true" enableBindingId="unifiEnabled" id="IPdeviceMACnumber31" type="menu" defaultValue="0" tooltip=" pick next unifi device to be member of this EVENT group">
-            <Label>Pick unifi device ........2.:</Label>     <List class="self" filter="" method="unifiFilter" dynamicReload="false"/>
-        </Field>
-            
-        <Field visibleBindingId="unifiEnabled" visibleBindingValue="true" enableBindingId="unifiEnabled" id="IPdeviceMACnumber32" type="menu" defaultValue="0" tooltip=" pick next unifi device to be member of this EVENT group">
-            <Label>Pick unifi device ........3.:</Label>     <List class="self" filter="" method="unifiFilter" dynamicReload="false"/>
-        </Field>
-            
-        <Field visibleBindingId="unifiEnabled" visibleBindingValue="true" enableBindingId="unifiEnabled" id="IPdeviceMACnumber33" type="menu" defaultValue="0" tooltip=" pick next unifi device to be member of this EVENT group">
-            <Label>Pick unifi device ........4.:</Label>     <List class="self" filter="" method="unifiFilter" dynamicReload="false"/>
-        </Field>
-            
-        <Field visibleBindingId="unifiEnabled" visibleBindingValue="true" enableBindingId="unifiEnabled" id="IPdeviceMACnumber34" type="menu" defaultValue="0" tooltip=" pick next unifi device to be member of this EVENT group">
-            <Label>Pick unifi device ........5.:</Label>     <List class="self" filter="" method="unifiFilter" dynamicReload="false"/>
-        </Field>
- 
 
 
 
@@ -401,59 +152,6 @@
 
 
 
-        <Field visibleBindingId="iDevicesEnabled" visibleBindingValue="true" id="distanceAwayLimit" type="menu" defaultValue="50" tooltip="if iFind is enabled    distance must be    OUTSIDE    this radius to be AWAY (unit = feet or meter)">
-                <List>
-                    <Option value="5"    >5 m/feet</Option>
-                    <Option value="10"   >10 m/feet</Option>
-                    <Option value="20"   >20 m/feet</Option>
-                    <Option value="30"   >30 m/feet</Option>
-                    <Option value="50"   >50 m/feet</Option>
-                    <Option value="100"   >100 m/feet</Option>
-                    <Option value="300"   >300 m/feet</Option>
-                    <Option value="500"   >500 m/feet</Option>
-                    <Option value="1000"   >1000 m/feet</Option>
-                    <Option value="3000"   >3000 m/feet</Option>
-                    <Option value="555555"  >OFF</Option>
-                </List>
-            <Label>min. dist. status can be AWAY:</Label>
-        </Field>
-
-        <Field visibleBindingId="iDevicesEnabled" visibleBindingValue="true" id="distanceHomeLimit" type="menu" defaultValue="-1" tooltip="if iFind is enabled and if device is    INSIDE    this radius:  status will be HOME (unit = feet or meter)">
-                <List>
-                    <Option value="-1" >OFF</Option>
-                    <Option value="5"    >5 m/feet</Option>
-                    <Option value="10"   >10 m/feet</Option>
-                    <Option value="20"   >20 m/feet</Option>
-                    <Option value="30"   >30 m/feet</Option>
-                    <Option value="50"   >50 m/feet</Option>
-                    <Option value="100"   >100 m/feet</Option>
-                    <Option value="300"   >300 m/feet</Option>
-                    <Option value="500"   >500 m/feet</Option>
-                    <Option value="1000"   >1000 m/feet</Option>
-                    <Option value="3000"   >3000 m/feet</Option>
-                </List>
-            <Label>min. dist. status is HOME:</Label>
-        </Field>
-        <Field visibleBindingId="iDevicesEnabled" visibleBindingValue="true" id="maxLastTimeUpdatedDistanceMinutes" type="menu" defaultValue="-1.0" tooltip="if iFind is enabled last udate must not be older than xx minutes or info is not used">
-                <List>
-                    <Option value="-1.0" >OFF</Option>
-                    <Option value="120" >2 Minutes </Option>
-                    <Option value="180" >3 Minutes </Option>
-                    <Option value="300" >5 Minutes </Option>
-                    <Option value="420" >7 Minutes </Option>
-                    <Option value="600" >10 Minutes </Option>
-                    <Option value="900" >15 Minutes </Option>
-                    <Option value="1200" >20 Minutes </Option>
-                    <Option value="1800" >30 Minutes </Option>
-                    <Option value="2400" >45 Minutes </Option>
-                    <Option value="3600" >1 Hour </Option>
-                    <Option value="4400" >1.5 Hours </Option>
-                    <Option value="7200" >2 Hours </Option>
-                </List>
-            <Label>ignore dist. info if older than:</Label>
-        </Field>
-
-
         <Field  id="enableDisable" type="menu" defaultValue="0">
                 <List>
                     <Option value="1" >ON</Option>
@@ -479,20 +177,8 @@
     </ConfigUI>
     </MenuItem>
   
-  
-    <MenuItem id="menu1">
-        <Name>Save ipDevice data to file</Name>
-        <CallbackMethod>inpSaveData</CallbackMethod>
-    </MenuItem>
-    <MenuItem id="menu2">
-        <Name>Load ipDevice data from (previously) stored file</Name>
-        <CallbackMethod>inpLoadDevices</CallbackMethod>
-    </MenuItem>
-    <MenuItem id="menu3">
-        <Name>Sort ipDevices Variables with IP number</Name>
-        <CallbackMethod>inpSortData</CallbackMethod>
-    </MenuItem>
-    <MenuItem id="menu30">
+
+    <MenuItem id="trigger">
     <Name>Trigger an Event NOW</Name>
         <ConfigUI>
             <Field id="triggerEvent" type="menu" default="EVENT_1_oneHome" >
@@ -608,6 +294,21 @@
     </MenuItem>
 
 
+
+
+  
+    <MenuItem id="menu1">
+        <Name>Save ipDevice data to file</Name>
+        <CallbackMethod>inpSaveData</CallbackMethod>
+    </MenuItem>
+    <MenuItem id="menu2">
+        <Name>Load ipDevice data from (previously) stored file</Name>
+        <CallbackMethod>inpLoadDevices</CallbackMethod>
+    </MenuItem>
+    <MenuItem id="menu3">
+        <Name>Sort ipDevices Variables with IP number</Name>
+        <CallbackMethod>inpSortData</CallbackMethod>
+    </MenuItem>
   
   
     <MenuItem id="menuremoveignoredMAC">
@@ -649,10 +350,6 @@
     <MenuItem id="menu6">
         <Name>Print configuration of all EVENTS</Name>
         <CallbackMethod>inpPrintEVENTS</CallbackMethod>
-    </MenuItem>
-    <MenuItem id="menu7">
-        <Name>Print Wifi Information</Name>
-        <CallbackMethod>inpPrintWiFi</CallbackMethod>
     </MenuItem>
     <MenuItem id="menu7a">
         <Name>Print piBeacon Information</Name>
