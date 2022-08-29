@@ -997,8 +997,8 @@ class Plugin(indigo.PluginBase):
 ##
 
 ########################################
-	def buttonConfirmAddIgnoredMACsCALLBACK(self, valuesDict,typeId=""):
-		theMAC = valuesDict["selectedMAC"]
+	def buttonConfirmAddIgnoredMACsCALLBACK(self, valuesDict, typeId=""):
+		theMAC = valuesDict["selectedMACIgnore"]
 		if theMAC not in self.ignoredMAC:
 			info = theMAC
 			if theMAC in self.allDeviceInfo:
@@ -1008,7 +1008,7 @@ class Plugin(indigo.PluginBase):
 		return valuesDict
 ########################################
 	def buttonConfirmRemoveIgnoredMACsCALLBACK(self, valuesDict,typeId=""):
-		theMAC = valuesDict["selectedMAC"]
+		theMAC = valuesDict["selectedMACRemove"]
 		if theMAC in self.ignoredMAC:
 			del self.ignoredMAC[theMAC]
 			self.saveIgnoredMAC()
@@ -1230,7 +1230,7 @@ class Plugin(indigo.PluginBase):
 				self.allDeviceInfo[theMAC]["usePing"]			= valuesDict["setUsePing"]
 				self.allDeviceInfo[theMAC]["exprirationTime"]	= float(valuesDict["setExpirationTime"])
 				self.allDeviceInfo[theMAC]["suppressChangeMSG"]	= valuesDict["setSuppressChangeMSG"]
-				self.updateIndigoIpDeviceFromDeviceData(theMAC,["hardwareVendor", "deviceInfo", "usePing", "suppressChangeMSG"])
+				self.updateIndigoIpDeviceFromDeviceData(theMAC,["hardwareVendor", "deviceInfo", "usePing", "suppressChangeMSG"], calledFrom="validateDeviceConfigUi")
 				self.updateIndigoIpVariableFromDeviceData(theMAC)
 		return (True, valuesDict)
 
@@ -1315,7 +1315,7 @@ class Plugin(indigo.PluginBase):
 			else:
 				shutil.copy(self.fingSaveFileName,self.fingSaveFileName+"{}".format(time.time()))
 				
-			self.doLoadDevices()
+			self.deleteIndigoIpDevicesData()
 
 		except Exception:
 			self.logger.error("", exc_info=True)
@@ -1523,25 +1523,24 @@ class Plugin(indigo.PluginBase):
 		valuesDict["selectEvent"] = "0"  
 		errorMsgDict = indigo.Dict()
 		return (valuesDict, errorMsgDict)
+
 ########################################
-	def inpPrintEVENTS(self):
+	def inpPrintEVENTS(self, dummy1="", dummy2=""):
 		self.indigoCommand = "PrintEVENTS"
 		self.indiLOG.log(20, "command: Print EVENTS and configuration")
 		return
-
-
 ########################################
-	def inpResetEVENTS(self):
+	def inpResetEVENTS(self, dummy1="", dummy2=""):
 		self.indigoCommand = "ResetEVENTS"
 		self.indiLOG.log(20, "command: ResetEVENTS")
 		return
 ########################################
-	def inpResetDEVICES(self):
+	def inpResetDEVICES(self, dummy1="", dummy2=""):
 		self.indigoCommand = "ResetDEVICES"
 		self.indiLOG.log(20, "command: ResetDEVICES")
 		return
 ########################################  not used anymore
-	def inpEVENTAway1(self):
+	def inpEVENTAway1(self, dummy1="", dummy2=""):
 		self.indigoCommand = "EVENT_Away_1"
 		self.indiLOG.log(20, "command: EVENT_Away_1")
 		return
@@ -1550,43 +1549,34 @@ class Plugin(indigo.PluginBase):
 		self.indigoCommand = "EVENT_Home_1"
 		self.indiLOG.log(20, "command: EVENT_Home_1")
 		return
-
 ########################################
-	def inpSaveData(self):
+	def inpSaveData(self, dummy1="", dummy2=""):
 		self.indigoCommand = "save"
 		self.indiLOG.log(20, "command: save")
 		retCode = self.writeToFile()
 		self.indigoCommand = "none"
 		self.indiLOG.log(20, "save done")
 		return
-		
-
 ########################################
-	def inpLoadDevices(self):
+	def inpLoadDevices(self, dummy1="", dummy2=""):
 		self.indigoCommand = "loadDevices"
 		self.indiLOG.log(20, "command: loadDevices")
 		return
-
-
 ########################################
-	def inpSortData(self):
+	def inpSortData(self, dummy1="", dummy2=""):
 		self.indigoCommand = "sort"
 		self.indiLOG.log(20, "command: sort")
 		return
-
 ########################################
-	def inpDetails(self):
+	def inpDetails(self, dummy1="", dummy2=""):
 		self.indigoCommand = "details"
 		self.indiLOG.log(20, "command: log IP-Services of your network")
 		return
-
 ########################################
-	def inpSoftrestart(self):
+	def inpSoftrestart(self, dummy1="", dummy2=""):
 		self.quitNOW = "softrestart"
 		self.indiLOG.log(20, "command: softrestart")
 		return
-
-
 ########################################
 
 
@@ -1601,7 +1591,7 @@ class Plugin(indigo.PluginBase):
 			self.sleep(1)
 			retCode = self.updateallDeviceInfofromVariable()
 			self.sleep(1)
-			retcode = self.updateAllIndigoIpDeviceFromDeviceData()
+			retcode = self.updateAllIndigoIpDeviceFromDeviceData(calledFrom="doLoadDevices")
 			self.sleep(1)
 			self.indiLOG.log(20, "       restore done")
 		except Exception:
@@ -2497,7 +2487,7 @@ class Plugin(indigo.PluginBase):
 									if ok:
 										if self.decideMyLog("Ping"): self.indiLOG.log(10, " ping file for {} older than  : {} secs".format(ipN, maxOldTimeStamp))
 										self.inbetweenPing[theMAC] = "down"
-										self.updateIndigoIpDeviceFromDeviceData(theMAC, ["status"],justStatus= "down")
+										self.updateIndigoIpDeviceFromDeviceData(theMAC, ["status"],justStatus= "down", calledFrom="doInbetweenPing1")
 										oneDown =  True
 										self.killPing (theMAC,ipnumber =ipN)
 										pingPid = -1
@@ -2535,7 +2525,7 @@ class Plugin(indigo.PluginBase):
 								if self.checkIfFirewalled(devI["deviceName"],theMAC, ipN) >0: continue
 							if self.decideMyLog("Ping"): self.indiLOG.log(10, " ping for  IP "+ipN +"  theMAC="  +theMAC +" timed out, status DOWN")
 							self.inbetweenPing[theMAC] = "down"
-							self.updateIndigoIpDeviceFromDeviceData(theMAC, ["status"], justStatus= "down")
+							self.updateIndigoIpDeviceFromDeviceData(theMAC, ["status"], justStatus= "down", calledFrom="doInbetweenPing2")
 							oneDown=True
 						else:
 							self.inbetweenPing[theMAC] = "up"
@@ -2948,7 +2938,7 @@ class Plugin(indigo.PluginBase):
 						pass
 					if update:
 						devI["timeOfLastChange"] = dateTimeNow
-						self.updateIndigoIpDeviceFromDeviceData(theMAC,["status", "timeOfLastChange"])
+						self.updateIndigoIpDeviceFromDeviceData(theMAC,["status", "timeOfLastChange"], calledFrom="compareToFingIfExpired")
 						self.updateIndigoIpVariableFromDeviceData(theMAC)
 				
 				
@@ -3010,7 +3000,7 @@ class Plugin(indigo.PluginBase):
 
 					if theStatus != "up":
 						if theMAC in self.allDeviceInfo and "useWakeOnLanSecs" in self.allDeviceInfo[theMAC] and  self.allDeviceInfo[theMAC]["useWakeOnLanSecs"] > 0:
-							self.sendWakewOnLanAndPing(theMAC, nBC= 1,waitForPing=10, countPings=1, waitBeforePing = 0., waitAfterPing = 0.0, calledFrom="compareToIndigoDeviceData")
+							self.sendWakewOnLanAndPing(theMAC, nBC= 1,waitForPing=10, countPings=1, waitBeforePing = 0., waitAfterPing = 0.0, calledFrom="compareToIndigoDeviceData1")
 
 					if time.time() - self.startTime < 150:  devI["lastFingUp"] = time.time()
 					if theStatus == "up":
@@ -3064,7 +3054,7 @@ class Plugin(indigo.PluginBase):
 						if len(dd) < 5 : dd = "{}".format(dateTimeNow)
 						devI["timeOfLastChange"]	= dd
 						if  self.decideMyLog("Logic"): self.indiLOG.log(10, "compareToIndigoDeviceData update  MAC#:{}, changes:{}".format(theMAC, updateStates) )
-						self.updateIndigoIpDeviceFromDeviceData(theMAC, updateStates)
+						self.updateIndigoIpDeviceFromDeviceData(theMAC, updateStates, calledFrom="compareToIndigoDeviceData2")
 						self.updateIndigoIpVariableFromDeviceData(theMAC)
 
 						if doIndigoUpdate == 3 or doIndigoUpdate == 6 or doIndigoUpdate == 7 :
@@ -3116,7 +3106,7 @@ class Plugin(indigo.PluginBase):
 					newIPDevNumber = "{}".format(self.indigoEmpty[0])
 					if self.decideMyLog("Logic"): self.indiLOG.log(10, "new device added ipDevice" +  newIPDevNumber)
 					
-					self.updateIndigoIpDeviceFromDeviceData(theMAC,["all"])
+					self.updateIndigoIpDeviceFromDeviceData(theMAC,["all"], calledFrom="compareToIndigoDeviceData2")
 					self.updateIndigoIpVariableFromDeviceData(theMAC)
 
 
@@ -3406,7 +3396,7 @@ class Plugin(indigo.PluginBase):
 					self.setupEventVariables()
 				if lastmin5 !=checkTime[1] and checkTime[1]%5 ==0 and checkTime[1] >0 and checkTime[2]>20 :
 					lastmin5 =checkTime[1]
-					self.updateAllIndigoIpDeviceFromDeviceData(["deviceInfo"])
+					self.updateAllIndigoIpDeviceFromDeviceData(["deviceInfo"], calledFrom="dorunConcurrentThread")
 					self.setupEventVariables()
 					
 				if lastmin29 !=checkTime[1] and checkTime[1]%29 ==0 and checkTime[1] >0 and checkTime[2]>25 :
@@ -3757,16 +3747,15 @@ class Plugin(indigo.PluginBase):
 		return
 
 ##############################################
-	def updateAllIndigoIpDeviceFromDeviceData(self, statesToUdate=["all"]):
+	def updateAllIndigoIpDeviceFromDeviceData(self, statesToUdate=["all"], calledFrom="updateAllIndigoIpDeviceFromDeviceData"):
 		devcopy = copy.deepcopy(self.allDeviceInfo)
 		for theMAC in devcopy:
-			if theMAC in self.ignoredMAC: continue
-			self.updateIndigoIpDeviceFromDeviceData(theMAC,statesToUdate)
+			self.updateIndigoIpDeviceFromDeviceData(theMAC,statesToUdate, calledFrom=calledFrom)
 		return 
 ##############################################
-	def updateIndigoIpDeviceFromDeviceData(self, theMAC, statesToUpdate, justStatus=""):
+	def updateIndigoIpDeviceFromDeviceData(self, theMAC, statesToUpdate, justStatus="", calledFrom=""):
 		if not self.isValidMAC(theMAC): 
-			self.indiLOG.log(30, "updateIndigoIpDeviceFromDeviceData: MAC Number>>{}<< not valid".format(theMAC))
+			self.indiLOG.log(30, "updateIndigoIpDeviceFromDeviceData: MAC Number>>{}<< not valid, calledFrom:{}".format(theMAC, calledFrom))
 			return
 		if theMAC in self.ignoredMAC: return
 
@@ -3783,7 +3772,8 @@ class Plugin(indigo.PluginBase):
 			try:
 				dev = indigo.devices[devId]
 			except:
-				self.indiLOG.log(20, "updateIndigoIpDeviceFromDeviceData: devId {}  does not exist in indigo devices, recreate for mac#:{}".format(devId, theMAC))
+				dev = ""
+				self.indiLOG.log(20, "updateIndigoIpDeviceFromDeviceData: devId {}  does not exist in indigo devices, recreate for mac#:{}, calledFrom:{}".format(devId, theMAC, calledFrom))
 			if justStatus != "": # update only status for quick turn around
 				if dev != "":
 					#dev.updateStateOnServer("status",justStatus)
@@ -3800,13 +3790,13 @@ class Plugin(indigo.PluginBase):
 
 			if dev == "":
 				# create new device
-				name = "MAC-"+theMAC,
+				theName = "MAC-{}".format(theMAC)
 				if self.acceptNewDevices:
 					try:
 						indigo.device.create(
 							protocol=indigo.kProtocol.Plugin,
 							address=self.formatiPforAddress(devI["ipNumber"]),
-							name=name,
+							name=theName,
 							description=theMAC,
 							pluginId="com.karlwachs.fingscan",
 							deviceTypeId="IP-Device",
@@ -3814,10 +3804,10 @@ class Plugin(indigo.PluginBase):
 							folder=self.indigoDeviceFolderID
 							)
 					except:
-						self.indiLOG.log(20, "updateIndigoIpDeviceFromDeviceData: devId {} - name: {}  already exists".format(devId, name))
+						self.indiLOG.log(20, "updateIndigoIpDeviceFromDeviceData: devId {} - name: {}  already exists, calledFrom:{}".format(devId, theName, calledFrom))
 						pass
 
-					dev = indigo.devices[name]
+					dev = indigo.devices[theName]
 					self.addToStatesUpdateList("{}".format(dev.id),"MACNumber",			theMAC)
 					self.addToStatesUpdateList("{}".format(dev.id),"ipNumber",			devI["ipNumber"])
 					self.addToStatesUpdateList("{}".format(dev.id),"timeOfLastChange",	devI["timeOfLastChange"])
@@ -3909,7 +3899,7 @@ class Plugin(indigo.PluginBase):
 				self.executeUpdateStatesList()
 
 		except Exception:
-			self.logger.error("", exc_info=True)
+			self.logger.error("calledfrom:{}".format(calledFrom), exc_info=True)
 		return
 ##############################################
 	def deleteIndigoIpDevicesData(self,theMACin):  # do this once in the beginning..
@@ -3921,33 +3911,26 @@ class Plugin(indigo.PluginBase):
 			else:
 				theList.append(theMACin)
 
-	#		if self.decideMyLog("Logic"): self.indiLOG.log(10, " list of devices to be deleted: %s"%theList)
 
 			for theMAC in theList:
 				try:
-					devI=self.allDeviceInfo[theMAC]
-					devID =devI["deviceId"]
-	#				if self.decideMyLog("Logic"): self.indiLOG.log(10, "deleting device information for theMAC/deviceName "+ theMAC+"/{}".format(self.allDeviceInfo[theMAC]["deviceName"]))
+					devI = self.allDeviceInfo[theMAC]
+					devID = devI["deviceId"]
 					indigo.device.delete(devID)
 				except:
-					if self.decideMyLog("Logic"): self.indiLOG.log(10, "deleteIndigoIpDevicesData: theMAC/deviceID/deviceName"+ theMAC+"/{}".format(devID)+"/{}".format(self.allDeviceInfo[theMAC]["deviceName"])+" device does not exist")
+					pass
 				
 				try:
-					devV=self.indigoIpVariableData[theMAC]
+					devV = self.indigoIpVariableData[theMAC]
 					indigo.variable.delete("ipDevice"+devV["ipDevice"])
 				except:
-					if self.decideMyLog("Logic"): self.indiLOG.log(10, "deleteIndigoIpDevicesData: theMAC "+ theMAC+ " information does not exist in indigoIpVariableData")
-
-
+					pass
 				try:
-					theName= devI["deviceName"]
+					theName = devI["deviceName"]
 					del self.allDeviceInfo[theMAC]
 				except:
 					if self.decideMyLog("Logic"): self.indiLOG.log(10, "deleteIndigoIpDevicesData: name/MAC "+ theName+"/"+theMAC+" information does not exist in allDeviceInfo")
 
-	#			if self.decideMyLog("Logic"): self.indiLOG.log(10, "deleted device MAC: "+theMAC)
-
-			self.getIndigoIpVariablesIntoData()
 		except Exception:
 			self.logger.error("", exc_info=True)
 		return
@@ -4088,8 +4071,7 @@ class Plugin(indigo.PluginBase):
 			try:
 				curr = indigo.variables["ipDevice"+devV["ipDevice"]].value.split(";")
 			except:
-				self.indiLOG.log(30, " updating ipDevice "+devV["ipDevice"]+" does not exist , (re)creating")
-				
+				self.indiLOG.log(30, " updating ipDevice:{},  does not exist, (re)creating variable".format(+devV["ipDevice"]))
 				curr =[]
 			
 			old = updstr.split(";")

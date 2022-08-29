@@ -1,385 +1,390 @@
 <?xml version="1.0"?>
 <MenuItems>
 
-    <MenuItem id="menuEVENTS">
-    <Name>Setup Events</Name>
-    <ConfigUI>
-        <Field id="piBeaconEnabled"    type="checkbox" defaultValue="false" hidden="yes"> </Field>
-        <Field id="unifiEnabled"       type="checkbox" defaultValue="false" hidden="yes"> </Field>
+	<MenuItem id="menuEVENTS">
+	<Name>Setup Events</Name>
+	<ConfigUI>
+		<Field id="piBeaconEnabled"	type="checkbox" defaultValue="false" hidden="yes"> </Field>
+		<Field id="unifiEnabled"	   type="checkbox" defaultValue="false" hidden="yes"> </Field>
 
 
-        <Field id="longList" type="checkbox" >
-                <Label>show Long/Short IP device list:</Label>
-                <Description></Description>
-        </Field>
+		<Field id="longList" type="checkbox" >
+				<Label>show Long/Short IP device list:</Label>
+				<Description></Description>
+		</Field>
 
 
-        <Field  id="selectEvent" type="menu" defaultValue="1" tooltip="Enter Event number, click on ::Event n:: to refresh" > <Label> Event GROUP # to be created ......:</Label>
-                <List>
-                    <Option value="1" >Event 1</Option>
-                    <Option value="2" >Event 2</Option>
-                    <Option value="3" >Event 3</Option>
-                    <Option value="4" >Event 4</Option>
-                    <Option value="5" >Event 5</Option>
-                    <Option value="6" >Event 6</Option>
-                    <Option value="7" >Event 7</Option>
-                    <Option value="8" >Event 8</Option>
-                    <Option value="9" >Event 9</Option>
-                    <Option value="10" >Event10</Option>
-                    <Option value="11" >Event11</Option>
-                    <Option value="12" >Event12</Option>
-                    <Option value="13" >Event13</Option>
-                    <Option value="14" >Event14</Option>
-                    <Option value="15" >Event15</Option>
-                    <Option value="16" >Event16</Option>
-                    <Option value="17" >Event17</Option>
-                    <Option value="18" >Event18</Option>
-                    <Option value="19" >Event19</Option>
-                    <Option value="20" >Event20</Option>
-                </List>
-                <CallbackMethod>CALLBACKevent</CallbackMethod>
-        </Field>
-
-
-
-        <Field  id="IPdeviceMACnumber1" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
-            <Label>Pick IP device ............................1.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="true" />
-            <CallbackMethod>CALLBACKIPdeviceMACnumber1</CallbackMethod></Field>
-
-        <Field  id="IPdeviceMACnumber2" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
-            <Label>Pick IP device ............................2.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
-            <CallbackMethod>CALLBACKIPdeviceMACnumber2</CallbackMethod></Field>
-
-        <Field  id="IPdeviceMACnumber3" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
-            <Label>Pick IP device ............................3.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
-            <CallbackMethod>CALLBACKIPdeviceMACnumber3</CallbackMethod></Field>
-
-        <Field  id="IPdeviceMACnumber4" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
-            <Label>Pick IP device ............................4.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false" />
-            <CallbackMethod>CALLBACKIPdeviceMACnumber4</CallbackMethod></Field>
-
-        <Field  id="IPdeviceMACnumber5" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
-            <Label>Pick IP device ............................5.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
-            <CallbackMethod>CALLBACKIPdeviceMACnumber5</CallbackMethod></Field>
-
-        <Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber6" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
-            <Label>Pick IP device ............................6.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
-            <CallbackMethod>CALLBACKIPdeviceMACnumber6</CallbackMethod></Field>
-
-        <Field  visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber7" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
-            <Label>Pick IP device ............................7.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
-            <CallbackMethod>CALLBACKIPdeviceMACnumber7</CallbackMethod></Field>
-
-        <Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber8" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
-            <Label>Pick IP device ............................8.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
-            <CallbackMethod>CALLBACKIPdeviceMACnumber8</CallbackMethod></Field>
-
-        <Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber9" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
-            <Label>Pick IP device ............................9.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
-            <CallbackMethod>CALLBACKIPdeviceMACnumber9</CallbackMethod></Field>
-
-        <Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber10" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
-            <Label>Pick IP device ..........................10.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
-            <CallbackMethod>CALLBACKIPdeviceMACnumber10</CallbackMethod></Field>
-
-        <Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber11" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
-            <Label>Pick IP device ..........................11.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
-            <CallbackMethod>CALLBACKIPdeviceMACnumber11</CallbackMethod></Field>
-
-        <Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber12" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
-            <Label>Pick IP device ..........................12.:</Label>     <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
-            <CallbackMethod>CALLBACKIPdeviceMACnumber12</CallbackMethod></Field>
+		<Field  id="selectEvent" type="menu" defaultValue="1" tooltip="Enter Event number, click on ::Event n:: to refresh" > <Label> Event GROUP # to be created ......:</Label>
+				<List>
+					<Option value="1" >Event 1</Option>
+					<Option value="2" >Event 2</Option>
+					<Option value="3" >Event 3</Option>
+					<Option value="4" >Event 4</Option>
+					<Option value="5" >Event 5</Option>
+					<Option value="6" >Event 6</Option>
+					<Option value="7" >Event 7</Option>
+					<Option value="8" >Event 8</Option>
+					<Option value="9" >Event 9</Option>
+					<Option value="10" >Event10</Option>
+					<Option value="11" >Event11</Option>
+					<Option value="12" >Event12</Option>
+					<Option value="13" >Event13</Option>
+					<Option value="14" >Event14</Option>
+					<Option value="15" >Event15</Option>
+					<Option value="16" >Event16</Option>
+					<Option value="17" >Event17</Option>
+					<Option value="18" >Event18</Option>
+					<Option value="19" >Event19</Option>
+					<Option value="20" >Event20</Option>
+				</List>
+				<CallbackMethod>CALLBACKevent</CallbackMethod>
+		</Field>
 
 
 
+		<Field  id="IPdeviceMACnumber1" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
+			<Label>Pick IP device ............................1.:</Label>	 <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="true" />
+			<CallbackMethod>CALLBACKIPdeviceMACnumber1</CallbackMethod></Field>
 
-        <Field id="sep3" type="label">	<Label> </Label></Field>
+		<Field  id="IPdeviceMACnumber2" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
+			<Label>Pick IP device ............................2.:</Label>	 <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
+			<CallbackMethod>CALLBACKIPdeviceMACnumber2</CallbackMethod></Field>
 
+		<Field  id="IPdeviceMACnumber3" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
+			<Label>Pick IP device ............................3.:</Label>	 <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
+			<CallbackMethod>CALLBACKIPdeviceMACnumber3</CallbackMethod></Field>
 
-        <Field  id="minimumTimeAway" type="menu"  defaultValue="15" tooltip="amount of time after IP device is DOWN before AWAY can trigger">
-                <List>
-                    <Option value="0" >0 minutes  immediate</Option>
-                    <Option value="6" > 6 seconds</Option>
-                    <Option value="12" >12 seconds</Option>
-                    <Option value="30" >30 seconds</Option>
-                    <Option value="60" >1 minute</Option>
-                    <Option value="120" >2 minutes</Option>
-                    <Option value="180" >3 minutes</Option>
-                    <Option value="240" >4 minutes</Option>
-                    <Option value="300" >5 minutes</Option>
-                    <Option value="360" >6 minutes</Option>
-                    <Option value="420" >7 minutes</Option>
-                    <Option value="480" >8 minutes</Option>
-                    <Option value="540" >9 minutes</Option>
-                    <Option value="600" >10 minutes</Option>
-                    <Option value="900" >15 minutes</Option>
-                    <Option value="1200" >20 minutes</Option>
-                    <Option value="1800" >30 minutes</Option>
-                    <Option value="2400" >40 minutes</Option>
-                    <Option value="3000" >50 minutes</Option>
-                    <Option value="3600" >60 minutes</Option>
-                    <Option value="6000" >100 minutes</Option>
-                    <Option value="9000" >130 minutes</Option>
-                </List>
-            <Label>Min. bf. AWAY status can trigger:</Label>
-        </Field>
+		<Field  id="IPdeviceMACnumber4" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
+			<Label>Pick IP device ............................4.:</Label>	 <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false" />
+			<CallbackMethod>CALLBACKIPdeviceMACnumber4</CallbackMethod></Field>
 
+		<Field  id="IPdeviceMACnumber5" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
+			<Label>Pick IP device ............................5.:</Label>	 <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
+			<CallbackMethod>CALLBACKIPdeviceMACnumber5</CallbackMethod></Field>
 
-        <Field  id="minimumTimeHome" type="menu"  defaultValue="15" tooltip="amount of time after IP device was UP before HOME can trigger again eg UP-DOWN-UP in 3 minutes will only trigger on the second UP if time > 3 minutes">
-                <List>
-                    <Option value="-1" >0 minutes  immediate</Option>
-                    <Option value="60" >1 minutes</Option>
-                    <Option value="120" >2 minutes</Option>
-                    <Option value="180" >3 minutes</Option>
-                    <Option value="240" >4 minutes</Option>
-                    <Option value="300" >5 minutes</Option>
-                    <Option value="360" >6 minutes</Option>
-                    <Option value="420" >7 minutes</Option>
-                    <Option value="480" >8 minutes</Option>
-                    <Option value="540" >9 minutes</Option>
-                    <Option value="600" >10 minutes</Option>
-                    <Option value="900" >15 minutes</Option>
-                    <Option value="1200" >20 minutes</Option>
-                    <Option value="1800" >30 minutes</Option>
-                    <Option value="2400" >40 minutes</Option>
-                    <Option value="3000" >50 minutes</Option>
-                    <Option value="3600" >60 minutes</Option>
-                    <Option value="6000" >100 minutes</Option>
-                    <Option value="9000" >130 minutes</Option>
-                </List>
-            <Label>Min. bf. HOME can re-trigger:</Label>
-        </Field>
+		<Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber6" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
+			<Label>Pick IP device ............................6.:</Label>	 <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
+			<CallbackMethod>CALLBACKIPdeviceMACnumber6</CallbackMethod></Field>
+
+		<Field  visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber7" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
+			<Label>Pick IP device ............................7.:</Label>	 <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
+			<CallbackMethod>CALLBACKIPdeviceMACnumber7</CallbackMethod></Field>
+
+		<Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber8" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
+			<Label>Pick IP device ............................8.:</Label>	 <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
+			<CallbackMethod>CALLBACKIPdeviceMACnumber8</CallbackMethod></Field>
+
+		<Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber9" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
+			<Label>Pick IP device ............................9.:</Label>	 <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
+			<CallbackMethod>CALLBACKIPdeviceMACnumber9</CallbackMethod></Field>
+
+		<Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber10" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
+			<Label>Pick IP device ..........................10.:</Label>	 <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
+			<CallbackMethod>CALLBACKIPdeviceMACnumber10</CallbackMethod></Field>
+
+		<Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber11" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
+			<Label>Pick IP device ..........................11.:</Label>	 <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
+			<CallbackMethod>CALLBACKIPdeviceMACnumber11</CallbackMethod></Field>
+
+		<Field   visibleBindingId="longList" visibleBindingValue="true" enableBindingId="longList" id="IPdeviceMACnumber12" type="menu" tooltip=" pick next IP device to be member of this EVENT group">
+			<Label>Pick IP device ..........................12.:</Label>	 <List class="self" filter="" method="IPdeviceMACnumberFilter" dynamicReload="false"/>
+			<CallbackMethod>CALLBACKIPdeviceMACnumber12</CallbackMethod></Field>
 
 
 
-        <Field  id="enableDisable" type="menu" defaultValue="0">
-                <List>
-                    <Option value="1" >ON</Option>
-                    <Option value="0" >off</Option>
-                </List>
-            <Label>Enable/Disable this event:</Label>
-        </Field>
+
+		<Field id="sep3" type="label">	<Label> </Label></Field>
 
 
-        <Field id="DeleteEvent" type="checkbox" >
-                <Label>remove Event / clear Data:</Label>
-                <Description></Description>
-        </Field>
+		<Field  id="minimumTimeAway" type="menu"  defaultValue="15" tooltip="amount of time after IP device is DOWN before AWAY can trigger">
+				<List>
+					<Option value="0" >0 minutes  immediate</Option>
+					<Option value="6" > 6 seconds</Option>
+					<Option value="12" >12 seconds</Option>
+					<Option value="30" >30 seconds</Option>
+					<Option value="60" >1 minute</Option>
+					<Option value="120" >2 minutes</Option>
+					<Option value="180" >3 minutes</Option>
+					<Option value="240" >4 minutes</Option>
+					<Option value="300" >5 minutes</Option>
+					<Option value="360" >6 minutes</Option>
+					<Option value="420" >7 minutes</Option>
+					<Option value="480" >8 minutes</Option>
+					<Option value="540" >9 minutes</Option>
+					<Option value="600" >10 minutes</Option>
+					<Option value="900" >15 minutes</Option>
+					<Option value="1200" >20 minutes</Option>
+					<Option value="1800" >30 minutes</Option>
+					<Option value="2400" >40 minutes</Option>
+					<Option value="3000" >50 minutes</Option>
+					<Option value="3600" >60 minutes</Option>
+					<Option value="6000" >100 minutes</Option>
+					<Option value="9000" >130 minutes</Option>
+				</List>
+			<Label>Min. bf. AWAY status can trigger:</Label>
+		</Field>
 
 
-        <Field  id="buttonDevices" type="button"	tooltip="This will confirm the devices for this event">
-            <Label>After selecting the parameters </Label><Title>CONFIRM</Title> 	
-            <CallbackMethod>buttonConfirmDevicesCALLBACK</CallbackMethod>
-        </Field>
-        <Field id="infoLabel8" type="label"><Label>---  Dont forget to click on CONFIRM to save EVENT parameters  ---</Label></Field>
+		<Field  id="minimumTimeHome" type="menu"  defaultValue="15" tooltip="amount of time after IP device was UP before HOME can trigger again eg UP-DOWN-UP in 3 minutes will only trigger on the second UP if time > 3 minutes">
+				<List>
+					<Option value="-1" >0 minutes  immediate</Option>
+					<Option value="60" >1 minutes</Option>
+					<Option value="120" >2 minutes</Option>
+					<Option value="180" >3 minutes</Option>
+					<Option value="240" >4 minutes</Option>
+					<Option value="300" >5 minutes</Option>
+					<Option value="360" >6 minutes</Option>
+					<Option value="420" >7 minutes</Option>
+					<Option value="480" >8 minutes</Option>
+					<Option value="540" >9 minutes</Option>
+					<Option value="600" >10 minutes</Option>
+					<Option value="900" >15 minutes</Option>
+					<Option value="1200" >20 minutes</Option>
+					<Option value="1800" >30 minutes</Option>
+					<Option value="2400" >40 minutes</Option>
+					<Option value="3000" >50 minutes</Option>
+					<Option value="3600" >60 minutes</Option>
+					<Option value="6000" >100 minutes</Option>
+					<Option value="9000" >130 minutes</Option>
+				</List>
+			<Label>Min. bf. HOME can re-trigger:</Label>
+		</Field>
 
-    
-    </ConfigUI>
-    </MenuItem>
+
+
+		<Field  id="enableDisable" type="menu" defaultValue="0">
+				<List>
+					<Option value="1" >ON</Option>
+					<Option value="0" >off</Option>
+				</List>
+			<Label>Enable/Disable this event:</Label>
+		</Field>
+
+
+		<Field id="DeleteEvent" type="checkbox" >
+				<Label>remove Event / clear Data:</Label>
+				<Description></Description>
+		</Field>
+
+
+		<Field  id="buttonDevices" type="button"	tooltip="This will confirm the devices for this event">
+			<Label>After selecting the parameters </Label><Title>CONFIRM</Title> 	
+			<CallbackMethod>buttonConfirmDevicesCALLBACK</CallbackMethod>
+		</Field>
+		<Field id="infoLabel8" type="label"><Label>---  Dont forget to click on CONFIRM to save EVENT parameters  ---</Label></Field>
+
+	
+	</ConfigUI>
+	</MenuItem>
   
 
-    <MenuItem id="trigger">
-    <Name>Trigger an Event NOW</Name>
-        <ConfigUI>
-            <Field id="triggerEvent" type="menu" default="EVENT_1_oneHome" >
-                <Label>select an event to trigger right now:</Label>
-                <List>
-                    <Option value="EVENT_1_oneAway" >EVENT_1_oneAway</Option>
-                    <Option value="EVENT_1_allAway" >EVENT_1_allAway</Option>
-                    <Option value="EVENT_1_oneHome" >EVENT_1_oneHome</Option>
-                    <Option value="EVENT_1_allHome" >EVENT_1_allHome</Option>
+	<MenuItem id="trigger">
+	<Name>Trigger an Event NOW..</Name>
+		<ConfigUI>
+			<Field id="triggerEvent" type="menu" default="EVENT_1_oneHome" >
+				<Label>select an event to trigger right now:</Label>
+				<List>
+					<Option value="EVENT_1_oneAway" >EVENT_1_oneAway</Option>
+					<Option value="EVENT_1_allAway" >EVENT_1_allAway</Option>
+					<Option value="EVENT_1_oneHome" >EVENT_1_oneHome</Option>
+					<Option value="EVENT_1_allHome" >EVENT_1_allHome</Option>
 
-                    <Option value="EVENT_2_oneAway" >EVENT_2_oneAway</Option>
-                    <Option value="EVENT_2_allAway" >EVENT_2_allAway</Option>
-                    <Option value="EVENT_2_oneHome" >EVENT_2_oneHome</Option>
-                    <Option value="EVENT_2_allHome" >EVENT_2_allHome</Option>
+					<Option value="EVENT_2_oneAway" >EVENT_2_oneAway</Option>
+					<Option value="EVENT_2_allAway" >EVENT_2_allAway</Option>
+					<Option value="EVENT_2_oneHome" >EVENT_2_oneHome</Option>
+					<Option value="EVENT_2_allHome" >EVENT_2_allHome</Option>
 
-                    <Option value="EVENT_3_oneAway" >EVENT_3_oneAway</Option>
-                    <Option value="EVENT_3_allAway" >EVENT_3_allAway</Option>
-                    <Option value="EVENT_3_oneHome" >EVENT_3_oneHome</Option>
-                    <Option value="EVENT_3_allHome" >EVENT_3_allHome</Option>
+					<Option value="EVENT_3_oneAway" >EVENT_3_oneAway</Option>
+					<Option value="EVENT_3_allAway" >EVENT_3_allAway</Option>
+					<Option value="EVENT_3_oneHome" >EVENT_3_oneHome</Option>
+					<Option value="EVENT_3_allHome" >EVENT_3_allHome</Option>
 
-                    <Option value="EVENT_4_oneAway" >EVENT_4_oneAway</Option>
-                    <Option value="EVENT_4_allAway" >EVENT_4_allAway</Option>
-                    <Option value="EVENT_4_oneHome" >EVENT_4_oneHome</Option>
-                    <Option value="EVENT_4_allHome" >EVENT_4_allHome</Option>
+					<Option value="EVENT_4_oneAway" >EVENT_4_oneAway</Option>
+					<Option value="EVENT_4_allAway" >EVENT_4_allAway</Option>
+					<Option value="EVENT_4_oneHome" >EVENT_4_oneHome</Option>
+					<Option value="EVENT_4_allHome" >EVENT_4_allHome</Option>
 
-                    <Option value="EVENT_5_oneAway" >EVENT_5_oneAway</Option>
-                    <Option value="EVENT_5_allAway" >EVENT_5_allAway</Option>
-                    <Option value="EVENT_5_oneHome" >EVENT_5_oneHome</Option>
-                    <Option value="EVENT_5_allHome" >EVENT_5_allHome</Option>
+					<Option value="EVENT_5_oneAway" >EVENT_5_oneAway</Option>
+					<Option value="EVENT_5_allAway" >EVENT_5_allAway</Option>
+					<Option value="EVENT_5_oneHome" >EVENT_5_oneHome</Option>
+					<Option value="EVENT_5_allHome" >EVENT_5_allHome</Option>
 
-                    <Option value="EVENT_6_oneAway" >EVENT_6_oneAway</Option>
-                    <Option value="EVENT_6_allAway" >EVENT_6_allAway</Option>
-                    <Option value="EVENT_6_oneHome" >EVENT_6_oneHome</Option>
-                    <Option value="EVENT_6_allHome" >EVENT_6_allHome</Option>
+					<Option value="EVENT_6_oneAway" >EVENT_6_oneAway</Option>
+					<Option value="EVENT_6_allAway" >EVENT_6_allAway</Option>
+					<Option value="EVENT_6_oneHome" >EVENT_6_oneHome</Option>
+					<Option value="EVENT_6_allHome" >EVENT_6_allHome</Option>
 
-                    <Option value="EVENT_7_oneAway" >EVENT_7_oneAway</Option>
-                    <Option value="EVENT_7_allAway" >EVENT_7_allAway</Option>
-                    <Option value="EVENT_7_oneHome" >EVENT_7_oneHome</Option>
-                    <Option value="EVENT_7_allHome" >EVENT_7_allHome</Option>
+					<Option value="EVENT_7_oneAway" >EVENT_7_oneAway</Option>
+					<Option value="EVENT_7_allAway" >EVENT_7_allAway</Option>
+					<Option value="EVENT_7_oneHome" >EVENT_7_oneHome</Option>
+					<Option value="EVENT_7_allHome" >EVENT_7_allHome</Option>
 
-                    <Option value="EVENT_8_oneAway" >EVENT_8_oneAway</Option>
-                    <Option value="EVENT_8_allAway" >EVENT_8_allAway</Option>
-                    <Option value="EVENT_8_oneHome" >EVENT_8_oneHome</Option>
-                    <Option value="EVENT_8_allHome" >EVENT_8_allHome</Option>
+					<Option value="EVENT_8_oneAway" >EVENT_8_oneAway</Option>
+					<Option value="EVENT_8_allAway" >EVENT_8_allAway</Option>
+					<Option value="EVENT_8_oneHome" >EVENT_8_oneHome</Option>
+					<Option value="EVENT_8_allHome" >EVENT_8_allHome</Option>
 
-                    <Option value="EVENT_9_oneAway" >EVENT_9_oneAway</Option>
-                    <Option value="EVENT_9_allAway" >EVENT_9_allAway</Option>
-                    <Option value="EVENT_9_oneHome" >EVENT_9_oneHome</Option>
-                    <Option value="EVENT_9_allHome" >EVENT_9_allHome</Option>
+					<Option value="EVENT_9_oneAway" >EVENT_9_oneAway</Option>
+					<Option value="EVENT_9_allAway" >EVENT_9_allAway</Option>
+					<Option value="EVENT_9_oneHome" >EVENT_9_oneHome</Option>
+					<Option value="EVENT_9_allHome" >EVENT_9_allHome</Option>
 
-                    <Option value="EVENT_10_oneAway" >EVENT_10_oneAway</Option>
-                    <Option value="EVENT_10_allAway" >EVENT_10_allAway</Option>
-                    <Option value="EVENT_10_oneHome" >EVENT_10_oneHome</Option>
-                    <Option value="EVENT_10_allHome" >EVENT_10_allHome</Option>
+					<Option value="EVENT_10_oneAway" >EVENT_10_oneAway</Option>
+					<Option value="EVENT_10_allAway" >EVENT_10_allAway</Option>
+					<Option value="EVENT_10_oneHome" >EVENT_10_oneHome</Option>
+					<Option value="EVENT_10_allHome" >EVENT_10_allHome</Option>
 
-                    <Option value="EVENT_11_oneAway" >EVENT_11_oneAway</Option>
-                    <Option value="EVENT_11_allAway" >EVENT_11_allAway</Option>
-                    <Option value="EVENT_11_oneHome" >EVENT_11_oneHome</Option>
-                    <Option value="EVENT_11_allHome" >EVENT_11_allHome</Option>
+					<Option value="EVENT_11_oneAway" >EVENT_11_oneAway</Option>
+					<Option value="EVENT_11_allAway" >EVENT_11_allAway</Option>
+					<Option value="EVENT_11_oneHome" >EVENT_11_oneHome</Option>
+					<Option value="EVENT_11_allHome" >EVENT_11_allHome</Option>
 
-                    <Option value="EVENT_12_oneAway" >EVENT_12_oneAway</Option>
-                    <Option value="EVENT_12_allAway" >EVENT_12_allAway</Option>
-                    <Option value="EVENT_12_oneHome" >EVENT_12_oneHome</Option>
-                    <Option value="EVENT_12_allHome" >EVENT_12_allHome</Option>
+					<Option value="EVENT_12_oneAway" >EVENT_12_oneAway</Option>
+					<Option value="EVENT_12_allAway" >EVENT_12_allAway</Option>
+					<Option value="EVENT_12_oneHome" >EVENT_12_oneHome</Option>
+					<Option value="EVENT_12_allHome" >EVENT_12_allHome</Option>
 
-                    <Option value="EVENT_13_oneAway" >EVENT_13_oneAway</Option>
-                    <Option value="EVENT_13_allAway" >EVENT_13_allAway</Option>
-                    <Option value="EVENT_13_oneHome" >EVENT_13_oneHome</Option>
-                    <Option value="EVENT_13_allHome" >EVENT_13_allHome</Option>
+					<Option value="EVENT_13_oneAway" >EVENT_13_oneAway</Option>
+					<Option value="EVENT_13_allAway" >EVENT_13_allAway</Option>
+					<Option value="EVENT_13_oneHome" >EVENT_13_oneHome</Option>
+					<Option value="EVENT_13_allHome" >EVENT_13_allHome</Option>
 
-                    <Option value="EVENT_14_oneAway" >EVENT_14_oneAway</Option>
-                    <Option value="EVENT_14_allAway" >EVENT_14_allAway</Option>
-                    <Option value="EVENT_14_oneHome" >EVENT_14_oneHome</Option>
-                    <Option value="EVENT_14_allHome" >EVENT_14_allHome</Option>
+					<Option value="EVENT_14_oneAway" >EVENT_14_oneAway</Option>
+					<Option value="EVENT_14_allAway" >EVENT_14_allAway</Option>
+					<Option value="EVENT_14_oneHome" >EVENT_14_oneHome</Option>
+					<Option value="EVENT_14_allHome" >EVENT_14_allHome</Option>
 
-                    <Option value="EVENT_15_oneAway" >EVENT_15_oneAway</Option>
-                    <Option value="EVENT_15_allAway" >EVENT_15_allAway</Option>
-                    <Option value="EVENT_15_oneHome" >EVENT_15_oneHome</Option>
-                    <Option value="EVENT_15_allHome" >EVENT_15_allHome</Option>
+					<Option value="EVENT_15_oneAway" >EVENT_15_oneAway</Option>
+					<Option value="EVENT_15_allAway" >EVENT_15_allAway</Option>
+					<Option value="EVENT_15_oneHome" >EVENT_15_oneHome</Option>
+					<Option value="EVENT_15_allHome" >EVENT_15_allHome</Option>
 
-                    <Option value="EVENT_16_oneAway" >EVENT_16_oneAway</Option>
-                    <Option value="EVENT_16_allAway" >EVENT_16_allAway</Option>
-                    <Option value="EVENT_16_oneHome" >EVENT_16_oneHome</Option>
-                    <Option value="EVENT_16_allHome" >EVENT_16_allHome</Option>
+					<Option value="EVENT_16_oneAway" >EVENT_16_oneAway</Option>
+					<Option value="EVENT_16_allAway" >EVENT_16_allAway</Option>
+					<Option value="EVENT_16_oneHome" >EVENT_16_oneHome</Option>
+					<Option value="EVENT_16_allHome" >EVENT_16_allHome</Option>
 
-                    <Option value="EVENT_17_oneAway" >EVENT_17_oneAway</Option>
-                    <Option value="EVENT_17_allAway" >EVENT_17_allAway</Option>
-                    <Option value="EVENT_17_oneHome" >EVENT_17_oneHome</Option>
-                    <Option value="EVENT_17_allHome" >EVENT_17_allHome</Option>
+					<Option value="EVENT_17_oneAway" >EVENT_17_oneAway</Option>
+					<Option value="EVENT_17_allAway" >EVENT_17_allAway</Option>
+					<Option value="EVENT_17_oneHome" >EVENT_17_oneHome</Option>
+					<Option value="EVENT_17_allHome" >EVENT_17_allHome</Option>
 
-                    <Option value="EVENT_18_oneAway" >EVENT_18_oneAway</Option>
-                    <Option value="EVENT_18_allAway" >EVENT_18_allAway</Option>
-                    <Option value="EVENT_18_oneHome" >EVENT_18_oneHome</Option>
-                    <Option value="EVENT_18_allHome" >EVENT_18_allHome</Option>
+					<Option value="EVENT_18_oneAway" >EVENT_18_oneAway</Option>
+					<Option value="EVENT_18_allAway" >EVENT_18_allAway</Option>
+					<Option value="EVENT_18_oneHome" >EVENT_18_oneHome</Option>
+					<Option value="EVENT_18_allHome" >EVENT_18_allHome</Option>
 
-                    <Option value="EVENT_19_oneAway" >EVENT_19_oneAway</Option>
-                    <Option value="EVENT_19_allAway" >EVENT_19_allAway</Option>
-                    <Option value="EVENT_19_oneHome" >EVENT_19_oneHome</Option>
-                    <Option value="EVENT_19_allHome" >EVENT_19_allHome</Option>
+					<Option value="EVENT_19_oneAway" >EVENT_19_oneAway</Option>
+					<Option value="EVENT_19_allAway" >EVENT_19_allAway</Option>
+					<Option value="EVENT_19_oneHome" >EVENT_19_oneHome</Option>
+					<Option value="EVENT_19_allHome" >EVENT_19_allHome</Option>
 
-                    <Option value="EVENT_20_oneAway" >EVENT_20_oneAway</Option>
-                    <Option value="EVENT_20_allAway" >EVENT_20_allAway</Option>
-                    <Option value="EVENT_20_oneHome" >EVENT_20_oneHome</Option>
-                    <Option value="EVENT_20_allHome" >EVENT_20_allHome</Option>
-                </List>
-            </Field>
-            <Field  id="execEventButton" type="button"	>
-                <Label> ....after selection click</Label>
-                <Title>EXECUTE</Title>
-                <CallbackMethod>triggerEventCALLBACK</CallbackMethod>
-            </Field>
-        </ConfigUI>
-    </MenuItem>
+					<Option value="EVENT_20_oneAway" >EVENT_20_oneAway</Option>
+					<Option value="EVENT_20_allAway" >EVENT_20_allAway</Option>
+					<Option value="EVENT_20_oneHome" >EVENT_20_oneHome</Option>
+					<Option value="EVENT_20_allHome" >EVENT_20_allHome</Option>
+				</List>
+			</Field>
+			<Field  id="execEventButton" type="button"	>
+				<Label> ....after selection click</Label>
+				<Title>EXECUTE</Title>
+				<CallbackMethod>triggerEventCALLBACK</CallbackMethod>
+			</Field>
+		</ConfigUI>
+	</MenuItem>
 
+	<MenuItem id="saveRestore">
+		<Name>Save or reload device info to / from file..</Name>
+		<ConfigUI>
+		   <Field  id="execButtonE" type="button"	>
+				<Label>to save ipDevice data to file:</Label>
+				<Title>CLICK</Title>
+				<CallbackMethod>inpSaveData</CallbackMethod>
+			</Field>
 
+			<Field id="sepLabel" type="label"> <Label>----------------------------------------------------------</Label>  </Field>
 
+			<Field  id="execButtonD" type="button"	>
+				<Label>To load ipDevice data from (previously) stored file:</Label>
+				<Title>CLICK</Title>
+				<CallbackMethod>inpLoadDevices</CallbackMethod>
+			</Field>
+		</ConfigUI>
+	</MenuItem>
 
-  
-    <MenuItem id="menu1">
-        <Name>Save ipDevice data to file</Name>
-        <CallbackMethod>inpSaveData</CallbackMethod>
-    </MenuItem>
-    <MenuItem id="menu2">
-        <Name>Load ipDevice data from (previously) stored file</Name>
-        <CallbackMethod>inpLoadDevices</CallbackMethod>
-    </MenuItem>
-    <MenuItem id="menu3">
-        <Name>Sort ipDevices Variables with IP number</Name>
-        <CallbackMethod>inpSortData</CallbackMethod>
-    </MenuItem>
-  
-  
-    <MenuItem id="menuremoveignoredMAC">
-        <Name>IGNORE LIST:  Remove MAC number from the ignore list</Name>
-        <ConfigUI>
-        <Field  id="selectedMAC" type="menu" defaultValue="0">
-            <Label>currently ignored MACs:</Label>     <List class="self" filter="" method="filterIgnoredMACs" dynamicReload="false"/>
-        </Field>
-        <Field  id="execButton" type="button"	>
-                <Label> ....after selection click</Label>
-                <Title>REMOVE</Title>
-            <CallbackMethod>buttonConfirmRemoveIgnoredMACsCALLBACK</CallbackMethod>
-        </Field>
-        </ConfigUI>
-    </MenuItem>
+	<MenuItem id="menu92">
+		<Name>Reset Devices / Events ..</Name>
+		<ConfigUI>
+		   <Field  id="execButtonE" type="button"	>
+					<Label>to reset all EVENTS:</Label>
+					<Title>CLICK</Title>
+				 <CallbackMethod>inpResetEVENTS</CallbackMethod>
+			</Field>
 
-  
-    <MenuItem id="menuaddignoredMAC">
-        <Name>IGNORE LIST:  Add MAC number to the ignore list</Name>
-        <ConfigUI>
-            <Field  id="selectedMAC" type="menu" defaultValue="0"> 
-                <Label>existing not ignored devices / MACs:</Label>     <List class="self" filter="" method="filterNotIgnoredMACs" dynamicReload="false"/>
-            </Field>
-            <Field  id="execButton" type="button"	>
-                    <Label> ....after selection click</Label>
-                    <Title>ADD</Title>
-            <CallbackMethod>buttonConfirmAddIgnoredMACsCALLBACK</CallbackMethod>
-            </Field>
-        </ConfigUI>
-    </MenuItem>
+			<Field id="sepLabel" type="label"> <Label>----------------------------------------------------------</Label>  </Field>
 
+			<Field  id="execButtonD" type="button"	>
+					<Label>to reset all DEVICES:</Label>
+					<Title>CLICK</Title>
+				 <CallbackMethod>inpResetDEVICES</CallbackMethod>
+			</Field>
+		</ConfigUI>
+	</MenuItem>
+
+	<MenuItem id="sortVAriables">
+		<Name>Sort ipDevices Variables with IP number</Name>
+		<CallbackMethod>inpSortData</CallbackMethod>
+	</MenuItem>
   
   
-    <MenuItem id="menu4">
-        <Name>Print details of IP_services of your network to logfile</Name>
-        <CallbackMethod>inpDetails</CallbackMethod>
-    </MenuItem>
+	<MenuItem id="menuremoveignoredMAC">
+		<Name>IGNORE LIST: Remove or add MAC number from/to the ignore list..</Name>
+		<ConfigUI>
+			<Field  id="selectedMACRemove" type="menu" defaultValue="0">
+				<Label>currently ignored MACs:</Label>	 <List class="self" filter="" method="filterIgnoredMACs" dynamicReload="false"/>
+			</Field>
+			<Field  id="execButtonR" type="button"	>
+				<Label> ....after selection click</Label>
+				<Title>REMOVE</Title>
+				<CallbackMethod>buttonConfirmRemoveIgnoredMACsCALLBACK</CallbackMethod>
+			</Field>
 
-    <MenuItem id="menu6">
-        <Name>Print configuration of all EVENTS</Name>
-        <CallbackMethod>inpPrintEVENTS</CallbackMethod>
-    </MenuItem>
-    <MenuItem id="menu7a">
-        <Name>Print piBeacon Information</Name>
-        <CallbackMethod>inpPrintpiBeacon</CallbackMethod>
-    </MenuItem>
-    <MenuItem id="menu7c">
-        <Name>Print unifi Information</Name>
-        <CallbackMethod>inpPrintUnifi</CallbackMethod>
-    </MenuItem>
-    <MenuItem id="menu90">
-        <Name>-------------------</Name>
-        <CallbackMethod>inpDummy</CallbackMethod>
-    </MenuItem>
-    <MenuItem id="menu92">
-        <Name>Reset all Events</Name>
-        <CallbackMethod>inpResetEVENTS</CallbackMethod>
-    </MenuItem>
-    <MenuItem id="menu93">
-        <Name>Reset all Devices</Name>
-        <CallbackMethod>inpResetDEVICES</CallbackMethod>
-    </MenuItem>
-    <MenuItem id="menu95">
-        <Name>-------------------</Name>
-        <CallbackMethod>inpDummy</CallbackMethod>
-    </MenuItem>
-    <MenuItem id="menu96">
-        <Name>Soft restart of plugin</Name>
-        <CallbackMethod>inpSoftrestart</CallbackMethod>
-    </MenuItem>
-    
+			<Field id="sepLabel" type="label"> <Label>----------------------------------------------------------</Label>  </Field>
+
+			<Field  id="selectedMACIgnore" type="menu" defaultValue="0"> 
+				<Label>existing not ignored devices / MACs:</Label>	 <List class="self" filter="" method="filterNotIgnoredMACs" dynamicReload="false"/>
+			</Field>
+			<Field  id="execButtonI" type="button"	>
+					<Label> ....after selection click</Label>
+					<Title>ADD</Title>
+				<CallbackMethod>buttonConfirmAddIgnoredMACsCALLBACK</CallbackMethod>
+			</Field>
+		</ConfigUI>
+	</MenuItem>
+
+ 
+	<MenuItem id="menu4">
+		<Name>Print details of IP_services of your network to logfile..</Name>
+		<ConfigUI>
+			<Field  id="execButton" type="button"	>
+				<Label>Start process, will take 1-5 minutes</Label>
+				<Title>START</Title>
+				<CallbackMethod>inpDetails</CallbackMethod>
+			</Field>
+		</ConfigUI>
+	</MenuItem>
+
+	<MenuItem id="menu6">
+		<Name>Print configuration of all EVENTS</Name>
+		<CallbackMethod>inpPrintEVENTS</CallbackMethod>
+	</MenuItem>
+
+
+	<MenuItem id="menu96">
+		<Name>Soft restart of plugin</Name>
+		<CallbackMethod>inpSoftrestart</CallbackMethod>
+	</MenuItem>
+	
 
 
 
