@@ -14,135 +14,142 @@ Before running make sure that you have installed fing binaries, install FING  64
  Then delete fing.log and fing.data (if exist) in the indigo preference directory 
   /Library/Application Support/Perceptive Automation/Indigo xx.y/Preferences/Plugins/com.karlwachs.fingscan
   Reload the plugin
+You need to set at a minimun:
+1. password of your mac (the one you use to login)
+2. network starting number
+3. number of ip numbers 
+For the rest the default values should be ok to start 
 </Label>
 	</Field>
 
+<Field	id="password" type="textfield" secure="true"  defaultValue="your MAC password here" readonly ="no" hidden="false">
+	<Label>Enter PASSSWORD of your  MAC userid:</Label>
+</Field>
+
+
 <Field defaultValue="192.168.1.0" id="network" type="textfield" alignText="right" >
-    <Label>Network starting # to be scanned</Label></Field>
+    <Label>Network starting # to be scanned</Label>
+</Field>
+
 <Field defaultValue="24" id="netwType" type="menu" alignText="right">
-            <List>
-            <Option value="16" >/16 = 16 bits: 0..65535  if you really need that many numbers.. scans will take a long time! ;)</Option>
-            <Option value="17" >/17 = 15 bits: 0..32767</Option>
-            <Option value="18" >/18 = 14 bits: 0..16383</Option>
-            <Option value="19" >/19 = 13 bits: 0..8193</Option>
-            <Option value="20" >/20 = 12 bits: 0..4095</Option>
-            <Option value="21" >/21 = 11 bits: 0..2047</Option>
-            <Option value="22" >/22 = 10 bits: 0..1011 </Option>
-            <Option value="23" >/23 =  9 bits: 0..512</Option>
-            <Option value="24" >/24 =  8 bits: 0..254  default</Option>
-            <Option value="25" >/25 =  7 bits: 0..127 </Option>
-            <Option value="26" >/26 =  6 bits: 0..63 </Option>
-            <Option value="27" >/27 =  5 bits: 0..31 </Option>
-            <Option value="28" >/28 =  4 bits: 0..15 </Option>
-            <Option value="29" >/29 =  3 bits: 0..7 </Option>
-            <Option value="30" >/30 =  2 bits: 0..3 </Option>
-            <Option value="31" >/31 =  1 bits: 0..1 </Option>
-            </List>
-<Label>Number of ip numbers (2**(32-x))</Label></Field>
+	<List>
+		<Option value="16" >/16 = 16 bits: 0..65535  if you really need that many numbers.. scans will take a long time! ;)</Option>
+		<Option value="17" >/17 = 15 bits: 0..32767</Option>
+		<Option value="18" >/18 = 14 bits: 0..16383</Option>
+		<Option value="19" >/19 = 13 bits: 0..8193</Option>
+		<Option value="20" >/20 = 12 bits: 0..4095</Option>
+		<Option value="21" >/21 = 11 bits: 0..2047</Option>
+		<Option value="22" >/22 = 10 bits: 0..1011 </Option>
+		<Option value="23" >/23 =  9 bits: 0..512</Option>
+		<Option value="24" >/24 =  8 bits: 0..254  default</Option>
+		<Option value="25" >/25 =  7 bits: 0..127 </Option>
+		<Option value="26" >/26 =  6 bits: 0..63 </Option>
+		<Option value="27" >/27 =  5 bits: 0..31 </Option>
+		<Option value="28" >/28 =  4 bits: 0..15 </Option>
+		<Option value="29" >/29 =  3 bits: 0..7 </Option>
+		<Option value="30" >/30 =  2 bits: 0..3 </Option>
+		<Option value="31" >/31 =  1 bits: 0..1 </Option>
+	</List>
+<Label>Number of ip numbers (2**(32-x))</Label>
+</Field>
+
 <Field id="infoLabel00" type="label" alignText="right">
-        <Label>eg 192.168.1.0/24= ...0..255 or 192.168.1.64/27 =...64..96  </Label>    </Field>
+        <Label>eg 192.168.1.0/24= ...0..255 or 192.168.1.64/27 =...64..96
+</Label> 
+</Field>
 
 
 <Field defaultValue="ipDevices" id="indigoDevicesFolderName" type="textfield" alignText="right">
-<Label>indigo DEVICE folder name </Label></Field>
-<Field defaultValue="IP devices" id="indigoVariablesFolderName" type="textfield" alignText="right">
-<Label>indigo VARIABLE folder name </Label></Field>
+<Label>Indigo folder name for devices</Label></Field>
+
+<Field defaultValue="ipDevices" id="indigoVariablesFolderName" type="textfield" alignText="right">
+<Label>Indigo folder name for variables</Label></Field>
 
 
-    <Field defaultValue="21" id="enableMACtoVENDORlookup" type="menu" alignText="right">
-                <List>
-					<Option value="0"  >disable </Option>
-					<Option value="7"  >enable, refresh every  7 days </Option>
-					<Option value="14" >enable, refresh every 14 days </Option>
-					<Option value="21" >enable, refresh every 21 days </Option>
-					<Option value="30" >enable, refresh every 30 days </Option>
-                </List>
-        <Label>MAC# to vendor lookup</Label>
-    </Field>
+<Field defaultValue="21" id="enableMACtoVENDORlookup" type="menu" alignText="right">
+	<List>
+		<Option value="0"  >disable </Option>
+		<Option value="7"  >enable, refresh every  7 days </Option>
+		<Option value="14" >enable, refresh every 14 days </Option>
+		<Option value="21" >enable, refresh every 21 days </Option>
+		<Option value="30" >enable, refresh every 30 days </Option>
+	</List>
+	<Label>Vendor lookup for MAC#s (download info)</Label>
+</Field>
 
 
 <Field defaultValue="1" id="acceptNewDevices" type="menu" alignText="right" visible = "no">
-            <List>
-            <Option value="0" >ignore new devices</Option>
-            <Option value="1" >add new devices</Option>
-            </List>
+	<List>
+		<Option value="0" >ignore new devices</Option>
+		<Option value="1" >add new devices</Option>
+	</List>
 <Label>ignore / accpet new devices</Label></Field>
 
-<Field defaultValue="0" id="enablepiBeaconDevices" type="menu" alignText="right">
-            <List>
-            <Option value="0" >disable piBeacon devices for tracking</Option>
-            <Option value="1" >enable  piBeacon devices for tracking </Option>
-            </List>
-<Label>use piBeacon devices for tracking</Label></Field>
 
-<Field defaultValue="0" id="enablepiUnifiDevices" type="menu" alignText="right">
-            <List>
-            <Option value="0" >disable UNIFI devices for tracking</Option>
-            <Option value="1" >enable  UNIFI devices for tracking </Option>
-            </List>
-<Label>use UNIFI devices for tracking</Label></Field>
-
-
-<Field    id="enableBroadCastEvents" type="menu"  defaultValue="0" tooltip="if enabled any change of status of a up/down devices will send indigo broadcast  to read the status and use it to determine home or away events">
-    <List>
-        <Option value="0"          >disable</Option>
-        <Option value="all"        >ENABLE ALL:   for all devices that have an up/ down status</Option>
-        <Option value="individual" >ENABLE INDIVIDUAL:  individual devices must be enabled in device edit</Option>
-    </List>
-    <Label>Enable BC of up/ down status:</Label>
+<Field    id="enableBroadCastEvents" type="menu"  defaultValue="0" tooltip="if enabled any change of status of a up/down devices will send an INDIGO broadcast  for otehr plugin to read the status and use it to determine change in status">
+	<List>
+		<Option value="0"          >disable</Option>
+		<Option value="all"        >ENABLE ALL:   for all devices that have an up/ down status</Option>
+		<Option value="individual" >ENABLE INDIVIDUAL:  individual devices must be enabled in device edit</Option>
+	</List>
+	<Label>Enable Broadcast of up/ down status:</Label>
 </Field>
+   
 
-
-<Field id="simpleSeparator1" type="separator"/>
-    
-
-
-<Field	id="password" type="textfield" defaultValue="your MAC password here" readonly ="no" hidden="false"> <Label>Enter YOUR MAC password:</Label> </Field>
-
-<Field id="infoLabel2" type="label" alignText="right"> <Label>overwrite with new password if you want to change it</Label> </Field>
+<Field    id="enableReLoadPluginHour" type="menu"  defaultValue="1" tooltip="if set the plugin will reload at 0/1/2 am in the morning">
+	<List>
+		<Option value="-1"       >disable</Option>
+		<Option value="0"        >at midnight</Option>
+		<Option value="1"        >at 1 am</Option>
+		<Option value="2"        >at 2 am</Option>
+	</List>
+	<Label>Enable reload/restart of plugin at midnight:</Label>
+</Field>
+   
 
 <Field id="simpleSeparator3" type="separator"/>
     
-<Field id="sleepTime" type="menu" defaultValue="1" tooltip="amount of seconds to sleep between checking for changes in FING files / pings etc">
-        <List>
-            <Option value="1" >1 second fastest reaction, but keeps CPU busy (wait seconds must a dividor of 60)</Option>
-            <Option value="2" >2 seconds</Option>
-            <Option value="3" >3 seconds</Option>
-            <Option value="4" >4 seconds</Option>
-            <Option value="5" >5 seconds</Option>
-            <Option value="6" >6 seconds</Option>
-            <Option value="10" >10 seconds</Option>
-            <Option value="15" >15 seconds .. slow to react </Option>
-        </List>
-    <Label>seconds to sleep between probing:</Label>
+<Field id="sleepTime" type="menu" defaultValue="2" tooltip="amount of seconds to sleep between checking for changes in FING files / pings etc">
+		<List>
+			<Option value="1" >1 second fastest reaction, but keeps CPU busy (wait seconds must a dividor of 60)</Option>
+			<Option value="2" >2 seconds</Option>
+			<Option value="3" >3 seconds</Option>
+			<Option value="4" >4 seconds</Option>
+			<Option value="5" >5 seconds</Option>
+			<Option value="6" >6 seconds</Option>
+			<Option value="10" >10 seconds</Option>
+			<Option value="15" >15 seconds .. slow to react </Option>
+		</List>
+	<Label>seconds to sleep between probing:</Label>
 </Field>
 
 <Field id="inbetweenPingType" type="menu" defaultValue="0" tooltip="choose if pings should detect DOWN status if devices are UP, fing will detect once a minute. pinging a device can detect a DOWN status faster , but if device answers ping, FING will detect it too." >
-    <List>
-        <Option value="0"          >do not use ping</Option>
-        <Option value="sequential" >do pings for each device sequentially</Option>
-        <Option value="parallel"   >do pings in parallel (fastest detection) </Option>
-    </List>
-    <Label>Enable PINGs inbetween FING(for all devices + device edit settings for each device):</Label> </Field>
+	<List>
+		<Option value="0"          >do not use ping</Option>
+		<Option value="sequential" >do pings for each device sequentially</Option>
+		<Option value="parallel"   >do pings in parallel (fastest detection) </Option>
+	</List>
+	<Label>Enable PINGs inbetween FING(for all devices + device edit settings for each device):</Label>
+ </Field>
 
-    <Field id="infoLabel99" type="label"> <Label>debug level for plugin:</Label>  </Field>
-        
-    <Field    id="debugLogic"    type="checkbox"  defaultValue="false"       tooltip=""> <Label> Debug...                   ... (1) Logic:</Label>  </Field>
-    <Field    id="debugPing"     type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (2) PING:</Label>  </Field>
-    <Field    id="debugEvents"   type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (4) Events:</Label>  </Field>
-    <Field    id="debugBC"       type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (8) send BC of status changes:</Label>  </Field>
-    <Field    id="debugSpecial"  type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (20) special for debuuging and development:</Label>  </Field>
-    <Field    id="debugall"      type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (99) All:</Label>  </Field>
+<Field id="infoLabel99" type="label"> <Label>debug level for plugin:</Label>  </Field>
+	
+<Field    id="debugLogic"    type="checkbox"  defaultValue="false"       tooltip=""> <Label> Debug...                   ... (1) Logic:</Label>  </Field>
+<Field    id="debugPing"     type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (2) PING:</Label>  </Field>
+<Field    id="debugEvents"   type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (4) Events:</Label>  </Field>
+<Field    id="debugBC"       type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (8) send BC of status changes:</Label>  </Field>
+<Field    id="debugSpecial"  type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (20) special for debuuging and development:</Label>  </Field>
+<Field    id="debugall"      type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (99) All:</Label>  </Field>
 
-    <Field    id="logFileActive2"      type="menu"      defaultValue="standard"      > <Label> send logs to ..:</Label>
-        <List>
-            <Option value="standard" > no special fing logfile, std indigo logfile</Option>
-        </List>
-    </Field>
-    <Field id="infoLabel227" type="label"> <Label>.                     for DETAILED time tracking set indigo variable "enableTimeTracking_fing"</Label>  </Field>
-    <Field    id="do_cProfile" type="textfield"  defaultValue="on/off/print"  readonly="yes"     > 
-        <Label>... enable or stop or  print intermediate results use on/off/print:</Label>  
-    </Field>
+<Field    id="logFileActive2"      type="menu"      defaultValue="standard"      > <Label> send logs to ..:</Label>
+	<List>
+		<Option value="standard" > no special fing logfile, std indigo logfile</Option>
+	</List>
+</Field>
+<Field id="infoLabel227" type="label"> <Label>.                     for DETAILED time tracking set indigo variable "enableTimeTracking_fing"</Label>  </Field>
+<Field    id="do_cProfile" type="textfield"  defaultValue="on/off/print"  readonly="yes"     > 
+	<Label>... enable or stop or  print intermediate results use on/off/print:</Label>  
+</Field>
 
 
 

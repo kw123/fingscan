@@ -1,3 +1,18 @@
+Added features / changes in v2022.36.85 @ 2022-08-31
+===================================================
+
+1.  removed dead code (findmy , pibeacon, unifi interfaces)
+2.  fixed restore devices
+3.  fixed one py2->py3 i/o issue (in network scan, write to log)
+4.  streamlined menu structure
+5.  fixed lookup of vendor 
+6.  status-date stamp is fixed at startup if datestamp is empty.
+    previously it was changed once device changes state up->down .. 
+    now also initial datestamp is not 0 but proper datestamp 
+7.  reload / restart of plugin is now configurable in config to be [disabled, start at  0:19, 1:19, 2:19] 
+
+
+
 Added features / changes in v2022.35.84 @ 2022-08-29
 ===================================================
 
@@ -5,6 +20,7 @@ Added features / changes in v2022.35.84 @ 2022-08-29
 2.  fixed restore devices
 3.  fixed one py2->py3 i/o issue ( in network scan, write to log)
 4.  streamlined menu structure
+5.  fixed lookup of vendor 
 
 
 Added features / changes in v2022.34.83 @ 2022-08-29

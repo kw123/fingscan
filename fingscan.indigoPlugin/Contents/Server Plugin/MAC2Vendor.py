@@ -160,7 +160,7 @@ class MAP2Vendor:
 
 
 	########################################
-	def getVendorOfMAC(self,MAC):
+	def getVendorOfMAC(self, MAC):
 			if "6" not in self.mac2VendorDict: 
 				return ""
 			if len(self.mac2VendorDict["6"]) < 1000:
@@ -168,13 +168,14 @@ class MAP2Vendor:
 				return ""
 
 			mac = MAC.replace(":","").upper()
+			ret = ""
 			if mac[0:6] in self.mac2VendorDict["6"]:		# large  Vendor Space
-				return self.mac2VendorDict["6"][mac[0:6]]
-			if mac[0:7] in self.mac2VendorDict["7"]:		# medium Vendor Space
-				return self.mac2VendorDict["7"][mac[0:7]]
-			if mac[0:9] in self.mac2VendorDict["9"]:		# small  Vendor Space
-				return self.mac2VendorDict["9"][mac[0:9]]
-			return ""
+				ret = self.mac2VendorDict["6"][mac[0:6]]
+			elif mac[0:7] in self.mac2VendorDict["7"]:		# medium Vendor Space
+				ret = self.mac2VendorDict["7"][mac[0:7]]
+			elif mac[0:9] in self.mac2VendorDict["9"]:		# small  Vendor Space
+				ret= self.mac2VendorDict["9"][mac[0:9]]
+			return ret
 	
 
 ####-------------------------------------------------------------------------####
