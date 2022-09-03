@@ -127,11 +127,6 @@
             <TriggerLabel>suppressChangeMSG</TriggerLabel>
             <ControlPageLabel>suppressChangeMSG</ControlPageLabel>
         </State>
-        <State id="nickName">
-            <ValueType>String</ValueType>
-            <TriggerLabel>nickName</TriggerLabel>
-            <ControlPageLabel>nickName</ControlPageLabel>
-        </State>
     </States>
 </Device>
 

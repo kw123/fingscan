@@ -1,3 +1,11 @@
+Added features / changes in v2022.36.86 @ 2022-09-03
+===================================================
+
+1.  some bug fixes
+2.  removed nickname info as this is not consistent and creates more confusion that it adds value 
+
+
+
 Added features / changes in v2022.36.85 @ 2022-08-31
 ===================================================
 
