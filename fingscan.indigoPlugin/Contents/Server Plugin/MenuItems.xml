@@ -336,6 +336,12 @@
 		<CallbackMethod>inpSortData</CallbackMethod>
 	</MenuItem>
   
+
+	<MenuItem id="reloadVendorInfo">
+		<Name>Reload vendor info</Name>
+		<CallbackMethod>inpreloadVendorInfo</CallbackMethod>
+	</MenuItem>
+  
   
 	<MenuItem id="menuremoveignoredMAC">
 		<Name>IGNORE LIST: Remove or add MAC number from/to the ignore list..</Name>

@@ -1217,8 +1217,10 @@ class Plugin(indigo.PluginBase):
 	def validateDeviceConfigUi(self, valuesDict, typeId, devId):
 		for theMAC in self.allDeviceInfo:
 			if int(self.allDeviceInfo[theMAC]["deviceId"]) == devId:
-				self.allDeviceInfo[theMAC]["hardwareVendor"]	= valuesDict["setHardwareVendor"]
-				self.allDeviceInfo[theMAC]["deviceInfo"]		= valuesDict["setDeviceInfo"]
+				if valuesDict["setHardwareVendor"] !="":
+					self.allDeviceInfo[theMAC]["hardwareVendor"]	= valuesDict["setHardwareVendor"]
+				if valuesDict["setDeviceInfo"] !="":
+					self.allDeviceInfo[theMAC]["deviceInfo"]		= valuesDict["setDeviceInfo"]
 				self.allDeviceInfo[theMAC]["useWakeOnLanSecs"]	= int(valuesDict["setuseWakeOnLan"])
 				if "useWakeOnLanLast" not in self.allDeviceInfo[theMAC]:
 					self.allDeviceInfo[theMAC]["useWakeOnLanLast"]		= 0
@@ -1553,6 +1555,11 @@ class Plugin(indigo.PluginBase):
 	def inpLoadDevices(self, dummy1="", dummy2=""):
 		self.indigoCommand = "loadDevices"
 		self.indiLOG.log(20, "command: loadDevices")
+		return
+########################################
+	def inpinpreloadVendorInfo(self, dummy1="", dummy2=""):
+		self.indigoCommand = "reloadVendorInfo"
+		self.indiLOG.log(20, "command: reloadVendorInfo")
 		return
 ########################################
 	def inpSortData(self, dummy1="", dummy2=""):
@@ -3380,6 +3387,7 @@ class Plugin(indigo.PluginBase):
 				if self.indigoCommand != "none" and self.indigoCommand != "":
 					if self.indigoCommand == "loadDevices": self.doLoadDevices()
 					if self.indigoCommand == "sort": self.doSortData()
+					if self.indigoCommand == "reloadVendorInfo": self.updateVendors()
 					if self.indigoCommand == "details": self.doDetails()
 					if self.indigoCommand == "ResetEVENTS": 
 						self.resetEvents()
@@ -3669,7 +3677,7 @@ class Plugin(indigo.PluginBase):
 				if devI["devExists"] == 0 and self.acceptNewDevices and theMAC not in self.ignoredMAC:
 	#				if self.decideMyLog("Logic"): self.indiLOG.log(10, " creating device {}".format(devI))
 					theName = "FING_"+theMAC
-					devI = self.createDev(devI, theName, theMAC)
+					self.createDev(theName, theMAC)
 					self.updateIndigoIpVariableFromDeviceData(theMAC)
 
 
@@ -3713,8 +3721,12 @@ class Plugin(indigo.PluginBase):
 			
 		return
 
-	def createDev(self, devI, theName, theMAC):
+	def createDev(self, theName, theMAC):
 		try:
+			devI = self.allDeviceInfo[theMAC]
+			vInfo = self.getVendorName(theMAC)
+			if len(vInfo)> 3: 
+				devI["hardwareVendor"] = vInfo
 			indigo.device.create(
 				protocol=indigo.kProtocol.Plugin,
 				address=self.formatiPforAddress(devI["ipNumber"]),
@@ -3746,11 +3758,12 @@ class Plugin(indigo.PluginBase):
 			devI["deviceId"]	= dev.id
 			devI["deviceName"]	= dev.name
 			devI["devExists"]	= 1
+			self.executeUpdateStatesList()
 			self.updateIndigoIpVariableFromDeviceData(theMAC)
 
 		except Exception:
 			self.logger.error("", exc_info=True)
-		return devI
+		return
 
 
 ##############################################
@@ -3768,12 +3781,12 @@ class Plugin(indigo.PluginBase):
 					if not theMAC in self.allDeviceInfo: continue
 					devI=self.allDeviceInfo[theMAC]
 	#				if self.decideMyLog("Logic"): self.indiLOG.log(10, " checking MAC/values: "+theMAC+":{}".format(devI))
-					devI["deviceId"]	=dev.id
+					devI["deviceId"]	= dev.id
 					if dev.name != devI["deviceName"]:
 						update = 1
 						devI["deviceName"]	= dev.name
 					if dev.states["hardwareVendor"] != devI["hardwareVendor"]:
-						devI["hardwareVendor"]		=dev.states["hardwareVendor"]
+						devI["hardwareVendor"]		= dev.states["hardwareVendor"]
 						update = 2
 					if dev.states["deviceInfo"] != devI["deviceInfo"]:
 						devI["deviceInfo"]		= dev.states["deviceInfo"]
@@ -3830,7 +3843,7 @@ class Plugin(indigo.PluginBase):
 				# create new device
 				theName = "MAC-{}".format(theMAC)
 				if self.acceptNewDevices:
-					devI = self.createDev(devI, theName, theMAC)
+					self.createDev(theName, theMAC)
 					self.executeUpdateStatesList()
 				return
 			

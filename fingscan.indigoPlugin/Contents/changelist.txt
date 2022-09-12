@@ -1,3 +1,11 @@
+Added features / changes in v2022.36.87 @ 2022-09-12
+===================================================
+
+1. bug fix: dev states for email after new device event where not populated in time
+   hence ip# and hardware info where not available in time.  after some seconds they were populated
+   this was introduced with the last update
+
+
 Added features / changes in v2022.36.86 @ 2022-09-03
 ===================================================
 
