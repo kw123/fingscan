@@ -2742,12 +2742,12 @@ class Plugin(indigo.PluginBase):
 				allAwayTrigger		= 0
 
 				out = "checkTrigger\n"
-				if self.decideMyLog("Events"): out+="EVENT# {}".format(nEvent).ljust(2)+"  Dev# HomeStat ".ljust(16)                         +"HomeTime".ljust(12)          +"AwayStat".ljust(12)         +"AwayTime".ljust(12)            +" oneHome"            +" allHome"             +"  oneAway"           +" allAWay"+"  Hometime"+"\n"
+				if self.decideMyLog("Special"): out+="EVENT# {}".format(nEvent).ljust(2)+"  Dev# HomeStat ".ljust(16)                         +"HomeTime".ljust(12)          +"AwayStat".ljust(12)         +"AwayTime".ljust(12)            +" oneHome"            +" allHome"             +"  oneAway"           +" allAWay"+"  Hometime"+"\n"
 				for nDev in evnt["IPdeviceMACnumber"]:
 					if evnt["IPdeviceMACnumber"][nDev] == "0": continue
 					if evnt["IPdeviceMACnumber"][nDev] ==  "": continue
-					if AwayStat[nDev] and evnt["currentStatusAway"][nDev] == "0" and (minAwayTime < 30 and False):  ### need to fix 
-						if self.decideMyLog("Events"): out += "          "+  "nDev{}".format(nDev)+" AwayStat[nDev]{}".format(AwayStat[nDev])+" evnt[currentStatusAway][nDev]" + "{}".format(evnt["currentStatusAway"][nDev])+" minAwayTime" + "{}".format(minAwayTime)+"\n"
+					if AwayStat[nDev] and evnt["currentStatusAway"][nDev] == "0":  ### need to fix 
+						if self.decideMyLog("Special"): out += "          nDev{} AwayStat[nDev:{} currentStatusAway:{} minAwayTime:{}\n".format(nDev, AwayStat[nDev], evnt["currentStatusAway"][nDev], minAwayTime)
 						self.redoAWAY= 10  # increase frequency of up/down test to 1 per second for 10 seconds
 	#### away status
 					if evnt["currentStatusAway"][nDev] == "0":
@@ -2769,12 +2769,12 @@ class Plugin(indigo.PluginBase):
 							if AwayStat[nDev]:
 								if AwayTime[nDev] >= float(evnt["minimumTimeAway"]):
 									evnt["currentStatusAway"][nDev] = "AWAY"
-									if allAway == 0: allAway = 1
+									if allAway == 0: allAway = 1  # mark that this could be allaway
 								else:    
-									allAway = -1
+									allAway = -1 # mark that at least one is not yet away 
 							else:    
 								evnt["currentStatusAway"][nDev] = "0"
-								allAway = -1
+								allAway = -1 # mark that at least one is not yet away 
 					 
 					if evnt["currentStatusAway"][nDev] == "AWAY":
 						if AwayStat[nDev]:
@@ -2783,10 +2783,11 @@ class Plugin(indigo.PluginBase):
 								oneAwayTrigger = True
 							if minAwayTime >= float(evnt["minimumTimeAway"]):
 								allAwayTrigger = True
+								if allAway == 0: allAway = 1  # mark that this could be allaway
 						else:
 							allAway = -1
 							evnt["currentStatusAway"][nDev]	= "0"
-							evnt["secondsOfLastOFF"][nDev]= timeNowm2
+							evnt["secondsOfLastOFF"][nDev] = timeNowm2
 					if evnt["currentStatusAway"][nDev] == "AWAY":
 						evnt["nAway"] += 1
 
@@ -2794,8 +2795,8 @@ class Plugin(indigo.PluginBase):
 					if evnt["currentStatusHome"][nDev] == "0": # was not home
 						if HomeStat[nDev]:
 							evnt["currentStatusHome"][nDev]	= "HOME"
-							evnt["secondsOfLastON"][nDev]= timeNowm2
-							evnt["timeOfLastON"][nDev]= timeNowHMS
+							evnt["secondsOfLastON"][nDev] = timeNowm2
+							evnt["timeOfLastON"][nDev] = timeNowHMS
 							oneHome = 1
 							oneHomeTrigger = 1
 							allHomeTrigger = 1
@@ -2804,8 +2805,8 @@ class Plugin(indigo.PluginBase):
 							allHome = -1
 					else:  # it is or was  home
 						if HomeStat[nDev]: # still home: restart timer
-							evnt["timeOfLastON"][nDev]= timeNowHMS
-							evnt["secondsOfLastON"][nDev]= timeNowm2
+							evnt["timeOfLastON"][nDev] = timeNowHMS
+							evnt["secondsOfLastON"][nDev] = timeNowm2
 							evnt["currentStatusHome"][nDev]	= "HOME"
 							if allHome == 0: allHome = 1
 							oneHome = 1
@@ -2814,12 +2815,12 @@ class Plugin(indigo.PluginBase):
 							allHome = -1
 					if evnt["currentStatusHome"][nDev]	== "HOME":
 						evnt["nHome"] += 1
-					#if self.decideMyLog("Events"): out+="EVENT# {}".format(nEvent).ljust(2)+"  {}".format(nDev).rjust(3)+"   " +"{}".format(HomeStat[nDev]).ljust(12)+ "{}".format(HomeTime[nDev]).ljust(12)+ "{}".format(AwayStat[nDev]).ljust(12)+ "{}".format(AwayTime[nDev]).ljust(12)+ "{}".format(oneHome).ljust(8)+ "{}".format(allHome).ljust(8)+ "{}".format(oneAway).ljust(8)+ "{}".format(allAway).ljust(8)+"{}".format(HomeTime[nDev]) +"\n"
+					if self.decideMyLog("Special"): out+="EVENT# {}".format(nEvent).ljust(2)+"  {}".format(nDev).rjust(3)+"   " +"{}".format(HomeStat[nDev]).ljust(12)+ "{}".format(HomeTime[nDev]).ljust(12)+ "{}".format(AwayStat[nDev]).ljust(12)+ "{}".format(AwayTime[nDev]).ljust(12)+ "{}".format(oneHome).ljust(8)+ "{}".format(allHome).ljust(8)+ "{}".format(oneAway).ljust(8)+ "{}".format(allAway).ljust(8)+"{}".format(HomeTime[nDev]) +"\n"
 
-				#if self.decideMyLog("Events"): out += "EVENT# {}".format(nEvent).ljust(2)+"  "+"oneHome:" + evnt["oneHome"]+"; allHome:" + evnt["allHome"]+"; oneAway:" + evnt["oneAway"]+"; allAway:" + evnt["allAway"]+" minHomeTime:{}, minimumTimeHome:{} \n".format(minHomeTime, evnt["minimumTimeHome"])
+				if self.decideMyLog("Special"): out += "EVENT# {}".format(nEvent).ljust(2)+"  "+"oneHome:" + evnt["oneHome"]+"; allHome:" + evnt["allHome"]+"; oneAway:" + evnt["oneAway"]+"; allAway:" + evnt["allAway"]+" minHomeTime:{}, minimumTimeHome:{} \n".format(minHomeTime, evnt["minimumTimeHome"])
 				if time.time() - self.timeOfStart > 100:
 					if oneHome > 0:
-						if evnt["oneHome"] != "1" :
+						if evnt["oneHome"] != "1":
 							evnt["oneHome"] = "1"
 							if oneHomeTrigger:
 								if timeNowm2 - evnt["secsOfLastOneHomeTrigger"]  >= float(evnt["minimumTimeHome"]):
@@ -2855,7 +2856,7 @@ class Plugin(indigo.PluginBase):
 
 
 
-					if allAway >0:
+					if allAway > 0:
 						if evnt["allAway"] != "1":
 							if allAwayTrigger:
 								self.updatePrefs = True
@@ -2894,7 +2895,7 @@ class Plugin(indigo.PluginBase):
 
 
 
-				#if self.decideMyLog("Events"): self.indiLOG.log(10, out)
+				if self.decideMyLog("Special"): self.indiLOG.log(10, out)
 				if self.decideMyLog("Events"): self.printEvents(printEvents=nEvent)
 
 			self.checkTriggerInitialized =True

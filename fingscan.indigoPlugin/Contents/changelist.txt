@@ -1,3 +1,10 @@
+Added features / changes in v2022.36.88 @ 2022-09-15
+===================================================
+
+1. bug fix: variable allaway_x was set properly but at next cycle reset 
+   reason: was one deleted line in python code
+
+
 Added features / changes in v2022.36.87 @ 2022-09-12
 ===================================================
 
