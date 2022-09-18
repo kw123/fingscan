@@ -126,7 +126,7 @@ class MAP2Vendor:
 
 			self.getFilesStatus = "finished" 
 
-			self.mac2VendorDict ={"6":{},"7":{},"9":{}}
+			self.mac2VendorDict = {"6":{},"7":{},"9":{}}
 
 			self.importFile("oui",  "6")
 			self.importFile("mam",  "7")
@@ -174,7 +174,8 @@ class MAP2Vendor:
 			elif mac[0:7] in self.mac2VendorDict["7"]:		# medium Vendor Space
 				ret = self.mac2VendorDict["7"][mac[0:7]]
 			elif mac[0:9] in self.mac2VendorDict["9"]:		# small  Vendor Space
-				ret= self.mac2VendorDict["9"][mac[0:9]]
+				ret = self.mac2VendorDict["9"][mac[0:9]]
+			if ret is None: ret = ""
 			return ret
 	
 

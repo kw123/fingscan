@@ -1,3 +1,9 @@
+Added features / changes in v2022.36.89 @ 2022-09-18
+===================================================
+
+fixed: TypeError: object of type 'NoneType' has no len()
+
+
 Added features / changes in v2022.36.88 @ 2022-09-15
 ===================================================
 

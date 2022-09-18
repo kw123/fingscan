@@ -3149,12 +3149,17 @@ class Plugin(indigo.PluginBase):
 ########################################
 	def getVendorName(self, MAC):
 		#self.indiLOG.log(10, "getVendorName  check :{} - {}".format(self.enableMACtoVENDORlookup, self.waitForMAC2vendor))
-		if self.enableMACtoVENDORlookup == "0" : return ""
+		ret = ""
+		if self.enableMACtoVENDORlookup == "0" : return ret
 		if self.waitForMAC2vendor:
 			self.waitForMAC2vendor = not self.M2V.makeFinalTable(quiet=False)
 
 		if not self.waitForMAC2vendor:
-			return  self.M2V.getVendorOfMAC(MAC)
+			ret = self.M2V.getVendorOfMAC(MAC)
+			if ret is None: ret = ""
+			return ret
+
+		return ret
 
 
 
