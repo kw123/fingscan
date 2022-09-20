@@ -21,6 +21,7 @@ class MAP2Vendor:
 
 		self.myLogger = myLogger
 		self.myLogger(10, u"MAP2Vendor initializing with python v:{}".format(sys.version_info[0]))
+		self.myLogger(10, u"MAP2Vendor path for download files and json file:{}".format(pathToMACFiles))
 
 		self.minSizeOfFiles = {"mac2Vendor.json":700000, "oui":500000,"mam": 30000, "oui36":40000}
 
@@ -32,7 +33,7 @@ class MAP2Vendor:
 
 		if pathToMACFiles != "":
 			self.filePath = pathToMACFiles
-			if self.filePath[-1]!="/": self.filePath+="/"
+			if self.filePath[-1] != "/": self.filePath+="/"
 			if not os.path.isdir(self.filePath):
 				self.myLogger(10, u"MAP2Vendor (i) making directory:" +self.filePath)
 				os.mkdir(self.filePath)
@@ -69,7 +70,7 @@ class MAP2Vendor:
 			self.getFilesStatus = "finished"
 			return
 
-		self.myLogger(10,u"MAP2Vendor  downloading raw files, will take some minutes")
+		self.myLogger(10,u"MAP2Vendor  downloading raw files, will take some minutes stored in:{}".format(self.filePath))
 		cmd  =  "rm "+self.filePath+"oui ;"
 		cmd +=  "rm "+self.filePath+"mam ;"
 		cmd +=  "rm "+self.filePath+"oui36"
@@ -151,7 +152,7 @@ class MAP2Vendor:
 			for line in dat:
 				item= line.split(",")
 				if len(item) < 2: continue
-				self.mac2VendorDict[size][item[0]]=item[1].strip("\n")
+				self.mac2VendorDict[size][item[0]] = item[1].strip("\n")
 		except Exception as e:
 			self.myLogger(30, u"error reading file {}, errcode:{}".format(fn, e))
 			
@@ -162,6 +163,7 @@ class MAP2Vendor:
 	########################################
 	def getVendorOfMAC(self, MAC):
 			if "6" not in self.mac2VendorDict: 
+				self.makeFinalTable()
 				return ""
 			if len(self.mac2VendorDict["6"]) < 1000:
 				self.makeFinalTable()

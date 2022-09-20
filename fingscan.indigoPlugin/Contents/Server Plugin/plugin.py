@@ -292,7 +292,8 @@ class Plugin(indigo.PluginBase):
 			self.passwordOK					= "no"
 			self.yourPassword				= ""
 			self.quitNOW					= "no"
-
+			self.waitForMAC2vendor 			= False
+			self.enableMACtoVENDORlookup	= "0"
 			self.executionMode				= "noInterruption"  ## interrupted by plugin/fingscan/configuration
 			self.theNetwork					= "0.0.0.0"
 
@@ -537,8 +538,9 @@ class Plugin(indigo.PluginBase):
 ########################################
 	def updateVendors(self):
 		try:
-			if not self.waitForMAC2vendor:  self.waitForMAC2vendor = not self.M2V.makeFinalTable(quiet=True)
-			if self.waitForMAC2vendor:  return 
+			if self.enableMACtoVENDORlookup != "0": 
+				if not self.waitForMAC2vendor:  self.waitForMAC2vendor = not self.M2V.makeFinalTable(quiet=True)
+			if self.waitForMAC2vendor :  return 
 
 			for theMAC in self.allDeviceInfo:
 				for item in emptyAllDeviceInfo:
@@ -3147,12 +3149,23 @@ class Plugin(indigo.PluginBase):
 
 
 ########################################
+	def updateVendorfiles(self):
+
+		if self.enableMACtoVENDORlookup == "0" : return False
+
+		if self.waitForMAC2vendor:
+			self.waitForMAC2vendor = not self.M2V.makeFinalTable(quiet=False)
+			if not self.waitForMAC2vendor: return True
+		else: 
+			return True
+		return False
+
+########################################
 	def getVendorName(self, MAC):
 		#self.indiLOG.log(10, "getVendorName  check :{} - {}".format(self.enableMACtoVENDORlookup, self.waitForMAC2vendor))
 		ret = ""
-		if self.enableMACtoVENDORlookup == "0" : return ret
-		if self.waitForMAC2vendor:
-			self.waitForMAC2vendor = not self.M2V.makeFinalTable(quiet=False)
+
+		if not self.updateVendorfiles(): return ret
 
 		if not self.waitForMAC2vendor:
 			ret = self.M2V.getVendorOfMAC(MAC)
@@ -3367,6 +3380,7 @@ class Plugin(indigo.PluginBase):
 		lastFingDATA = lastFingActivity
 		rebootMinute = 19 # 19 minutes after midnight, dont do it too close to 00:00 because of other processes might be active
 
+		self.updateVendorfiles()
 
 		self.timeOfStart = time.time()
 		try:
