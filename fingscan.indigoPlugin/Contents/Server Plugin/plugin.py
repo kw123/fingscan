@@ -3696,8 +3696,7 @@ class Plugin(indigo.PluginBase):
 				devI = self.allDeviceInfo[theMAC]
 				if devI["devExists"] == 0 and self.acceptNewDevices and theMAC not in self.ignoredMAC:
 	#				if self.decideMyLog("Logic"): self.indiLOG.log(10, " creating device {}".format(devI))
-					theName = "FING_"+theMAC
-					self.createDev(theName, theMAC)
+					self.createDev(theMAC)
 					self.updateIndigoIpVariableFromDeviceData(theMAC)
 
 
@@ -3741,10 +3740,11 @@ class Plugin(indigo.PluginBase):
 			
 		return
 
-	def createDev(self, theName, theMAC):
+	def createDev(self, theMAC):
 		try:
 			devI = self.allDeviceInfo[theMAC]
 			vInfo = self.getVendorName(theMAC)
+			theName = "MAC-{}-{}".format(theMAC, devI["hardwareVendor"]) 
 			if len(vInfo)> 3: 
 				devI["hardwareVendor"] = vInfo
 			indigo.device.create(
@@ -3861,9 +3861,8 @@ class Plugin(indigo.PluginBase):
 
 			if dev == "":
 				# create new device
-				theName = "MAC-{}".format(theMAC)
 				if self.acceptNewDevices:
-					self.createDev(theName, theMAC)
+					self.createDev(theMAC)
 					self.executeUpdateStatesList()
 				return
 			
