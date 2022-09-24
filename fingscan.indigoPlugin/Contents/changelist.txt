@@ -1,7 +1,16 @@
+Added features / changes in v2022.37.91 @ 2022-09-22
+===================================================
+
+statusDisplay date stamp was changed during reload of the plugin. e.g. during auto reload at 1pm, can be switch off in config)
+that is fixed now: no device state updated until 100 secs into the plugin running.
+this was due to data loaded from differnt sources during startup.
+after everything is loaded the inetrnal data is correct.
+
+
 Added features / changes in v2022.37.90 @ 2022-09-20
 ===================================================
 
-name of newly cretaed devices are now: 
+name of newly created devices are now: 
   MAC-xx:xx:xx:xx:xx-Vendor info 
 like:
   MAC-5C:87:xx:0A:xx:xx-Apple
