@@ -1,10 +1,10 @@
-Added features / changes in v2022.37.91 @ 2022-09-22
+Added features / changes in v2022.37.91 @ 2022-09-24
 ===================================================
 
 statusDisplay date stamp was changed during reload of the plugin. e.g. during auto reload at 1pm, can be switch off in config)
 that is fixed now: no device state updated until 100 secs into the plugin running.
 this was due to data loaded from differnt sources during startup.
-after everything is loaded the inetrnal data is correct.
+after everything is loaded the internal data is correct.
 
 
 Added features / changes in v2022.37.90 @ 2022-09-20

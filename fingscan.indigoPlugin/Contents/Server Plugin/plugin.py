@@ -2402,9 +2402,9 @@ class Plugin(indigo.PluginBase):
 				if len (theTest) < 5:  # that is minimum, should be 8 or 9
 					if self.indigoCommand == "none":
 						skip = 1
-						self.quitNOW = "Indigo variable error 6"
 						self.indiLOG.log(30, "getting data from indigo: bad variable ipDevice{};  deleting and letting the program recreate ".format(ii00) )
 						indigo.variable.delete("ipDevice"+ii00)
+						self.quitNOW = "Indigo variable error 6"
 					continue
 				theValue = theTest.split(";")
 				if len(theValue) == 10:
@@ -2422,24 +2422,24 @@ class Plugin(indigo.PluginBase):
 				if not self.isValidMAC(theValue[0].strip()):
 					if self.indigoCommand == "none":
 						skip = 1
-						self.quitNOW = "Indigo variable error 7"
 						self.indiLOG.log(30, "getting data from indigo: bad variable ipDevice{} does not have a valid MAC number>>{}<<  deleting and letting the program recreate it ".format(ii00, theValue[0].strip()) )
+						self.quitNOW = "Indigo variable error 7"
 						indigo.variable.delete("ipDevice"+ii00)
 					continue
 
 
 
-				if not self.isValidIP(theValue[1].strip()):
+				if not self.isValidIP(theValue[1].split("-")[0].strip()):
 					if self.indigoCommand == "none":
 						skip = 1
-						self.quitNOW = "Indigo variable error 8"
 						self.indiLOG.log(30, "getting data from indigo: bad variable ipDevice{} does not have a valid  IP number>>{}<<\  deleting and letting the program recreate  it ".format(ii00, theValue[1].strip()) )
+						self.quitNOW = "Indigo variable error 8"
 						indigo.variable.delete("ipDevice"+ii00)
 					continue
 
 				self.indigoIpVariableData[theMAC] = copy.deepcopy(emptyindigoIpVariableData)
 				devV = self.indigoIpVariableData[theMAC]
-				devV["ipNumber"]			= theValue[1].strip()
+				devV["ipNumber"]			= theValue[1].split("-")[0].strip()
 				devV["timeOfLastChange"]	= theValue[2].strip()
 				devV["status"]				= theValue[3].strip()
 				try:
@@ -4077,7 +4077,7 @@ class Plugin(indigo.PluginBase):
 
 			devI = self.allDeviceInfo[theMAC]
 			updstr  =self.padMAC(theMAC)
-			updstr += ";"+self.padIP(devI["ipNumber"])
+			updstr += ";"+self.padIP(devI["ipNumber"].split("-")[0])
 			updstr += ";"+self.padDateTime(devI["timeOfLastChange"])
 			updstr += ";"+devI["status"]
 			updstr += ";"+self.padStatus(devI["status"])+self.padNoOfCh(devI["noOfChanges"])
@@ -4087,7 +4087,7 @@ class Plugin(indigo.PluginBase):
 			updstr += ";"+(devI["usePing"]+"-{}".format(devI["useWakeOnLanSecs"])).rjust(13)
 			theValue = updstr.split(";")
 
-			devV["ipNumber"]			= theValue[1].strip()
+			devV["ipNumber"]			= theValue[1].split("-")[0].strip()
 			devV["timeOfLastChange"]	= theValue[2].strip()
 			devV["status"]				= theValue[3].strip()
 			try:
@@ -4339,13 +4339,9 @@ class Plugin(indigo.PluginBase):
 			if devId in self.updateStatesList: 
 				if key in self.updateStatesList[devId]:
 					if value != self.updateStatesList[devId][key]:
-						if int(devId) == 537292779:
-							self.indiLOG.log(20, "addToStatesUpdateList  state:{}, value:{}".format( key,value) )
 						self.updateStatesList[devId][key]=value
 					return
 			else:  self.updateStatesList[devId]={}      
-			if int(devId) == 537292779:
-				self.indiLOG.log(20, "addToStatesUpdateList state:{}, value:{}".format(key,value) )
 			self.updateStatesList[devId][key] = value
 
 		except Exception as e:
