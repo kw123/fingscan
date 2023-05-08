@@ -65,9 +65,14 @@ def checkVer():
 		cmd 	= u"echo '"+yourPassword+ u"' | sudo -S "+fingEXEpath+u" -v"
 		ret, err= readPopen(cmd)
 		ret = ret.strip("\n").split(".")
-		fingVersion	= float(ret[0]+"."+ret[1])
-		if logLevel > 0: logger.log(20,"chk versions.opsys: {};   fingVersion:{} from cmd:{};   ".format(opsys, fingVersion, cmd))
-		return opsys, fingVersion
+		if len(ret) > 1:
+			fingVersion	= float(ret[0]+"."+ret[1])
+			if logLevel > 0: logger.log(20,"chk versions.opsys: {};   fingVersion:{} from cmd:{};   ".format(opsys, fingVersion, cmd))
+			return opsys, fingVersion
+		else:
+			logger.log(20,"bad return for cmd:{} \nret:{}\err:{}  ".format(cmd, ret, err))
+			return 0,0
+
 	except  Exception as e:
 		exceptionHandler(40,e)
 	return 0,0
@@ -273,7 +278,7 @@ logger = logging.getLogger(__name__)
 
 #
 logger.setLevel(logging.DEBUG)
-logger.log(20,u"========= start   @ {}   ===========;  loglevel:{}".format(datetime.datetime.now(), logLevel))
+logger.log(20,u"========= start   @ {}   ===========;  params:{}".format(datetime.datetime.now(), params))
 
 
 

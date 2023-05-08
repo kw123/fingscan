@@ -1,3 +1,8 @@
+Added features / changes in v2022.37.94 @ 2023-05-08
+===================================================
+added error catching in startfing
+
+
 Added features / changes in v2022.37.93 @ 2023-05-08
 ===================================================
 added start fing debug option in config
