@@ -1,3 +1,14 @@
+Added features / changes in v2022.37.93 @ 2023-05-08
+===================================================
+added start fing debug option in config
+
+
+Added features / changes in v2022.37.92 @ 2022-10-16
+===================================================
+fingscan Warning getting data from indigo: bad variable ipDevice03 does not have a valid IP number>>192.168.86.237-changed<<\ deleting and letting .. and stopping plugin
+
+
+
 Added features / changes in v2022.37.91 @ 2022-09-24
 ===================================================
 

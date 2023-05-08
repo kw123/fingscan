@@ -88,7 +88,7 @@ emptyEVENT = {#
 	}
 indigoMaxDevices = 1024
 
-_debAreas = ["Logic", "Ping", "Events", "BC", "Special", "all"]
+_debAreas = ["Logic", "Ping", "Events", "BC", "StartFi", "Special", "all"]
 
 
 kDefaultPluginPrefs = {
@@ -218,6 +218,8 @@ class Plugin(indigo.PluginBase):
 			exit() 
 
 		try:
+			self.timeOfStart = time.time()
+
 			self.checkcProfile()
 
 			self.debugLevel			= []
@@ -3696,8 +3698,8 @@ class Plugin(indigo.PluginBase):
 				if theMAC == "": continue
 				devI = self.allDeviceInfo[theMAC]
 				if devI["devExists"] == 0 and self.acceptNewDevices and theMAC not in self.ignoredMAC:
-	#				if self.decideMyLog("Logic"): self.indiLOG.log(10, " creating device {}".format(devI))
-					self.createDev(theMAC)
+					if True or self.decideMyLog("Logic"): self.indiLOG.log(10, " creating device {}".format(devI))
+					self.createDev(theMAC, calledFrom="checkDEVICES")
 					self.updateIndigoIpVariableFromDeviceData(theMAC)
 
 
@@ -3741,23 +3743,30 @@ class Plugin(indigo.PluginBase):
 			
 		return
 
-	def createDev(self, theMAC):
+	def createDev(self, theMAC, calledFrom=""):
 		try:
 			devI = self.allDeviceInfo[theMAC]
 			vInfo = self.getVendorName(theMAC)
-			theName = "MAC-{}-{}".format(theMAC, devI["hardwareVendor"]) 
 			if len(vInfo)> 3: 
 				devI["hardwareVendor"] = vInfo
-			indigo.device.create(
-				protocol=indigo.kProtocol.Plugin,
-				address=self.formatiPforAddress(devI["ipNumber"]),
-				name=theName,
-				description=theMAC,
-				pluginId="com.karlwachs.fingscan",
-				deviceTypeId="IP-Device",
-				props = {"setUsePing":"doNotUsePing","setuseWakeOnLan":0,"setExpirationTime":0},
-				folder=self.indigoDeviceFolderID
-				)
+			theName = "FING-{}-{}".format(theMAC, devI["hardwareVendor"]).strip("-") 
+			if theName in indigo.devices:
+				self.indiLOG.log(30, "dev:{}, mac:{} already exists! why recreate? trying to fix..   called from:{}".format(theName, theMAC, calledFrom))
+			else:
+				try:
+					indigo.device.create(
+						protocol=indigo.kProtocol.Plugin,
+						address=self.formatiPforAddress(devI["ipNumber"]),
+						name=theName,
+						description=theMAC,
+						pluginId="com.karlwachs.fingscan",
+						deviceTypeId="IP-Device",
+						props = {"setUsePing":"doNotUsePing","setuseWakeOnLan":0,"setExpirationTime":0},
+						folder=self.indigoDeviceFolderID
+						)
+				except Exception:
+					self.logger.error("name:{}".format(theName), exc_info=True)
+
 			dev = indigo.devices[theName]
 			self.addToStatesUpdateList("{}".format(dev.id),"MACNumber",			theMAC)
 			self.addToStatesUpdateList("{}".format(dev.id),"ipNumber",			devI["ipNumber"])
@@ -3863,7 +3872,7 @@ class Plugin(indigo.PluginBase):
 			if dev == "":
 				# create new device
 				if self.acceptNewDevices:
-					self.createDev(theMAC)
+					self.createDev(theMAC, calledFrom="updateIndigoIpDeviceFromDeviceData")
 					self.executeUpdateStatesList()
 				return
 			
