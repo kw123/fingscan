@@ -1,3 +1,8 @@
+Added features / changes in v2022.38.95 @ 2023-10-15
+===================================================
+added  option in config sys to xxxxx any password print to logfile during debug ON
+
+
 Added features / changes in v2022.37.95 @ 2023-05-08
 ===================================================
 added error catching in startfing

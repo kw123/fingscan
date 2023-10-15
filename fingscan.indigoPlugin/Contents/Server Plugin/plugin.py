@@ -101,6 +101,7 @@ kDefaultPluginPrefs = {
 				"password":					"your MAC password here",
 				"inbetweenPingType":		"1",
 				"sleepTime":				"2",
+				"showPassword":				False,
 				"debugLogic":				False,
 				"debugPing":				False,
 				"debugEvents":				False,
@@ -617,12 +618,22 @@ class Plugin(indigo.PluginBase):
 
 				### set proper attributes for >= catalina OS 
 				cmd = "echo '"+self.yourPassword+ "' | sudo -S /usr/bin/xattr -rd com.apple.quarantine '"+self.fingEXEpath+"'"
+				if self.pluginPrefs.get("showPassword",False):
+					cmdSHOW = cmd
+				else:
+					cmdSHOW = "echo 'xxxxxx' | sudo -S /usr/bin/xattr -rd com.apple.quarantine '"+self.fingEXEpath+"'"
+
 				ret, err = self.readPopen(cmd)
-				if self.decideMyLog("Logic"): self.indiLOG.log(10, "setting attribute for catalina+  with:  {}".format(cmd))
+				if self.decideMyLog("Logic"): self.indiLOG.log(10, "setting attribute for catalina+  with:  {}".format(cmdSHOW))
 				if self.decideMyLog("Logic"): self.indiLOG.log(10, "setting attribute for catalina+  result:{}".format(ret))
 				cmd = "echo '"+self.yourPassword+ "' | sudo -S /usr/bin/xattr -rd com.apple.quarantine  /usr/local/lib/fing/*"
+				if self.pluginPrefs.get("showPassword",False):
+					cmdSHOW = cmd
+				else:
+					cmdSHOW = "echo 'xxxxxx' | sudo -S /usr/bin/xattr -rd com.apple.quarantine  /usr/local/lib/fing/*"
+
 				ret, err = self.readPopen(cmd)
-				if self.decideMyLog("Logic"): self.indiLOG.log(10, "setting attribute for catalina+  with:  {}".format(cmd))
+				if self.decideMyLog("Logic"): self.indiLOG.log(10, "setting attribute for catalina+  with:  {}".format(cmdSHOW))
 				if self.decideMyLog("Logic"): self.indiLOG.log(10, "setting attribute for catalina+  result:{}".format(ret))
 				self.indiLOG.log(20, "fing install check done")
 
@@ -651,14 +662,18 @@ class Plugin(indigo.PluginBase):
 
 		try:
 			cmd 		= "echo '"+self.yourPassword+ "' | sudo -S "+self.fingEXEpath+" -v"
-			if self.decideMyLog("Logic"): self.indiLOG.log(10, "testing versiosn w  {}".format(cmd))
+			if self.pluginPrefs.get("showPassword",False):
+				cmdSHOW = cmd
+			else:
+				cmdSHOW = "echo 'xxxxxx' | sudo -S "+self.fingEXEpath+" -v"
+			if self.decideMyLog("Logic"): self.indiLOG.log(10, "testing versiosn w  {}".format(cmdSHOW))
 			ret, err = self.readPopen(cmd)
-			if self.decideMyLog("Logic"): self.indiLOG.log(10, "testing verions w  {} ==> {} - {}, opsys:{}".format(cmd, ret, err, opsys))
+			if self.decideMyLog("Logic"): self.indiLOG.log(10, "testing verions res:  {} - {}, opsys:{}".format(ret, err, opsys))
 			ret 		= ret.strip("\n").split(".")
 			if len(ret) > 1:
 				fingVersion	= float(ret[0]+"."+ret[1])
 			else:
-				self.indiLOG.log(40, "error in get fing version#: seems that either {} in not installed or password>>{}<< not correct,\nreturned text from fing probe:{}:  {}-{}".format(self.fingEXEpath, self.yourPassword, cmd, ret, err))
+				self.indiLOG.log(40, "error in get fing version#: seems that either {} in not installed or password>>{}<< not correct,\nreturned text from fing probe:{}:  {}-{}".format(self.fingEXEpath, pwdSHOW, cmdSHOW, ret, err))
 				fingVersion	= -1.0
 			return fingVersion
 		except Exception:
@@ -1475,7 +1490,8 @@ class Plugin(indigo.PluginBase):
 		try:
 			## get pwd from keychain
 			ret, storePassword = self.readPopen(["security", "find-generic-password", "-gl",name])
-			if self.decideMyLog("Logic"): self.indiLOG.log(10, "password entered (&a3reversed#5B)=" +"{}".format(storePassword))
+			if self.pluginPrefs.get("showPassword",False):
+				if self.decideMyLog("Logic"): self.indiLOG.log(10, "password entered (&a3reversed#5B)=" +"{}".format(storePassword))
 			try:
 				storePassword.index("password")  # if the return text contains "password" its ok, continue
 				storePassword= "{}".format(storePassword).split('"')[1]
@@ -1622,16 +1638,30 @@ class Plugin(indigo.PluginBase):
 		try:
 
 			cmd ="echo '" +self.yourPassword + "' | sudo -S /bin/rm '"+self.fingServicesFileName+"'"
-			ret, err = self.readPopen(cmd)
-			if self.decideMyLog("Special"): self.indiLOG.log(10, " del cmd: {}, ret: {}- {}".format(cmd, ret, err) )
-			if self.opsys >= 10.15:
-				cmd ="cd '"+self.indigoPreferencesPluginDir+"';echo '"+self.yourPassword+"' | sudo -S "+self.fingEXEpath+"  -s "+self.theNetwork+"/{}".format(self.netwType)+" -o json > "+self.fingServicesFileName0
+			if self.pluginPrefs.get("showPassword",False):
+				cmdSHOW = cmd
 			else:
-				cmd ="cd '"+self.indigoPreferencesPluginDir+"';echo '"+self.yourPassword+"' | sudo -S "+self.fingEXEpath+"  -s "+self.theNetwork+"/{}".format(self.netwType)+" -o json,"+self.fingServicesFileName0+" > "+self.fingServicesLOGFileName0
+				cmdSHOW = "echo 'xxxxxx' | sudo -S /bin/rm '"+self.fingServicesFileName+"'"
+
+			ret, err = self.readPopen(cmd)
+			if self.decideMyLog("Special"): self.indiLOG.log(10, " del cmd: {}, ret: {}- {}".format(cmdSHOW, ret, err) )
+			if self.opsys >= 10.15:
+				cmd = "cd '"+self.indigoPreferencesPluginDir+"';echo '"+self.yourPassword+"' | sudo -S "+self.fingEXEpath+"  -s "+self.theNetwork+"/{}".format(self.netwType)+" -o json > "+self.fingServicesFileName0
+				if self.pluginPrefs.get("showPassword",False):
+					cmdSHOW = cmd
+				else:
+					cmdSHOW = "cd '"+self.indigoPreferencesPluginDir+"';echo 'xxxxx' | sudo -S "+self.fingEXEpath+"  -s "+self.theNetwork+"/{}".format(self.netwType)+" -o json > "+self.fingServicesFileName0
+
+			else:
+				cmd = "cd '"+self.indigoPreferencesPluginDir+"';echo '"+self.yourPassword+"' | sudo -S "+self.fingEXEpath+"  -s "+self.theNetwork+"/{}".format(self.netwType)+" -o json,"+self.fingServicesFileName0+" > "+self.fingServicesLOGFileName0
+				if self.pluginPrefs.get("showPassword",False):
+					cmdSHOW = cmd
+				else:
+					cmdSHOW = "cd '"+self.indigoPreferencesPluginDir+"';echo 'xxxxx' | sudo -S "+self.fingEXEpath+"  -s "+self.theNetwork+"/{}".format(self.netwType)+" -o json,"+self.fingServicesFileName0+" > "+self.fingServicesLOGFileName0
 		
 
 			self.indiLOG.log(20, "fing network scan: "+self.theNetwork+"/{}".format(self.netwType))
-			if self.decideMyLog("Special"): self.indiLOG.log(10, "fing under opsys: {} command: {}".format(self.opsys, cmd) )
+			if self.decideMyLog("Special"): self.indiLOG.log(10, "fing under opsys: {} command: {}".format(self.opsys, cmdSHOW) )
 			ret, err = self.readPopen(cmd)
 			
 
@@ -1949,7 +1979,7 @@ class Plugin(indigo.PluginBase):
 			if self.decideMyLog("StartFi"):	deblevelForStartFing = 20
 			else:							deblevelForStartFing = 0
 			
-			params =  {"ppp":"&a3"+self.yourPassword[::-1]+"#5B", "theNetwork":self.theNetwork, "netwType":self.netwType,"logLevel": deblevelForStartFing, "fingEXEpath":self.fingEXEpath,"macUser":self.MACuserName, "pythonPath":self.pythonPath}
+			params =  {"ppp":"&a3"+self.yourPassword[::-1]+"#5B", "showPassword":self.pluginPrefs.get("showPassword",False), "theNetwork":self.theNetwork, "netwType":self.netwType,"logLevel": deblevelForStartFing, "fingEXEpath":self.fingEXEpath,"macUser":self.MACuserName, "pythonPath":self.pythonPath}
 			f = open(self.indigoPreferencesPluginDir+"paramsForStart","w")
 			f.write(json.dumps(params))
 			f.close()
@@ -2018,7 +2048,12 @@ class Plugin(indigo.PluginBase):
 
 		if pidsToKill != " ":
 			cmd = "echo '" + self.yourPassword + "' | sudo -S /bin/kill -9 " + pidsToKill +" > /dev/null 2>&1 &"
-			if self.decideMyLog("Logic"): self.indiLOG.log(10, "  FING kill cmd:" + cmd)
+			if self.pluginPrefs.get("showPassword",False):
+				cmdSHOW = cmd
+			else:
+				cmdSHOW = "echo 'xxxxxx' | sudo -S /bin/kill -9 " + pidsToKill +" > /dev/null 2>&1 &"
+
+			if self.decideMyLog("Logic"): self.indiLOG.log(10, "  FING kill cmd:" + cmdSHOW)
 			ret, err = self.readPopen(cmd)
 			#if self.decideMyLog("Logic"): self.indiLOG.log(10, "  FING kill ret= " +  "{}".format(ret))
 			self.sleep(1)
@@ -2603,20 +2638,20 @@ class Plugin(indigo.PluginBase):
 ########################################
 	def checkIfFirewalled(self, devName,theMAC, ipN):
 		try:
-			if theMAC not in self.excludeMacFromPing: self.excludeMacFromPing[theMAC] =0 # start the counter
+			if theMAC not in self.excludeMacFromPing: self.excludeMacFromPing[theMAC] = 0 # start the counter
 			if self.decideMyLog("Ping"): self.indiLOG.log(10, "testing if  "+devName+"/"+theMAC +"/"+ipN+"  is firewalled, does not answer to PINGs (%1d"%(self.excludeMacFromPing[theMAC]+1)+"/3 tests)" )
 			ret, err = self.readPopen("echo '"+self.yourPassword+"' | sudo -S '"+self.fingEXEpath+"' -s "+ipN)
-			if ret.find("incorrect password attempt")>-1:
+			if ret.find("incorrect password attempt") > -1:
 				self.indiLOG.log(40, "incorrect password  in config, please correct")
 				return 3
 			if self.decideMyLog("Ping"): self.indiLOG.log(10,"{}".format(ret).replace("--","").replace("  ","") )
-			if ret.find("host unreachable") >-1:
-				self.excludeMacFromPing[theMAC] +=1
+			if ret.find("host unreachable") > -1:
+				self.excludeMacFromPing[theMAC] += 1
 				return 1
-			if ret.find("no service found, firewalled")>-1 or(
-			   ret.find("Non positive scan results")>-1 and ret.find("no service found")>-1) or(
-			   ret.find("Detected firewall")>-1):
-				self.excludeMacFromPing[theMAC] +=1
+			if ret.find("no service found, firewalled") > -1 or(
+			   ret.find("Non positive scan results") > -1 and ret.find("no service found") >- 1) or(
+			   ret.find("Detected firewall") > -1):
+				self.excludeMacFromPing[theMAC] += 1
 				if self.excludeMacFromPing[theMAC] > 2:
 					if self.decideMyLog("Ping"): self.indiLOG.log(10, "excluding "+devName+"/"+theMAC +"/"+ipN+" from PING test as it is firewalled or does not answer on any port(%1d"%(self.excludeMacFromPing[theMAC])+"/3 tests)" )
 					return 3
