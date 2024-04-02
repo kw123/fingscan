@@ -3,8 +3,11 @@
 <Device type="custom" id="IP-Device">
     <Name>IP-Device</Name>
         <ConfigUI>			
+
             <Field id="setHardwareVendor" type="textfield" hidden="false"> <Label>overwrite HardwareVendor State value:</Label></Field>
+
             <Field id="setDeviceInfo"     type="textfield" hidden="false"> <Label>overwrite DeviceInfo State value:</Label></Field>
+
             <Field id="setExpirationTime" 			  type="menu"     defaultValue="0"> <Label>Add expiration time to FING up to down status change:</Label>
                 <List>
                     <Option value="0"  >use FING info directly for up to down expired</Option>
@@ -26,7 +29,8 @@
                     <Option value="900">add 15 min to FING info for up to down expired</Option>
                 </List>
             </Field>
-            <Field id="setUsePing" 			  type="menu"     defaultValue="doNotUsePing"> <Label>Use Ping to track DOWN status:</Label>
+
+            <Field id="setUsePing" 			  type="menu"     defaultValue="doNotUsePing"> <Label>Use Ping to track status:</Label>
                 <List>
                     <Option value="doNotUsePing" >do not use PING</Option>
                     <Option value="usePingifUP"  >use Ping if up, test if down (fast down detection)</Option>
@@ -34,6 +38,7 @@
                     <Option value="usePingifUPdown" >use Ping up and down </Option>
                 </List>
             </Field>
+
             <Field id="setuseWakeOnLan" 			  type="menu"     defaultValue="0"> <Label>Use wake on lan every xx secs to keep device online:</Label>
                 <List>
                     <Option value="0" >do not use wakeOnLan</Option>
@@ -49,12 +54,16 @@
                     <Option value="360" >6 min</Option>
                 </List>
             </Field>
+
             <Field id="setSuppressChangeMSG" type="menu"     defaultValue="show"> <Label>Show MSG changed/double IP#(suppress change MSG):</Label>
                 <List>
                     <Option value="notShow" >do NOT show double / changed IP numbers in Logfile</Option>
                     <Option value="show"    >SHOW  double / changed IP numbers in Logfile</Option>
                 </List>
+            </Field>
+
             <Field id="sep-03" type="separator"/>
+
             <Field   id="enableBroadCastEvents"  type="menu"  defaultValue="0" tooltip="this will enable plugin-plugin bc of status changes ie to EVENTS plugin" >
                 <Label>:send broadcasts to other plugins for status up/x changes</Label>
                 <List>
@@ -62,7 +71,27 @@
                     <Option value="1" >YES send BC, must be enabled in config  </Option>
                 </List>
             </Field>
+
+            <Field id="sep-04" type="separator"/>
+
+            <Field id="sep-05" type="separator"/>
+
+            <Field   id="lab99"  type="textfield" >  <Label>experts only !</Label>       </Field>
+            <Field   id="lab101"  type="textfield" >  
+				<Label> to add a new device (eg for unreachable ip subnet) change IPnumber
+  don't chnage MAC numnber, not used yet
+  and enable Use Ping ... 
+  then the plugin will ry to ping the device and use taht info to set up/down</Label>       
+			</Field>
+
+            <Field   id="overWriteIpNumber"  type="textfield" >
+                <Label>overwrite IP number</Label>
             </Field>
+
+            <Field   id="overWriteMAC"  type="textfield" >
+                <Label>overwrite MAC number(not used yet)</Label>
+            </Field>
+
         </ConfigUI>
 
     <UiDisplayStateId>statusDisplay</UiDisplayStateId>

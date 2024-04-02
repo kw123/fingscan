@@ -1231,7 +1231,27 @@ class Plugin(indigo.PluginBase):
 			self.logger.error("", exc_info=True)
 		return True, valuesDict
 
+########################################
+	def getDeviceConfigUiValues(self, VD, typeId, devId):
+		try:
+			#self.indiLOG.log(20, "getDeviceConfigUiValues valuesDict{}, typeId:{}, devId:{}".format(VD,  typeId, devId))
 
+			self.theMacNumberForvalidateDeviceConfigUi = ""
+
+			theDictList= super(Plugin, self).getDeviceConfigUiValues(VD,  typeId, devId)
+			#self.indiLOG.log(20, "getDeviceConfigUiValues valuesDict{}".format(theDictList))
+			for theMAC in self.allDeviceInfo:
+				if self.allDeviceInfo[theMAC]["deviceId"] == devId:
+					theDictList[0]["overWriteMAC"]  	= theMAC
+					theDictList[0]["overWriteIpNumber"] = VD["address"]
+					self.theMacNumberForvalidateDeviceConfigUi = theMAC
+					break
+
+			#self.indiLOG.log(20, "getDeviceConfigUiValues valuesDict{}".format(theDictList[0]))
+	
+		except Exception:
+			self.logger.error("", exc_info=True)
+		return theDictList
 
 ########################################
 	def validateDeviceConfigUi(self, valuesDict, typeId, devId):
@@ -1247,9 +1267,31 @@ class Plugin(indigo.PluginBase):
 				self.allDeviceInfo[theMAC]["usePing"]			= valuesDict["setUsePing"]
 				self.allDeviceInfo[theMAC]["exprirationTime"]	= float(valuesDict["setExpirationTime"])
 				self.allDeviceInfo[theMAC]["suppressChangeMSG"]	= valuesDict["setSuppressChangeMSG"]
+				# strip leading 0
+				dev = indigo.devices[devId]
+				newip = valuesDict["overWriteIpNumber"]
+				newippad = self.formatiPforAddress(newip)
+				newips = newip.split(".")
+				new3 = newips[3].lstrip("0").lstrip("0")
+				newIpStrip = newips[0]+"."+newips[1]+"."+newips[2]+"."+new3
+
+				if newPipStrip != dev.states["ipNumber"]:
+					dev.updateStateOnServer("ipNumber", newIpStrip)
+					self.allDeviceInfo[theMAC]["ipNumber"] = newIpStrip
+					valuesDict["address"] =  newippad
 				self.updateIndigoIpDeviceFromDeviceData(theMAC,["hardwareVendor", "deviceInfo", "usePing", "suppressChangeMSG"], calledFrom="validateDeviceConfigUi")
 				self.updateIndigoIpVariableFromDeviceData(theMAC)
+				return (True, valuesDict)
+
+		if valuesDict["overWriteMAC"] not in self.allDeviceInfo: 
+			# create new device
+			self.allDeviceInfo[valuesDict["overWriteMAC"]] = copy.deepcopy(self.allDeviceInfo[self.theMacNumberForvalidateDeviceConfigUi])
+			if self.theMacNumberForvalidateDeviceConfigUi != "":
+				del self.allDeviceInfo[self.theMacNumberForvalidateDeviceConfigUi]
 		return (True, valuesDict)
+
+
+
 
 
 
