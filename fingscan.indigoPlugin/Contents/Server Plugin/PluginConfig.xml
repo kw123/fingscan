@@ -86,16 +86,6 @@ For the rest the default values should be ok to start
 <Label>ignore / accpet new devices</Label></Field>
 
 
-<Field    id="enableBroadCastEvents" type="menu"  defaultValue="0" tooltip="if enabled any change of status of a up/down devices will send an INDIGO broadcast  for otehr plugin to read the status and use it to determine change in status">
-	<List>
-		<Option value="0"          >disable</Option>
-		<Option value="all"        >ENABLE ALL:   for all devices that have an up/ down status</Option>
-		<Option value="individual" >ENABLE INDIVIDUAL:  individual devices must be enabled in device edit</Option>
-	</List>
-	<Label>Enable Broadcast of up/ down status:</Label>
-</Field>
-   
-
 <Field    id="enableReLoadPluginHour" type="menu"  defaultValue="1" tooltip="if set the plugin will reload at 0/1/2 am in the morning">
 	<List>
 		<Option value="-1"       >disable</Option>

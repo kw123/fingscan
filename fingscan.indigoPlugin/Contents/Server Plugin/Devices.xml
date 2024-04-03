@@ -62,26 +62,16 @@
                 </List>
             </Field>
 
-            <Field id="sep-03" type="separator"/>
-
-            <Field   id="enableBroadCastEvents"  type="menu"  defaultValue="0" tooltip="this will enable plugin-plugin bc of status changes ie to EVENTS plugin" >
-                <Label>:send broadcasts to other plugins for status up/x changes</Label>
-                <List>
-                    <Option value="0" >NO </Option>
-                    <Option value="1" >YES send BC, must be enabled in config  </Option>
-                </List>
-            </Field>
-
             <Field id="sep-04" type="separator"/>
 
             <Field id="sep-05" type="separator"/>
 
-            <Field   id="lab99"  type="textfield" >  <Label>experts only !</Label>       </Field>
-            <Field   id="lab101"  type="textfield" >  
-				<Label> to add a new device (eg for unreachable ip subnet) change IPnumber
-  don't chnage MAC numnber, not used yet
-  and enable Use Ping ... 
-  then the plugin will ry to ping the device and use taht info to set up/down</Label>       
+            <Field   id="lab99"  type="label" >  <Label>=== Experts only ===</Label>       </Field>
+            <Field   id="lab101"  type="label" >  
+				<Label> To add a new device (eg for unreachable ip subnet):
+  1. change IPnumber (also MAC# to create a new device)
+  2. enable Use Ping ... 
+  then the plugin will try to ping the (new) device and use that info to set up/down</Label>       
 			</Field>
 
             <Field   id="overWriteIpNumber"  type="textfield" >
@@ -89,7 +79,7 @@
             </Field>
 
             <Field   id="overWriteMAC"  type="textfield" >
-                <Label>overwrite MAC number(not used yet)</Label>
+                <Label>overwrite MAC number(will create a new dev after restart)</Label>
             </Field>
 
         </ConfigUI>

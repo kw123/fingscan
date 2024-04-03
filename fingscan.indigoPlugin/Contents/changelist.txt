@@ -1,7 +1,13 @@
-dded features / changes in v2022.39.95 @ 2024-04-02
+added features / changes in v2022.39.96 @ 2024-04-03
 ===================================================
 
-to track devcies outside the current subnet:
+fixed  track devices outside the current subnet
+
+
+added features / changes in v2022.39.95 @ 2024-04-02
+===================================================
+
+to track devices outside the current subnet:
 	added  option in device edit to overwrite IP#
     use this to edit an old expired device and enable "use ping" to track devices outside the local subnet
 
