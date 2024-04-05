@@ -386,6 +386,21 @@
 	</MenuItem>
 
 
+	<MenuItem id="menu7">
+		<Name>Print details for one device</Name>
+		<ConfigUI>
+			<Field  id="indigoId" type="menu" >
+				<Label>Pick  device:</Label>	 <List class="self" filter="" method="filterallExistingDevices" dynamicReload="false"/>
+			</Field>
+			<Field  id="execButton" type="button"	>
+				<Label>Print </Label>
+				<Title>PRINT </Title>
+				<CallbackMethod>CALLBACKprintDevice</CallbackMethod>
+			</Field>
+		</ConfigUI>
+	</MenuItem>
+
+
 	<MenuItem id="menu96">
 		<Name>Soft restart of plugin</Name>
 		<CallbackMethod>inpSoftrestart</CallbackMethod>

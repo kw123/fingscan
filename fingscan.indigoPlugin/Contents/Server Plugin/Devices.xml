@@ -36,6 +36,7 @@
                     <Option value="usePingifUP"  >use Ping if up, test if down (fast down detection)</Option>
                     <Option value="usePingifDown" >use Ping if down, check if back up</Option>
                     <Option value="usePingifUPdown" >use Ping up and down </Option>
+                    <Option value="useOnlyPing" >use only Ping for up and down </Option>
                 </List>
             </Field>
 
@@ -68,18 +69,24 @@
 
             <Field   id="lab99"  type="label" >  <Label>=== Experts only ===</Label>       </Field>
             <Field   id="lab101"  type="label" >  
-				<Label> To add a new device (eg for unreachable ip subnet):
+				<Label> To add a new device (eg for unreachable ip subnet or external device):
+  To create a ping only device: 
+  A) just create a new device and set ip, mac and select "use only Ping...""
+  B) edit an existing device that is expired
   1. change IPnumber (also MAC# to create a new device)
-  2. enable Use Ping ... 
-  then the plugin will try to ping the (new) device and use that info to set up/down</Label>       
+  2. enable "use only Ping..."
+  then the plugin will try to ping the (new) device and use that info to set up/down
+  for example to check if internet is up/down: 
+    ping google at ip= 142.250.180.238; MAC = AA:BB:CC:EE:FF:11 (just a random number that is not used), 
+    set Use Ping.. to  "use only Ping..."" </Label>       
 			</Field>
 
             <Field   id="overWriteIpNumber"  type="textfield" >
-                <Label>overwrite IP number</Label>
+                <Label>(overwrite) IP number</Label>
             </Field>
 
             <Field   id="overWriteMAC"  type="textfield" >
-                <Label>overwrite MAC number(will create a new dev after restart)</Label>
+                <Label>(overwrite) MAC number</Label>
             </Field>
 
         </ConfigUI>
