@@ -26,16 +26,16 @@ You can besides auto created FING devices also PING only devices
 </Label>
 	</Field>
 
-<Field	id="password" type="textfield" secure="true"  defaultValue="your MAC password here" readonly ="no" hidden="false">
+<Field	id="password" type="textfield" secure="true"  hidden="false">
 	<Label>Enter PASSSWORD of your  MAC userid:</Label>
 </Field>
 
 
-<Field defaultValue="192.168.1.0" id="network" type="textfield" alignText="right" >
+<Field  id="network" type="textfield" alignText="right" >
     <Label>Network starting # to be scanned</Label>
 </Field>
 
-<Field defaultValue="24" id="netwType" type="menu" alignText="right">
+<Field  id="netwType" type="menu" alignText="right">
 	<List>
 		<Option value="16" >/16 = 16 bits: 0..65535  if you really need that many numbers.. scans will take a long time! ;)</Option>
 		<Option value="17" >/17 = 15 bits: 0..32767</Option>
@@ -63,14 +63,14 @@ You can besides auto created FING devices also PING only devices
 </Field>
 
 
-<Field defaultValue="ipDevices" id="indigoDevicesFolderName" type="textfield" alignText="right">
+<Field id="indigoDevicesFolderName" type="textfield" alignText="right">
 <Label>Indigo folder name for devices</Label></Field>
 
-<Field defaultValue="ipDevices" id="indigoVariablesFolderName" type="textfield" alignText="right">
+<Field id="indigoVariablesFolderName" type="textfield" alignText="right">
 <Label>Indigo folder name for variables</Label></Field>
 
 
-<Field defaultValue="21" id="enableMACtoVENDORlookup" type="menu" alignText="right">
+<Field  id="enableMACtoVENDORlookup" type="menu" alignText="right">
 	<List>
 		<Option value="0"  >disable </Option>
 		<Option value="7"  >enable, refresh every  7 days </Option>
@@ -82,7 +82,7 @@ You can besides auto created FING devices also PING only devices
 </Field>
 
 
-<Field defaultValue="1" id="acceptNewDevices" type="menu" alignText="right" visible = "no">
+<Field  id="acceptNewDevices" type="menu" alignText="right" visible = "no">
 	<List>
 		<Option value="0" >ignore new devices</Option>
 		<Option value="1" >add new devices</Option>
@@ -90,7 +90,7 @@ You can besides auto created FING devices also PING only devices
 <Label>ignore / accpet new devices</Label></Field>
 
 
-<Field    id="enableReLoadPluginHour" type="menu"  defaultValue="1" tooltip="if set the plugin will reload at 0/1/2 am in the morning">
+<Field    id="enableReLoadPluginHour" type="menu"  tooltip="if set the plugin will reload at 0/1/2 am in the morning">
 	<List>
 		<Option value="-1"       >disable</Option>
 		<Option value="0"        >at midnight</Option>
@@ -103,7 +103,7 @@ You can besides auto created FING devices also PING only devices
 
 <Field id="simpleSeparator3" type="separator"/>
     
-<Field id="sleepTime" type="menu" defaultValue="2" tooltip="amount of seconds to sleep between checking for changes in FING files / pings etc">
+<Field id="sleepTime" type="menu"  tooltip="amount of seconds to sleep between checking for changes in FING files / pings etc">
 		<List>
 			<Option value="1" >1 second fastest reaction, but keeps CPU busy (wait seconds must a dividor of 60)</Option>
 			<Option value="2" >2 seconds</Option>
@@ -117,7 +117,7 @@ You can besides auto created FING devices also PING only devices
 	<Label>seconds to sleep between probing:</Label>
 </Field>
 
-<Field id="inbetweenPingType" type="menu" defaultValue="0" tooltip="choose if pings should detect DOWN status if devices are UP, fing will detect once a minute. pinging a device can detect a DOWN status faster , but if device answers ping, FING will detect it too." >
+<Field id="inbetweenPingType" type="menu"  tooltip="choose if pings should detect DOWN status if devices are UP, fing will detect once a minute. pinging a device can detect a DOWN status faster , but if device answers ping, FING will detect it too." >
 	<List>
 		<Option value="0"          >do not use ping</Option>
 		<Option value="sequential" >do pings for each device sequentially</Option>
@@ -126,24 +126,27 @@ You can besides auto created FING devices also PING only devices
 	<Label>Enable PINGs inbetween or instead of FING (for all devices + device edit settings for each device):</Label>
  </Field>
 
+
+
 <Field id="infoLabel99" type="label"> <Label>debug level for plugin:</Label>  </Field>
 	
-<Field    id="showPassword"  type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... show password in log file (if debug is on):</Label>  </Field>
-<Field    id="debugLogic"    type="checkbox"  defaultValue="false"       tooltip=""> <Label> Debug..                   ... (1) Logic:</Label>  </Field>
-<Field    id="debugPing"     type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (2) PING:</Label>  </Field>
-<Field    id="debugEvents"   type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (4) Events:</Label>  </Field>
-<Field    id="debugBC"       type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (8) send BC of status changes:</Label>  </Field>
-<Field    id="debugStartFi"  type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (9) start fing (change requires a restsart):</Label>  </Field>
-<Field    id="debugSpecial"  type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (20) special for debuuging and development:</Label>  </Field>
-<Field    id="debugall"      type="checkbox"  defaultValue="false"       tooltip=""> <Label>     ... (99) All:</Label>  </Field>
+<Field    id="showLoginTest" type="checkbox"       > <Label> show logging test at startup:</Label>  </Field>
+<Field    id="showPassword"  type="checkbox"       > <Label>     ... show password in log file (if debug is on):</Label>  </Field>
+<Field    id="debugLogic"    type="checkbox"       > <Label> Debug..                   ... (1) Logic:</Label>  </Field>
+<Field    id="debugPing"     type="checkbox"       > <Label>     ... (2) PING:</Label>  </Field>
+<Field    id="debugEvents"   type="checkbox"       > <Label>     ... (4) Events:</Label>  </Field>
+<Field    id="debugBC"       type="checkbox"       > <Label>     ... (8) send BC of status changes:</Label>  </Field>
+<Field    id="debugStartFi"  type="checkbox"       > <Label>     ... (9) start fing (change requires a restsart):</Label>  </Field>
+<Field    id="debugSpecial"  type="checkbox"       > <Label>     ... (20) special for debuuging and development:</Label>  </Field>
+<Field    id="debugall"      type="checkbox"       > <Label>     ... (99) All:</Label>  </Field>
 
-<Field    id="logFileActive2"      type="menu"      defaultValue="standard"      > <Label> send logs to ..:</Label>
+<Field    id="logFileActive2"      type="menu"      > <Label> send logs to ..:</Label>
 	<List>
 		<Option value="standard" > no special fing logfile, std indigo logfile</Option>
 	</List>
 </Field>
 <Field id="infoLabel227" type="label"> <Label>.                     for DETAILED time tracking set indigo variable "enableTimeTracking_fing"</Label>  </Field>
-<Field    id="do_cProfile" type="textfield"  defaultValue="on/off/print"  readonly="yes"     > 
+<Field    id="do_cProfile" type="textfield" readonly="yes"     > 
 	<Label>... enable or stop or  print intermediate results use on/off/print:</Label>  
 </Field>
 

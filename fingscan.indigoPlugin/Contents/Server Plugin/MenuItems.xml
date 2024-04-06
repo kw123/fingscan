@@ -381,12 +381,17 @@
 	</MenuItem>
 
 	<MenuItem id="menu6">
+		<Name>Print plugin configuration parameters</Name>
+		<CallbackMethod>CALLBACKprintConfig</CallbackMethod>
+	</MenuItem>
+
+	<MenuItem id="menu7">
 		<Name>Print configuration of all EVENTS</Name>
 		<CallbackMethod>inpPrintEVENTS</CallbackMethod>
 	</MenuItem>
 
 
-	<MenuItem id="menu7">
+	<MenuItem id="menu8">
 		<Name>Print details for one device</Name>
 		<ConfigUI>
 			<Field  id="indigoId" type="menu" >

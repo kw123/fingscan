@@ -1,7 +1,10 @@
-added features / changes in v2022.40.96 @ 2024-04-05
+added features / changes in v2022.40.97 @ 2024-04-06
 ===================================================
 
 completed changes for PING only devices
+  added expiration times for up-> down and down-> expired
+  some efficiency setting
+  cleanup of menus 
 
 
 added features / changes in v2022.39.96 @ 2024-04-03

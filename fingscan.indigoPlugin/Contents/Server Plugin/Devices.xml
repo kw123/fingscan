@@ -8,7 +8,18 @@
 
             <Field id="setDeviceInfo"     type="textfield" hidden="false"> <Label>overwrite DeviceInfo State value:</Label></Field>
 
-            <Field id="setExpirationTime" 			  type="menu"     defaultValue="0"> <Label>Add expiration time to FING up to down status change:</Label>
+
+            <Field id="setUsePing" 			  type="menu"     defaultValue="doNotUsePing"> <Label>Use Ping to track status:</Label>
+                <List>
+                    <Option value="doNotUsePing" >do not use PING</Option>
+                    <Option value="usePingifUP"  >use Ping if up, test if down (fast down detection)</Option>
+                    <Option value="usePingifDown" >use Ping if down, check if back up</Option>
+                    <Option value="usePingifUPdown" >use Ping up and down </Option>
+                    <Option value="useOnlyPing" >use only Ping for up and down </Option>
+                </List>
+            </Field>
+
+            <Field id="setExpirationTime" 			  type="menu"     defaultValue="0" visibleBindingId="setUsePing" visibleBindingValue="doNotUsePing,usePingifUP,usePingifDown,usePingifUPdown"> <Label>Add expiration time to FING up to down status change:</Label>
                 <List>
                     <Option value="0"  >use FING info directly for up to down expired</Option>
                     <Option value="10" >add 10 sec to FING info for up to down expired</Option>
@@ -27,16 +38,6 @@
                     <Option value="600">add 10 min to FING info for up to down expired</Option>
                     <Option value="720">add 12 min to FING info for up to down expired</Option>
                     <Option value="900">add 15 min to FING info for up to down expired</Option>
-                </List>
-            </Field>
-
-            <Field id="setUsePing" 			  type="menu"     defaultValue="doNotUsePing"> <Label>Use Ping to track status:</Label>
-                <List>
-                    <Option value="doNotUsePing" >do not use PING</Option>
-                    <Option value="usePingifUP"  >use Ping if up, test if down (fast down detection)</Option>
-                    <Option value="usePingifDown" >use Ping if down, check if back up</Option>
-                    <Option value="usePingifUPdown" >use Ping up and down </Option>
-                    <Option value="useOnlyPing" >use only Ping for up and down </Option>
                 </List>
             </Field>
 
@@ -67,8 +68,8 @@
 
             <Field id="sep-05" type="separator"/>
 
-            <Field   id="lab99"  type="label" >  <Label>=== Experts only ===</Label>       </Field>
-            <Field   id="lab101"  type="label" >  
+            <Field   id="lab99"  type="label"  >  <Label>=== Experts only:  for "use only Ping for up and down" ===</Label>       </Field>
+            <Field   id="lab101"  type="label" visibleBindingId="setUsePing" visibleBindingValue="useOnlyPing" >  
 				<Label> To add a new device (eg for unreachable ip subnet or external device):
   To create a ping only device: 
   A) just create a new device and set ip, mac and select "use only Ping...""
@@ -77,17 +78,46 @@
   2. enable "use only Ping..."
   then the plugin will try to ping the (new) device and use that info to set up/down
   for example to check if internet is up/down: 
-    ping google at ip= 142.250.180.238; MAC = AA:BB:CC:EE:FF:11 (just a random number that is not used), 
-    set Use Ping.. to  "use only Ping..."" </Label>       
+    ping google at ip= 142.250.180.238; MAC = AA:BB:CC:EE:FF:11 
+     (just a random but valid MAC, that is not used), 
+     </Label>       
 			</Field>
 
-            <Field   id="overWriteIpNumber"  type="textfield" >
+            <Field   id="overWriteIpNumber"  type="textfield" visibleBindingId="setUsePing" visibleBindingValue="useOnlyPing" >
                 <Label>(overwrite) IP number</Label>
             </Field>
 
-            <Field   id="overWriteMAC"  type="textfield" >
+            <Field   id="overWriteMAC"  type="textfield" visibleBindingId="setUsePing" visibleBindingValue="useOnlyPing" >
                 <Label>(overwrite) MAC number</Label>
             </Field>
+    
+<Field id="upToDownPing" type="menu" defaultValue="30" tooltip="seconds to go to down after ping fails" visibleBindingId="setUsePing" visibleBindingValue="useOnlyPing" >
+		<List>
+			<Option value="15" >15 seconds </Option>
+			<Option value="20" >20 seconds</Option>
+			<Option value="30" >30 seconds</Option>
+			<Option value="40" >40 seconds</Option>
+			<Option value="50" >50 seconds</Option>
+			<Option value="60" >60 seconds</Option>
+			<Option value="90" >90 seconds</Option>
+		</List>
+	<Label>for PINGONLY: seconds from up to down:</Label>
+</Field>
+<Field id="downToExpiredPing" type="menu" defaultValue="30" tooltip="seconds to go to down after ping fails" visibleBindingId="setUsePing" visibleBindingValue="useOnlyPing" >
+		<List>
+			<Option value="15" >15 seconds </Option>
+			<Option value="20" >20 seconds</Option>
+			<Option value="30" >30 seconds</Option>
+			<Option value="40" >40 seconds</Option>
+			<Option value="50" >50 seconds</Option>
+			<Option value="60" >60 seconds</Option>
+			<Option value="90" >90 seconds</Option>
+			<Option value="120" >2 minutes</Option>
+			<Option value="180" >3 minutes</Option>
+		</List>
+	<Label>for PINGONLY: seconds from down to expired:</Label>
+</Field>
+
 
         </ConfigUI>
 
