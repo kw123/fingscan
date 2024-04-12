@@ -1,3 +1,10 @@
+added features / changes in v2022.40.98 @ 2024-04-12
+===================================================
+
+fixed error introduced in last version: 
+	File "plugin.py", line 2455, in getfingData
+
+
 added features / changes in v2022.40.97 @ 2024-04-06
 ===================================================
 

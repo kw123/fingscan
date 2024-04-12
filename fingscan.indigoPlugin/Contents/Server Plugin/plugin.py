@@ -43,7 +43,7 @@ emptyAllDeviceInfo = {
 	"deviceInfo": "",
 	"usePing": "doNotUsePing",
 	"upToDownPing": 30,
-	"downToExpiredPing": 30,
+	"downToExpiredPing": 60,
 	"useWakeOnLanSecs": 0,
 	"useWakeOnLanLast": 0,
 	"suppressChangeMSG": "show",
@@ -54,6 +54,20 @@ emptyAllDeviceInfo = {
 	"expirationTime": 0,
 	"variableName": ""
 	}
+defaultDevProps = {
+	"setHardwareVendor": "",
+	"setDeviceInfo": "",
+	"setUsePing": "doNotUsePing",
+	"setExpirationTime": "0",
+	"setuseWakeOnLan": "0",
+	"useWakeOnLanLast": 0,
+	"setSuppressChangeMSG": "show",
+	"overWriteIpNumber": "",
+	"overWriteMAC": "",
+	"upToDownPing": "30",
+	"downToExpiredPing": "30"
+	}
+
 emptyindigoIpVariableData = {
 	"ipNumber": "0.0.0.0",
 	"timeOfLastChange": "0",
@@ -103,8 +117,6 @@ kDefaultPluginPrefs = {
 				"password":					"your MAC password here",
 				"inbetweenPingType":		"parallel",
 				"sleepTime":				"2",
-				"upToDownPing":				30,
-				"downToExpiredPing":		60,
 				"showPassword":				False,
 				"debugLogic":				False,
 				"debugPing":				False,
@@ -723,6 +735,8 @@ class Plugin(indigo.PluginBase):
 ########################################
 	def setupEventVariables(self):
 		try:
+			doPrint = False
+			if doPrint: self.indiLOG.log(20, "setupEventVariables start")
 			try:
 				indigo.variables.folder.create("FINGscanEvents")
 				self.indiLOG.log(20, "FINGscanFolder folder created")
@@ -732,7 +746,7 @@ class Plugin(indigo.PluginBase):
 			for nEvent in self.EVENTS:
 				if self.EVENTS[nEvent]["enableDisable"] == "1":
 					try: 	indigo.variable.create("allHome_{}".format(nEvent), "",folder=self.FINGscanFolderID)
-					except:	pass
+					except: pass
 					try: 	indigo.variable.create("oneHome_{}".format(nEvent), "",folder=self.FINGscanFolderID)
 					except:	pass
 					try: 	indigo.variable.create("nHome_{}".format(nEvent), "",folder=self.FINGscanFolderID)
@@ -748,7 +762,7 @@ class Plugin(indigo.PluginBase):
 					except:	pass
 					try: 	indigo.variable.delete("oneHome_{}".format(nEvent), "",folder=self.FINGscanFolderID)
 					except:	pass
-					try: 	indigo.variable.creadeletete("nHome_{}".format(nEvent), "",folder=self.FINGscanFolderID)
+					try: 	indigo.variable.delete("nHome_{}".format(nEvent), "",folder=self.FINGscanFolderID)
 					except:	pass
 					try: 	indigo.variable.delete("allAway_{}".format(nEvent), "",folder=self.FINGscanFolderID)
 					except:	pass
@@ -2438,6 +2452,14 @@ class Plugin(indigo.PluginBase):
 				removeMAC=[]
 				for kk in range(self.fingNumberOfdevices):
 					theMAC = self.fingMACNumbers[kk]
+					if theMAC not in self.allDeviceInfo:
+						self.allDeviceInfo[theMAC] = copy.copy(emptyAllDeviceInfo)
+						self.allDeviceInfo[theMAC]["status"] = self.fingStatus[kk]
+						self.allDeviceInfo[theMAC]["ipNumber"] = self.fingIPNumbers[kk]
+						self.allDeviceInfo[theMAC]["hardwareVendor"] = self.fingVendor[kk]
+						self.allDeviceInfo[theMAC]["deviceInfo"] = self.fingDeviceInfo[kk]
+						self.allDeviceInfo[theMAC]["timeOfLastChange"] = time.strftime(_defTimeFormat, time.localtime())
+
 					if self.allDeviceInfo[theMAC]["usePing"] == "useOnlyPing": continue
 
 					if theMAC in self.ignoredMAC: 
@@ -2452,14 +2474,6 @@ class Plugin(indigo.PluginBase):
 							del self.inbetweenPing[theMAC]
 					self.fingDate[kk] = self.fingDate[kk].replace("/", "-")
 
-					if theMAC not in self.allDeviceInfo:
-						self.allDeviceInfo[theMAC] = copy.copy(emptyAllDeviceInfo)
-						self.allDeviceInfo[theMAC]["status"] = self.fingStatus[kk]
-						self.allDeviceInfo[theMAC]["ipNumber"] = self.fingIPNumbers[kk]
-						self.allDeviceInfo[theMAC]["hardwareVendor"] = self.fingVendor[kk]
-						self.allDeviceInfo[theMAC]["deviceInfo"] = self.fingDeviceInfo[kk]
-
-						self.allDeviceInfo[theMAC]["timeOfLastChange"] = time.strftime(_defTimeFormat, time.localtime())
 							
 					if self.fingStatus[kk] == "up" and self.allDeviceInfo[theMAC]["status"] != "up":
 							if self.decideMyLog("Logic"): self.indiLOG.log(10, "fing.data status down --> up MAC#:{}".format(theMAC) )
@@ -3744,7 +3758,7 @@ class Plugin(indigo.PluginBase):
 				checkTime[2]=int(checkTime[2]) #S
 
 				# every minute
-				if lastmin !=checkTime[1] and checkTime[2]>10 :
+				if lastmin !=checkTime[1] and checkTime[2] > 10 :
 					self.checkcProfile()
 					lastmin =checkTime[1]
 					self.checkIfDevicesChanged() # check for changed device parameters once a minute .
@@ -3752,13 +3766,13 @@ class Plugin(indigo.PluginBase):
 					self.setupEventVariables()
 
 				# every 5 minutes
-				if lastmin5 !=checkTime[1] and checkTime[1]%5 ==0 and checkTime[1] >0 and checkTime[2]>20 :
+				if lastmin5 !=checkTime[1] and checkTime[1]%5 == 0 and checkTime[1] >0 and checkTime[2] >20:
 					lastmin5 =checkTime[1]
 					self.updateAllIndigoIpVariableFromDeviceData() # copy any new / changed devices to variables
 					self.setupEventVariables()
 					
 				# at 29 minutes
-				if lastmin29 !=checkTime[1] and checkTime[1]%29 ==0 and checkTime[1] >0 and checkTime[2]>25 :
+				if lastmin29 !=checkTime[1] and checkTime[1]%29 == 0 and checkTime[1] >0 and checkTime[2] >25:
 					lastmin29 =checkTime[1]
 					self.cleanUpEvents()
 					self.IDretList=[]
@@ -3767,7 +3781,7 @@ class Plugin(indigo.PluginBase):
 
 			
 				# at 53 minutes
-				if lastmin53 !=checkTime[1] and checkTime[1]%53 ==0 and checkTime[1] >0 and checkTime[2]>35 :
+				if lastmin53 !=checkTime[1] and checkTime[1]%53 == 0 and checkTime[1] >0 and checkTime[2] > 35:
 					lastmin53 =checkTime[1]
 					self.doInbetweenPing(force=True)
 					self.totalLoopCounter= 500
@@ -4087,6 +4101,7 @@ class Plugin(indigo.PluginBase):
 					return 
 			try:
 				#self.indiLOG.log(20, "createDev; dev:{}, mac:{} ".format(theName, theMAC))
+				props = copy.copy(defaultDevProps)
 				indigo.device.create(
 					protocol=indigo.kProtocol.Plugin,
 					address=self.formatiPforAddress(devI["ipNumber"]),
@@ -4094,7 +4109,7 @@ class Plugin(indigo.PluginBase):
 					description=theMAC,
 					pluginId="com.karlwachs.fingscan",
 					deviceTypeId="IP-Device",
-					props = {"setUsePing":"doNotUsePing","setuseWakeOnLan":0,"setExpirationTime":0},
+					props = props,
 					folder=self.indigoDeviceFolderID
 					)
 			except Exception:
