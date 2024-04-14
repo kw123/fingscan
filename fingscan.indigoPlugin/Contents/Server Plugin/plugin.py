@@ -2380,6 +2380,7 @@ class Plugin(indigo.PluginBase):
 				self.finglogerrorCount   = 0
 				for kk in range(1):
 					theMAC = self.fingMACNumbers[kk]
+					if theMAC not in self.allDeviceInfo: continue
 					if self.allDeviceInfo[theMAC]["usePing"] != "useOnlyPing":
 						if self.fingStatus[kk] == "up":
 							if theMAC in self.inbetweenPing:	# if this is listed as down in inbetween pings, remove as we have new info.
@@ -4103,6 +4104,7 @@ class Plugin(indigo.PluginBase):
 					self.indiLOG.log(30, "dev:{}, mac:{} already exists! why recreate? trying to fix..   called from:{}".format(theName, theMAC, calledFrom))
 					return 
 			try:
+				self.indiLOG.log(20, "createDev; try to create new dev:{}, with MAC:{}, ipN:>>{}<<".format(theName, theMAC, devI))
 				#self.indiLOG.log(20, "createDev; dev:{}, mac:{} ".format(theName, theMAC))
 				props = copy.copy(defaultDevProps)
 				indigo.device.create(
@@ -4697,22 +4699,27 @@ class Plugin(indigo.PluginBase):
 
 ##############################################
 	def formatiPforAddress(self,ipN):
-		ips = ipN.strip(" ").strip("\n")
-		ips = ips.split(".")
-		if len(ips) !=4: return ipN
-		for ii in range(4):
-			digit = ips[ii].split("-")[0].lstrip("0")
-			if   int(digit) < 10:	last = "00"
-			elif int(digit) < 100:	last = "0"
-			else: last = ""
-			ips[ii] = last+digit
-		if "changed" in ipN:
-			ips[3] += "-changed"
-		elif "double" in ipN:
-			ips[3] += "-double"
-		else:
-			ips[3] += "        "
-		return ".".join(ips)
+		try:
+			ips = ipN.strip(" ").strip("\n")
+			ips = ips.split(".")
+			if len(ips) != 4: return ipN
+			for ii in range(4):
+				digit = ips[ii].split("-")[0].lstrip("0")
+				if digit == "": return ipN
+				if   int(digit) < 10:	last = "00"
+				elif int(digit) < 100:	last = "0"
+				else: last = ""
+				ips[ii] = last+digit
+			if "changed" in ipN:
+				ips[3] += "-changed"
+			elif "double" in ipN:
+				ips[3] += "-double"
+			else:
+				ips[3] += "        "
+			return ".".join(ips)
+		except Exception:
+			self.logger.error("ipn in>>{}<<".format(ipN), exc_info=True)
+		return ipN 
 
 	####################  utilities -- end #######################
 	def checkTimeZone (self,InfoTimeStamp):
