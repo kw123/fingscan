@@ -917,13 +917,16 @@ class Plugin(indigo.PluginBase):
 				dev.stateListOrDisplayStateIdChanged()  # update device.xml info if changed
 				props = dev.pluginProps
 				addrOld = dev.address.strip(" ")
-				if addrOld != self.formatiPforAddress(addrOld).strip(" "):
-					self.indiLOG.log(10, "replacing dev.address for {}  old:>>{}<< new:>>{}<< ".format(dev.name, addrOld, self.formatiPforAddress(addrOld)))
-					props["address"] = self.formatiPforAddress(addrOld)
-					dev.replacePluginPropsOnServer(props)	
+				if addrOld == "":
+					self.indiLOG.log(30, "deviceStart address not defined: please edit device and save  {}  addrs:>>{}<< ".format(dev.name, addrOld))
+				else:	
+					if addrOld != self.formatiPforAddress(addrOld).strip(" "):
+						self.indiLOG.log(10, "replacing dev.address for {}  old:>>{}<< new:>>{}<< ".format(dev.name, addrOld, self.formatiPforAddress(addrOld)))
+						props["address"] = self.formatiPforAddress(addrOld)
+						dev.replacePluginPropsOnServer(props)	
 
 			else:
-				if self.decideMyLog("Logic"): self.indiLOG.log(10, "dev start called for "+dev.name)
+				if self.decideMyLog("Logic"): self.indiLOG.log(10, "dev start called for {}".format(dev.name) )
 			if dev.pluginProps.get("setUsePing","") == "useOnlyPing": self.useOnlyPingActive = True
 			return
 		except Exception:
@@ -4696,6 +4699,7 @@ class Plugin(indigo.PluginBase):
 	def formatiPforAddress(self,ipN):
 		ips = ipN.strip(" ").strip("\n")
 		ips = ips.split(".")
+		if len(ips) !=4: return ipN
 		for ii in range(4):
 			digit = ips[ii].split("-")[0].lstrip("0")
 			if   int(digit) < 10:	last = "00"
