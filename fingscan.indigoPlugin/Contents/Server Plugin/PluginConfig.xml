@@ -82,12 +82,21 @@ You can besides auto created FING devices also PING only devices
 </Field>
 
 
-<Field  id="acceptNewDevices" type="menu" alignText="right" visible = "no">
+<Field  id="useVariables" type="menu" alignText="right" visible = "yes">
+	<List>
+		<Option value="0" >ignore</Option>
+		<Option value="1" >use</Option>
+	</List>
+<Label>use / ignore indigo ipDevicexx variables</Label></Field>
+
+
+<Field  id="acceptNewDevices" type="menu" alignText="right" visible = "yes">
 	<List>
 		<Option value="0" >ignore new devices</Option>
 		<Option value="1" >add new devices</Option>
 	</List>
 <Label>ignore / accpet new devices</Label></Field>
+
 
 
 <Field    id="enableReLoadPluginHour" type="menu"  tooltip="if set the plugin will reload at 0/1/2 am in the morning">
