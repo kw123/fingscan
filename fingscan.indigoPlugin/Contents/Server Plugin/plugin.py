@@ -150,9 +150,8 @@ class Plugin(indigo.PluginBase):
 		self.indigoRootPath 			= indigo.server.getInstallFolderPath().split("Indigo")[0]
 		self.pathToPlugin 				= self.completePath(os.getcwd())
 
-		major, minor, release 			= map(int, indigo.server.version.split("."))
+		major, minor, release 			= indigo.server.version.split(".")
 		self.indigoVersion 				= float(major)+float(minor)/10.
-		self.indigoRelease 				= release
 
 		self.pluginVersion				= pluginVersion
 		self.pluginId					= pluginId
@@ -1323,14 +1322,14 @@ class Plugin(indigo.PluginBase):
 			self.theMacNumberForvalidateDeviceConfigUi = ""
 
 			theDictList= super(Plugin, self).getDeviceConfigUiValues(VD,  typeId, devId)
-			#self.indiLOG.log(20, "getDeviceConfigUiValues valuesDict{}".format(theDictList))
+			self.indiLOG.log(20, "getDeviceConfigUiValues valuesDict{}".format(str(theDictList)))
 			for theMAC in self.allDeviceInfo:
 				if self.allDeviceInfo[theMAC]["deviceId"] == devId:
 					theDictList[0]["overWriteMAC"]  	= theMAC.strip(" ")
 					theDictList[0]["overWriteIpNumber"] = self.strip0fromIP(VD["address"].strip(" "))
-					theDictList[0]["downToExpiredPing"] = VD["downToExpiredPing"]
-					theDictList[0]["upToDownPing"] 		= VD["upToDownPing"]
-					self.theMacNumberForvalidateDeviceConfigUi = theMAC.strip(" ").upper()
+					theDictList[0]["downToExpiredPing"] = VD.get("downToExpiredPing","30")
+					theDictList[0]["upToDownPing"] 		= VD.get("upToDownPing","30")
+					#self.theMacNumberForvalidateDeviceConfigUi = theMAC.strip(" ").upper()
 					return theDictList
 			
 			

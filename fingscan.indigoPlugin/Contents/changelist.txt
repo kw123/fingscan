@@ -1,4 +1,14 @@
-dded features / changes in v2022.40.101 @ 2024-08-06
+
+added features / changes in v2022.40.102 @ 2025-03-27
+===================================================
+
+fixed:
+  File "plugin.py", line 1330, in getDeviceConfigUiValues
+    theDictList[0]["downToExpiredPing"] = VD["downToExpiredPing"]
+
+
+
+added features / changes in v2022.40.101 @ 2024-08-06
 ===================================================
 
 added exception handling to catch bad device data, ie:
