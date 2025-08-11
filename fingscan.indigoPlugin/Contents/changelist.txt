@@ -1,7 +1,7 @@
-added features / changes in v2022.40.104 @ 2025-08-11
+added features / changes in v2022.40.105 @ 2025-08-11
 ===================================================
 
-1. added better eror message in device edit for bad ip / mac numbers
+1. added better error message in device edit for bad ip / mac numbers
 2. fixed remove leading 0 for formatted ip number for eg 192.168.000.001, dos not replace ("000" -> "" but to "0")
 
 

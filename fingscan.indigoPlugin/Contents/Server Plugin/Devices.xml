@@ -83,11 +83,11 @@
      </Label>       
 			</Field>
 
-            <Field   id="overWriteIpNumber"  type="textfield" visibleBindingId="setUsePing" visibleBindingValue="useOnlyPing" >
+            <Field   id="overWriteIpNumber"  type="textfield"  >
                 <Label>(overwrite) IP number</Label>
             </Field>
 
-            <Field   id="overWriteMAC"  type="textfield" visibleBindingId="setUsePing" visibleBindingValue="useOnlyPing" >
+            <Field   id="overWriteMAC"  type="textfield"  >
                 <Label>(overwrite) MAC number</Label>
             </Field>
     

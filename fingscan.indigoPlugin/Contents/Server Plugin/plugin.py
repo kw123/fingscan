@@ -1355,7 +1355,6 @@ class Plugin(indigo.PluginBase):
 
 		newip = self.strip0fromIP(valuesDict["overWriteIpNumber"])
 		if not self.isValidIP(newip):
-			valuesDict["setUsePing"] = "useOnlyPing"
 			errdict["overWriteIpNumber"] = newip+" bad IP number"
 			errdict["showAlertText"] = newip+" please enter valid IP number"
 			self.indiLOG.log(20, "validateDeviceConfigUi  valuesDict:{}".format(valuesDict))
