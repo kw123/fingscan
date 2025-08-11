@@ -188,29 +188,29 @@ class Plugin(indigo.PluginBase):
 		self.indiLOG.setLevel(logging.THREADDEBUG)
 
 		self.indigo_log_handler.setLevel(logging.INFO)
-
-		self.indiLOG.log(20, "initializing  ... ")
-		self.indiLOG.log(20, "path To files:          =================")
-		self.indiLOG.log(10, "indigo                  {}".format(self.indigoRootPath))
-		self.indiLOG.log(10, "installFolder           {}".format(self.indigoPath))
-		self.indiLOG.log(10, "plugin.py               {}".format(self.pathToPlugin))
-		self.indiLOG.log(10, "indigo                  {}".format(self.indigoRootPath))
-		self.indiLOG.log(20, "detailed logging        {}".format(self.PluginLogFile))
-		if self.pluginPrefs.get("showLoginTest",False):
-			self.indiLOG.log(20, "testing logging levels, for info only: ")
-			self.indiLOG.log( 0, "logger  enabled for     0 ==> TEST ONLY ")
-			self.indiLOG.log( 5, "logger  enabled for     THREADDEBUG    ==> TEST ONLY ")
-			self.indiLOG.log(10, "logger  enabled for     DEBUG          ==> TEST ONLY ")
-			self.indiLOG.log(20, "logger  enabled for     INFO           ==> TEST ONLY ")
-			self.indiLOG.log(30, "logger  enabled for     WARNING        ==> TEST ONLY ")
-			self.indiLOG.log(40, "logger  enabled for     ERROR          ==> TEST ONLY ")
-			self.indiLOG.log(50, "logger  enabled for     CRITICAL       ==> TEST ONLY ")
-		self.indiLOG.log(10, "Plugin short Name       {}".format(self.pluginShortName))
-		self.indiLOG.log(10, "my PID                  {}".format(self.myPID))	 
-		self.indiLOG.log(10, "Achitecture             {}".format(platform.platform()))	 
-		self.indiLOG.log(10, "OS                      {}".format(platform.mac_ver()[0]))	 
-		self.indiLOG.log(10, "indigo V                {}".format(indigo.server.version))	 
-		self.indiLOG.log(10, "python V                {}.{}.{}".format(sys.version_info[0], sys.version_info[1] , sys.version_info[2]))	 
+		if self.pluginPrefs.get("debugStartFi",True):
+			self.indiLOG.log(20, "initializing  ... ")
+			self.indiLOG.log(20, "path To files:          =================")
+			self.indiLOG.log(10, "indigo                  {}".format(self.indigoRootPath))
+			self.indiLOG.log(10, "installFolder           {}".format(self.indigoPath))
+			self.indiLOG.log(10, "plugin.py               {}".format(self.pathToPlugin))
+			self.indiLOG.log(10, "indigo                  {}".format(self.indigoRootPath))
+			self.indiLOG.log(20, "detailed logging        {}".format(self.PluginLogFile))
+			if self.pluginPrefs.get("showLoginTest",False):
+				self.indiLOG.log(20, "testing logging levels, for info only: ")
+				self.indiLOG.log( 0, "logger  enabled for     0 ==> TEST ONLY ")
+				self.indiLOG.log( 5, "logger  enabled for     THREADDEBUG    ==> TEST ONLY ")
+				self.indiLOG.log(10, "logger  enabled for     DEBUG          ==> TEST ONLY ")
+				self.indiLOG.log(20, "logger  enabled for     INFO           ==> TEST ONLY ")
+				self.indiLOG.log(30, "logger  enabled for     WARNING        ==> TEST ONLY ")
+				self.indiLOG.log(40, "logger  enabled for     ERROR          ==> TEST ONLY ")
+				self.indiLOG.log(50, "logger  enabled for     CRITICAL       ==> TEST ONLY ")
+			self.indiLOG.log(10, "Plugin short Name       {}".format(self.pluginShortName))
+			self.indiLOG.log(10, "my PID                  {}".format(self.myPID))	 
+			self.indiLOG.log(10, "Achitecture             {}".format(platform.platform()))	 
+			self.indiLOG.log(10, "OS                      {}".format(platform.mac_ver()[0]))	 
+			self.indiLOG.log(10, "indigo V                {}".format(indigo.server.version))	 
+			self.indiLOG.log(10, "python V                {}.{}.{}".format(sys.version_info[0], sys.version_info[1] , sys.version_info[2]))	 
 
 		self.pythonPath = ""
 		if sys.version_info[0] >2:
@@ -220,7 +220,7 @@ class Plugin(indigo.PluginBase):
 				self.indiLOG.log(40, "FATAL error:  python versions 3.x is not installed  ==>  stopping {}".format(self.pluginId))
 				self.quitNOW = "python 3 not installed"
 				exit()
-		self.indiLOG.log(20, "using '{}' for utily programs".format(self.pythonPath))
+		if self.pluginPrefs.get("debugStartFi",True): self.indiLOG.log(20, "using '{}' for utily programs".format(self.pythonPath))
 ###############  END common for all plugins ############
 
 		return
@@ -240,12 +240,12 @@ class Plugin(indigo.PluginBase):
 		try:
 			self.timeOfStart = time.time()
 			self.dontDoAnythingAfterStart = 30
-			self.checkcProfile()
-
 			self.debugLevel			= []
 			for d in _debAreas:
 				if self.pluginPrefs.get("debug"+d, False): self.debugLevel.append(d)
-			self.indiLOG.log(20, "debug settings :{} ".format(self.debugLevel))
+			if self.decideMyLog("StartFi"): self.indiLOG.log(20, "debug settings :{} ".format(self.debugLevel))
+			self.checkcProfile()
+
 
 ############ directory & file names ...
 			self.fingDataFileName0			= "fing.data"
@@ -338,7 +338,7 @@ class Plugin(indigo.PluginBase):
 		try:
 ############ startup message
 			 
-			indigo.server.log("FINGSCAN--   initializing     will take ~ 2 minutes..")
+			if self.decideMyLog("StartFi"): indigo.server.log("FINGSCAN--   initializing     will take ~ 2 minutes..")
 
 ############ set basic parameters to default before we use them
 
@@ -385,7 +385,7 @@ class Plugin(indigo.PluginBase):
 			except Exception as e:
 				self.logger.error("", exc_info=True)
 				self.netwInfo = {'netWorkId': '192.168.1.0', 'broadcast': '192.168.1.255', 'netMask': '255.255.255.0', 'maxHosts': 254, 'hostRange': '192.168.1.1 - 192.168.1.254'}
-			self.indiLOG.log(20, "network info: {}, netwType:{}".format(self.netwInfo, self.netwType))
+			if self.decideMyLog("StartFi"): self.indiLOG.log(20, "network info: {}, netwType:{}".format(self.netwInfo, self.netwType))
 			self.broadcastIP = self.netwInfo["broadcast"]
 
 			self.pluginPrefs["network"]  	= self.theNetwork
@@ -413,7 +413,7 @@ class Plugin(indigo.PluginBase):
 
 ########## get password
 			self.passwordOK = "0"
-			self.indiLOG.log(20, "getting password")
+			if self.decideMyLog("StartFi"): self.indiLOG.log(20, "getting password")
 			test = self.getPWD("fingscanpy")
 			if self.pluginPrefs.get("passwordMethod", "keyChain") == "prefs":
 				self.yourPassword = self.pluginPrefs.get("password", "")
@@ -468,7 +468,7 @@ class Plugin(indigo.PluginBase):
 			self.pluginPrefs["password"] = self.yourPassword	
 			self.pluginPrefs["passwordMethod"] = "prefs"
 
-			self.indiLOG.log(20, "get password done;  checking if FING is installed ")
+			if self.decideMyLog("StartFi"): self.indiLOG.log(20, "get password done;  checking if FING is installed ")
 
 	
 
@@ -480,7 +480,7 @@ class Plugin(indigo.PluginBase):
 			self.checkDEVICES()
 			self.checkIfDevicesChanged()
 			self.updateAllIndigoIpVariableFromDeviceData()
-			self.indiLOG.log(20, "loaded indigo data")
+			if self.decideMyLog("StartFi"): self.indiLOG.log(20, "loaded indigo data")
 
 
 
@@ -535,7 +535,7 @@ class Plugin(indigo.PluginBase):
 	 
 
 ############ initialize indigo settings ..
-			self.indiLOG.log(20, "Initializing parameters for FING")
+			if self.decideMyLog("StartFi"): self.indiLOG.log(20, "Initializing parameters for FING")
 			retCode = self.initFing(1)
 			if retCode != 1:
 				self.indiLOG.log(40, " FING not running... quit")
@@ -550,7 +550,7 @@ class Plugin(indigo.PluginBase):
 			
 
 ############ try to find hw vendor 
-			self.indiLOG.log(20, "getting vendor info.. ")
+			if self.decideMyLog("StartFi"): self.indiLOG.log(20, "getting vendor info.. ")
 			self.updateVendors()
 
 		except Exception as e:
@@ -659,7 +659,7 @@ class Plugin(indigo.PluginBase):
 				ret, err = self.readPopen(cmd)
 				if self.decideMyLog("Logic"): self.indiLOG.log(10, "setting attribute for catalina+  with:  {}".format(cmdSHOW))
 				if self.decideMyLog("Logic"): self.indiLOG.log(10, "setting attribute for catalina+  result:{}".format(ret))
-				self.indiLOG.log(20, "fing install check done")
+				if self.decideMyLog("StartFi"): self.indiLOG.log(20, "fing install check done")
 
 				self.fingVersion = self.checkVersion()
 				if self.opsys >= 10.15 and self.fingVersion < 5 and self.fingVersion >0 :
@@ -1322,14 +1322,14 @@ class Plugin(indigo.PluginBase):
 			self.theMacNumberForvalidateDeviceConfigUi = ""
 
 			theDictList= super(Plugin, self).getDeviceConfigUiValues(VD,  typeId, devId)
-			self.indiLOG.log(20, "getDeviceConfigUiValues valuesDict{}".format(str(theDictList)))
+			#self.indiLOG.log(20, "getDeviceConfigUiValues valuesDict{}".format(str(theDictList)))
 			for theMAC in self.allDeviceInfo:
 				if self.allDeviceInfo[theMAC]["deviceId"] == devId:
 					theDictList[0]["overWriteMAC"]  	= theMAC.strip(" ")
 					theDictList[0]["overWriteIpNumber"] = self.strip0fromIP(VD["address"].strip(" "))
 					theDictList[0]["downToExpiredPing"] = VD.get("downToExpiredPing","30")
 					theDictList[0]["upToDownPing"] 		= VD.get("upToDownPing","30")
-					#self.theMacNumberForvalidateDeviceConfigUi = theMAC.strip(" ").upper()
+					self.theMacNumberForvalidateDeviceConfigUi = theMAC.strip(" ").upper()
 					return theDictList
 			
 			
@@ -1348,14 +1348,17 @@ class Plugin(indigo.PluginBase):
 		valuesDict["overWriteMAC"] = newMAC
 		errdict = indigo.Dict()
 		if not self.isValidMAC(newMAC):
-			errdict["overWriteMAC"] = "bad mac number"
-			errdict["showAlertText"] = "please enter valid mac number"
+			errdict["overWriteMAC"] = newMAC+" bad mac number"
+			errdict["showAlertText"] = newMAC+" please enter valid mac number"
+			self.indiLOG.log(20, "validateDeviceConfigUi  valuesDict:{}".format(valuesDict))
 			return (False, valuesDict, errdict)
 
 		newip = self.strip0fromIP(valuesDict["overWriteIpNumber"])
 		if not self.isValidIP(newip):
-			errdict["overWriteMAC"] = "bad IP number"
-			errdict["showAlertText"] = "please enter valid IP number"
+			valuesDict["setUsePing"] = "useOnlyPing"
+			errdict["overWriteIpNumber"] = newip+" bad IP number"
+			errdict["showAlertText"] = newip+" please enter valid IP number"
+			self.indiLOG.log(20, "validateDeviceConfigUi  valuesDict:{}".format(valuesDict))
 			return (False, valuesDict, errdict)
 
 		newippad = self.formatiPforAddress(newip)
@@ -1363,8 +1366,10 @@ class Plugin(indigo.PluginBase):
 		if newMAC in self.allDeviceInfo:
 			self.allDeviceInfo[newMAC]["usePing"] == valuesDict["setUsePing"]
 
+		#self.indiLOG.log(20, "validateDeviceConfigUi  oldMAC:{} - newMAC:{}".format(oldMAC, newMAC ))
 		if self.isValidMAC(oldMAC):
 			for theMAC in self.allDeviceInfo:
+				#self.indiLOG.log(20, "validateDeviceConfigUi  testing:{} - devid:{}".format(theMAC, self.allDeviceInfo[theMAC]["deviceId"]))
 				if int(self.allDeviceInfo[theMAC]["deviceId"]) == devId:
 					if valuesDict["setHardwareVendor"] !="":
 						self.allDeviceInfo[theMAC]["hardwareVendor"]	= valuesDict["setHardwareVendor"]
@@ -1401,7 +1406,7 @@ class Plugin(indigo.PluginBase):
 	
 					self.updateIndigoIpDeviceFromDeviceData(newMAC,["hardwareVendor", "deviceInfo", "usePing", "suppressChangeMSG"], calledFrom="validateDeviceConfigUi")
 					self.updateIndigoIpVariableFromDeviceData(newMAC)
-					#self.indiLOG.log(20, "getDeviceConfigUiValues  valuesDict:{}".format(valuesDict))
+					self.indiLOG.log(20, "validateDeviceConfigUi  valuesDict:{}".format(valuesDict))
 					return (True, valuesDict)
 
 
@@ -1428,7 +1433,7 @@ class Plugin(indigo.PluginBase):
 			valuesDict["address"] =  newippad
 			valuesDict["description"] =  newMAC
 			self.updateDescription = devId
-			self.indiLOG.log(20, "validateDeviceConfigUi  configured new device devId:{}, \nvD:{}".format(devId, valuesDict))
+			self.indiLOG.log(20, "validateDeviceConfigUi  configured device devId:{}, \nvD:{}".format(devId, valuesDict))
 			self.useOnlyPingForce = time.time() + 40
 			self.useOnlyPingActive = True
 			return (True, valuesDict)
@@ -2119,7 +2124,7 @@ class Plugin(indigo.PluginBase):
 		except:
 			pass
 
-		self.indiLOG.log(20, "indigo variables initialized" )
+		if self.decideMyLog("StartFi"):self.indiLOG.log(20, "indigo variables initialized" )
 
 
 
@@ -2179,7 +2184,7 @@ class Plugin(indigo.PluginBase):
 			self.sleep( 1 )
 			self.killFing("onlyParents")
 
-			self.indiLOG.log(20, "Waiting for first data from FING")
+			if self.decideMyLog("StartFi"): self.indiLOG.log(20, "Waiting for first data from FING")
 
 			found = False
 			for ii in range(5):
@@ -3580,7 +3585,7 @@ class Plugin(indigo.PluginBase):
 			self.cProfileVariableLoaded = 0
 			self.do_cProfile  			= "x"
 			self.timeTrVarName 			= "enableTimeTracking_"+self.pluginShortName
-			indigo.server.log("testing if variable "+self.timeTrVarName+" is == on/off/print-option to enable/end/print time tracking of all functions and methods (option:'',calls,cumtime,pcalls,time)")
+			if self.decideMyLog("StartFi"): sindigo.server.log("testing if variable "+self.timeTrVarName+" is == on/off/print-option to enable/end/print time tracking of all functions and methods (option:'',calls,cumtime,pcalls,time)")
 
 		self.lastTimegetcProfileVariable = time.time()
 
@@ -4758,7 +4763,8 @@ class Plugin(indigo.PluginBase):
 		try:
 			newips = ipIN.replace(" ","").split("-")[0].split(".")
 			for ii in range(4):
-				newips[ii] = newips[ii].lstrip("0")
+				if len(newips[ii]) > 1:
+					newips[ii] = newips[ii].lstrip("0")
 			return ".".join(newips)
 
 		except: return ipIN
@@ -4934,6 +4940,8 @@ class Plugin(indigo.PluginBase):
 	def isValidIP(self, ip0):
 		ipx = ip0.split(".")
 		if len(ipx) != 4:									return False	# not complete
+		if ipx[0] == "0":									return False	# must not start with 0
+		if ipx[3] == "0":									return False	# must not start with 0
 		else:
 			for ip in ipx:
 				try:
@@ -4948,7 +4956,7 @@ class Plugin(indigo.PluginBase):
 		if len(macx) != 6:									return False	# len(mac.split("D0:D2:B0:88:7B:76")):
 
 		for xx in macx:
-			if len(xx) !=2:									return False	# not 2 digits
+			if len(xx) != 2:								return False	# not 2 digits
 			try: 	int(xx,16)
 			except: 										return False	# is not a hex number
 
