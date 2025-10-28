@@ -1,3 +1,11 @@
+added features / changes in v2022.40.116 @ 2025-10-28
+===================================================
+
+1. fixed bug when setting debug = true for STARTFI
+2. cleanup  fing init debug logging
+3. fixed network entry, was always defaulting to 192.168.1.0
+
+
 added features / changes in v2022.40.105 @ 2025-08-11
 ===================================================
 

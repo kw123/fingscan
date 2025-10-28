@@ -377,7 +377,8 @@ class Plugin(indigo.PluginBase):
 			
 			self.theNetwork         = self.pluginPrefs.get("network", "192.168.1.0")
 			if not self.isValidIP(self.theNetwork):
-				self.theNetwork ="192.168.1.0"
+				self.indiLOG.log(30, "network : {} is wrong format, settig to 192.168.1.0".format(self.theNetwork))
+				self.theNetwork = "192.168.1.0"
 
 			try: 
 				aa = self.theNetwork+"/"+self.netwType
@@ -648,8 +649,8 @@ class Plugin(indigo.PluginBase):
 					cmdSHOW = "echo 'xxxxxx' | sudo -S /usr/bin/xattr -rd com.apple.quarantine '"+self.fingEXEpath+"'"
 
 				ret, err = self.readPopen(cmd)
-				if self.decideMyLog("Logic"): self.indiLOG.log(10, "setting attribute for catalina+  with:  {}".format(cmdSHOW))
-				if self.decideMyLog("Logic"): self.indiLOG.log(10, "setting attribute for catalina+  result:{}".format(ret))
+				if self.decideMyLog("Logic",Second="StartFi"): self.indiLOG.log(10, "setting attribute for catalina+  with:  {}".format(cmdSHOW))
+				if self.decideMyLog("Logic",Second="StartFi"): self.indiLOG.log(10, "setting attribute for catalina+  result:{}".format(ret))
 				cmd = "echo '"+self.yourPassword+ "' | sudo -S /usr/bin/xattr -rd com.apple.quarantine  /usr/local/lib/fing/*"
 				if self.pluginPrefs.get("showPassword",False):
 					cmdSHOW = cmd
@@ -657,9 +658,8 @@ class Plugin(indigo.PluginBase):
 					cmdSHOW = "echo 'xxxxxx' | sudo -S /usr/bin/xattr -rd com.apple.quarantine  /usr/local/lib/fing/*"
 
 				ret, err = self.readPopen(cmd)
-				if self.decideMyLog("Logic"): self.indiLOG.log(10, "setting attribute for catalina+  with:  {}".format(cmdSHOW))
-				if self.decideMyLog("Logic"): self.indiLOG.log(10, "setting attribute for catalina+  result:{}".format(ret))
-				if self.decideMyLog("StartFi"): self.indiLOG.log(20, "fing install check done")
+				if self.decideMyLog("Logic",Second="StartFi"): self.indiLOG.log(10, "setting attribute for catalina+  with:  {}".format(cmdSHOW))
+				if self.decideMyLog("Logic",Second="StartFi"): self.indiLOG.log(10, "setting attribute for catalina+  result:{}".format(ret))
 
 				self.fingVersion = self.checkVersion()
 				if self.opsys >= 10.15 and self.fingVersion < 5 and self.fingVersion >0 :
@@ -667,7 +667,7 @@ class Plugin(indigo.PluginBase):
 					 "\nor use\nCLI_macOSX_5.4.0.zip\n included in the plugin download to install\nthen delete fing.log and fing.data in the indigo preference directory and reload the plugin".format(self.opsys, self.fingVersion))
 					for ii in range(1000):			
 						time.sleep(2)
-				if self.fingVersion  ==-1 :
+				if self.fingVersion  == -1 :
 					self.indiLOG.log(50, "\nmiss match version of opsys:{} and fing:{} you need to upgrade / imstall FING to 64 bit version (>=5). Download from\nhttps://www.fing.com/products/development-toolkit  use OSX button")
 					self.indiLOG.log(50, "or use\nCLI_macOSX_5.4.0.zip\n included in the plugin download to install\nthen delete fing.log and fing.data in the indigo preference directory and reload the plugin".format(self.opsys, self.fingVersion))
 					self.indiLOG.log(50, "\n and try:")
@@ -1541,8 +1541,9 @@ class Plugin(indigo.PluginBase):
 				return
 
 
-			out ="\nEVENT defs:::::::::::::::::: Start :::::::::::::::: -- {}\n".format(printEvents)
-			eventsToPrint=[]
+			header = "\nEVENT defs:::::::::::::::::: Start :::::::::::::::: -- {}\n".format(printEvents)
+			out = ""
+			eventsToPrint = []
 			if printEvents == "all":
 				for i in range(1,nEvents+1):
 					eventsToPrint.append("{}".format(i))
@@ -1601,8 +1602,9 @@ class Plugin(indigo.PluginBase):
 				out+=   	"n Devices           Away :{}  -- reacts minTimeAway before trigger\n".format(evnt["nAway"]) 
 				out+=		"minTimeAway              :{:4.0f}[secs] before Away trigger\n".format(evnt["minimumTimeAway"])
 				out+= 		"minTimeNotHome           :{:4.0f}[secs] before re-trigger Home\n".format(evnt["minimumTimeHome"])
-			out+=			"EVENT defs:::::::::::::::::: END ::::::::::::::::::"
-			self.indiLOG.log(20, out+"\n")
+			if out != "":
+				tail =			"EVENT defs:::::::::::::::::: END ::::::::::::::::::"
+				self.indiLOG.log(20, header+out+tail+"\n")
 		except Exception:
 			self.logger.error("", exc_info=True)
 		return
@@ -2138,7 +2140,7 @@ class Plugin(indigo.PluginBase):
 			self.fingRestartCount +=1
 
 			if self.fingRestartCount > 5:  # starts # 1
-				self.indiLOG.log(30, "  (re)started FING 5 times, quiting ... reloading the plugin ")
+				self.indiLOG.log(30, "initFing; (re)started FING 5 times, quiting ... reloading the plugin ")
 				self.quitNOW = "FING problem"
 				return -1
 			
@@ -2172,43 +2174,47 @@ class Plugin(indigo.PluginBase):
 			if self.decideMyLog("StartFi"):	deblevelForStartFing = 20
 			else:							deblevelForStartFing = 0
 			
-			params =  {"ppp":"&a3"+self.yourPassword[::-1]+"#5B", "showPassword":self.pluginPrefs.get("showPassword",False), "theNetwork":self.theNetwork, "netwType":self.netwType,"logLevel": deblevelForStartFing, "fingEXEpath":self.fingEXEpath,"macUser":self.MACuserName, "pythonPath":self.pythonPath}
+			params =  {"ppp":"&a3"+self.yourPassword[::-1]+"#5B", "showPassword":self.pluginPrefs.get("showPassword",False), "theNetwork":self.theNetwork, "netwType":self.netwType,"logLevel": deblevelForStartFing, "fingEXEpath":self.fingEXEpath,"macUser":self.MACuserName, "pythonPath":self.pythonPath,"pluginPID":self.myPID}
 			f = open(self.indigoPreferencesPluginDir+"paramsForStart","w")
 			f.write(json.dumps(params))
 			f.close()
 			cmd = "'{}' '{}startfing.py' '{}paramsForStart'  &".format(self.pythonPath, self.pathToPlugin, self.indigoPreferencesPluginDir)
 
-			if self.decideMyLog("StartFi"): self.indiLOG.log(10, "FING cmd= {}".format(cmd) )
+			if self.decideMyLog("StartFi"): self.indiLOG.log(10, "initFing; FING cmd= {}".format(cmd) )
 			os.system(cmd)
-			self.sleep( 1 )
-			self.killFing("onlyParents")
 
-			if self.decideMyLog("StartFi"): self.indiLOG.log(20, "Waiting for first data from FING")
+			if self.decideMyLog("StartFi"): self.indiLOG.log(20, "initFing; Waiting for first data from FING; loking for file:{}".format(self.fingDataFileName))
 
 			found = False
-			for ii in range(5):
-				for kk in range(20):
+			gtime = 1
+			for ii in range(15):
+				for kk in range(10):
 					self.sleep( 1 )
-				try:	gtime = os.path.getmtime(self.fingDataFileName)
-				except: continue
-				self.indiLOG.log(10, "Checking if FING created output, old timeStamp:{}; new timeStamp:{}".format(dataFileTimeOld, gtime) )
+				try:	
+					if os.path.isfile(self.fingDataFileName):
+						gtime = os.path.getmtime(self.fingDataFileName)
+					else: continue
+				except Exception:
+					self.logger.error("fingDataFileName error with:{}".format(self.fingDataFileName), exc_info=True)
+					continue
+				if self.decideMyLog("StartFi"): self.indiLOG.log(20, "Checking if FING created output, old timeStamp:{:.1f}; new timeStamp:{:.1f}".format(dataFileTimeOld, gtime) )
 				if dataFileTimeOld != os.path.getmtime(self.fingDataFileName):
 					found = True
-					self.indiLOG.log(20, "Initializing ..  FING created new data   waiting ~ 1 minute for stable operation")
+					self.indiLOG.log(20, "initFing; Initializing ..  FING created new data   waiting ~ 1 minute for stable operation")
 					break
 			if not found: 
-				self.indiLOG.log(20, "Initializing .. FING data file not created, return")
+				self.indiLOG.log(20, "initFing; Initializing .. FING data file not created, return")
 				return 0
 
 		
 			#test if it is actually running
 			pids, parentPids = self.testFing()
-			self.indiLOG.log(10, "FING Pids active after step3 = {}".format(pids))
+			self.indiLOG.log(10, "initFing; FING Pids active after step3 = {}".format(pids))
 			if len(pids) > 0:
-				self.indiLOG.log(20, "..  (re)started FING, initialized")
+				self.indiLOG.log(20, "initFing; ..  (re)started FING, initialized")
 				return 1
 
-			self.indiLOG.log(30, "  (re)start FING not successful ")
+			self.indiLOG.log(30, "initFing;   (re)start FING not successful ")
 
 			return 0 #  not successful
 		except Exception:
@@ -2216,58 +2222,58 @@ class Plugin(indigo.PluginBase):
 	
 	
 	
-	
-	
-	
 ########################################
-	def killFing(self,whomToKill):
+	def killFing(self, whomToKill):
 		# all="all": kill fing and parents, if not just parents
 
 		pids, parentPids = self.testFing()
 
-		if self.decideMyLog("Logic"): self.indiLOG.log(10, "  killing FING Processes pids   " +whomToKill + " - " +"{}".format(pids))
+		if self.decideMyLog("Logic", Second="StartFi"): self.indiLOG.log(10, "killFing; killing old FING Processes pids   " +whomToKill + " - " +"{}".format(pids))
 		
 		lenPid = len(pids)
 		lenPidP = len(parentPids)
 
-		pidsToKill =" "
+		pidsToKill = ""
 		for kk in range (lenPidP):
-			if parentPids[kk] != "1": pidsToKill += " "+parentPids[kk]
+			if parentPids[kk] != "1": pidsToKill += parentPids[kk] + " "
 		
 		if whomToKill ==  "all":
 			for kk in range(lenPid):
-				if pids[kk] != "1": pidsToKill += " "+pids[kk]
+				if pids[kk] != "1": pidsToKill += pids[kk]  + " "
 
+		pidsToKill = pidsToKill.strip(" ")
+		if pidsToKill == "":
+			if self.decideMyLog("StartFi"): self.indiLOG.log(10, "killFing; no FING pgms found running")
+			return 
+			
+		cmd = "echo '" + self.yourPassword + "' | sudo -S /bin/kill -9 " + pidsToKill +" > /dev/null 2>&1 &"
+		if self.pluginPrefs.get("showPassword",False):
+			cmdSHOW = cmd
+		else:
+			cmdSHOW = "echo 'xxxxxx' | sudo -S /bin/kill -9 " + pidsToKill +" > /dev/null 2>&1 &"
 
-		if pidsToKill != " ":
-			cmd = "echo '" + self.yourPassword + "' | sudo -S /bin/kill -9 " + pidsToKill +" > /dev/null 2>&1 &"
-			if self.pluginPrefs.get("showPassword",False):
-				cmdSHOW = cmd
-			else:
-				cmdSHOW = "echo 'xxxxxx' | sudo -S /bin/kill -9 " + pidsToKill +" > /dev/null 2>&1 &"
-
-			if self.decideMyLog("Logic"): self.indiLOG.log(10, "  FING kill cmd:" + cmdSHOW)
-			ret, err = self.readPopen(cmd)
-			#if self.decideMyLog("Logic"): self.indiLOG.log(10, "  FING kill ret= " +  "{}".format(ret))
-			self.sleep(1)
+		if self.decideMyLog("StartFi"): self.indiLOG.log(10, "killFing; kill cmd:" + cmdSHOW)
+		ret, err = self.readPopen(cmd)
+		#if self.decideMyLog("Logic"): self.indiLOG.log(10, "  FING kill ret= " +  "{}".format(ret))
+		self.sleep(1)
 
 		# check if successfull killed,  ps ... should return nothing
 		pids, parentPids = self.testFing()
-		if len(pids) >0:
-			if self.decideMyLog("Logic"): self.indiLOG.log(10, "  FING still running,  pids = " +  "{}".format(pids)+"--{}".format(parentPids))
+		if len(pids) > 0:
+			if self.decideMyLog("StartFi"): self.indiLOG.log(10, "killFing; FING still running,  pids = " +  "{};  parentPIDs:{}".format(pids, parentPids))
 			return 0
 		return 1
 		
 		
 ########################################
 	def killPing(self,whomToKill, ipnumber= "0.0.0.0"):
-		if self.decideMyLog("Logic"): self.indiLOG.log(10, "killing ping jobs: {}".format(whomToKill))
+		if self.decideMyLog("Logic"): self.indiLOG.log(10, "killPing; obs: {}".format(whomToKill))
 		
 		if whomToKill == "all":
 			for theMAC in self.pingJobs:
 				pid = self.pingJobs[theMAC]
 				if int(pid) < 10 : continue
-				if self.decideMyLog("Logic"): self.indiLOG.log(10, "killing PID: {} - {}".format(theMAC, pid))
+				if self.decideMyLog("Logic"): self.indiLOG.log(10, "killPing; PID: {} - {}".format(theMAC, pid))
 				ret, err = self.readPopen("/bin/kill {}".format(pid))
 				self.pingJobs[theMAC] =-1
 
@@ -2276,7 +2282,7 @@ class Plugin(indigo.PluginBase):
 				
 			for pid  in pids:
 				if int(pid) < 10: continue
-				if self.decideMyLog("Logic"): self.indiLOG.log(10, "killing PID: {}".format(pid))
+				if self.decideMyLog("Logic"): self.indiLOG.log(10, "killPing; PID: {}".format(pid))
 				ret, err = self.readPopen("/bin/kill {}".format(pid))
 
 
@@ -2290,7 +2296,7 @@ class Plugin(indigo.PluginBase):
 			if whomToKill in self.pingJobs:
 				pid = self.pingJobs[whomToKill]
 				if int(pid) > 10:
-					if self.decideMyLog("Logic"): self.indiLOG.log(10, "killing : "+whomToKill +"-" +"{}".format(pid))
+					if self.decideMyLog("Logic"): self.indiLOG.log(10, "killPing; killing : "+whomToKill +"-" +"{}".format(pid))
 					ret, err = self.readPopen("/bin/kill {}".format(pid))
 					self.pingJobs[whomToKill] =-1
 			if ipnumber != "0.0.0.0":
@@ -2303,39 +2309,39 @@ class Plugin(indigo.PluginBase):
 		return
 		
 ########################################
-	def killPGM(self,whomToKill):
-		if self.decideMyLog("Logic"): self.indiLOG.log(10, "killing pgm: {}".format(whomToKill))
+	def killPGM(self, whomToKill):
+		if self.decideMyLog("Logic", Second="StartFi"): self.indiLOG.log(10, "killPGM: PGM{}".format(whomToKill))
 
 		ret, err = self.readPopen("ps -ef | grep '{}' | grep -v grep | awk '{{print$2}}'".format(whomToKill))
 		pids =ret.split()
 			
 		for pid  in pids:
 			if int(pid) < 10: continue
-			if self.decideMyLog("Logic"): self.indiLOG.log(10, "killing PID: {}".format(pid))
+			if self.decideMyLog("Logic", Second="StartFi"): self.indiLOG.log(10, "killPGM: PID:{}".format(pid))
 			ret, err = self.readPopen( "echo '{}' | sudo -S /bin/kill -9 {}".format(self.yourPassword, pid))
 		return 	
 		
 ########################################
 	def testFing(self):
-		if self.decideMyLog("Logic"): self.indiLOG.log(10, "testing if FING is running ")
+		#if self.decideMyLog("Logic", Second="StartFi"): self.indiLOG.log(10, "testFing; testing if FING is running ")
 
 
-		ret, err = self.readPopen("ps -ef | grep fing.bin | grep -v grep | grep -v fingscan| grep -v Indigo | awk '{print$2,$3}'")
-		pids =ret.strip("\n")
-		pids = pids.split("\n")
-		fingPids=[]
-		parentPids=[]
-		if self.decideMyLog("Logic"): self.indiLOG.log(10, "  FING running pids2= ".format(pids))
+		#ret, err = self.readPopen("ps -ef | grep fing.bin | grep -v grep | grep -v fingscan| grep -v Indigo | awk '{print$2,$3}'")
+		ret, err = self.readPopen("ps -ef | grep fing.bin | grep -v grep | grep -v fingscan| grep -v Indigo ")
+		pids = ret.strip("\n")
+		pidLines = pids.split("\n")
+		fingPids = []
+		parentPids = []
+		if self.decideMyLog("Logic", Second="StartFi"): self.indiLOG.log(10, "testFing; FING running pids found = ".format(pidLines))
 		
-		for kk in range(len(pids)):
-			p = pids[kk].split(" ")
-			if len(p)==0: continue
-			fingPids.append(p[0])
-			if len(p)!=2: continue
-			if p[1] == "1": continue
-			if p[1] == "0": continue
-			if p[1] == " ": continue
-			parentPids.append(p[1])
+		for kk in range(len(pidLines)):
+			p = pidLines[kk].split(" ")
+			if len(p) < 3: continue
+			fingPids.append(p[1])
+			if p[2] == "1": continue
+			if p[2] == "0": continue
+			if p[2] == " ": continue
+			parentPids.append(p[2])
 			# pids has the process ids #  of fing and parent shell as simple string have removed PID # 1 = the root
 		return fingPids, parentPids
 	
@@ -3584,7 +3590,7 @@ class Plugin(indigo.PluginBase):
 			self.cProfileVariableLoaded = 0
 			self.do_cProfile  			= "x"
 			self.timeTrVarName 			= "enableTimeTracking_"+self.pluginShortName
-			if self.decideMyLog("StartFi"): sindigo.server.log("testing if variable "+self.timeTrVarName+" is == on/off/print-option to enable/end/print time tracking of all functions and methods (option:'',calls,cumtime,pcalls,time)")
+			if self.decideMyLog("StartFi"): indigo.server.log("testing if variable "+self.timeTrVarName+" is == on/off/print-option to enable/end/print time tracking of all functions and methods (option:'',calls,cumtime,pcalls,time)")
 
 		self.lastTimegetcProfileVariable = time.time()
 
@@ -4872,11 +4878,12 @@ class Plugin(indigo.PluginBase):
 
 
 ####-----------------	 ---------
-	def decideMyLog(self, msgLevel):
+	def decideMyLog(self, debugType, Second=""):
 		try:
-			if msgLevel	 == "all" or "all" in self.debugLevel:	 return True
-			if msgLevel	 == ""	 and "all" not in self.debugLevel:	 return False
-			if msgLevel in self.debugLevel:							 return True
+			if debugType	 == "all" or "all" in self.debugLevel:	 	 return True
+			if Second		 != ""  and Second in self.debugLevel:	 	 return True
+			if debugType	 == ""	 and "all" not in self.debugLevel:	 return False
+			if debugType in self.debugLevel:							 return True
 			return False
 		except Exception as e:
 				self.logger.error("", exc_info=True)
@@ -4940,7 +4947,7 @@ class Plugin(indigo.PluginBase):
 		ipx = ip0.split(".")
 		if len(ipx) != 4:									return False	# not complete
 		if ipx[0] == "0":									return False	# must not start with 0
-		if ipx[3] == "0":									return False	# must not start with 0
+		#if ipx[3] == "0":									return False	# must not start with 0
 		else:
 			for ip in ipx:
 				try:
